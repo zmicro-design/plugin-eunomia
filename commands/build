@@ -13,6 +13,23 @@ core() {
     exit 0
   fi
 
+  if [ -z "$GIT_REPO_DIR" ]; then
+
+  fi
+
+  if [ -z "$GIT_REPO_PKG" ]; then
+    log::info "GIT_REPO_PKG is required"
+    exit 1
+  fi
+
+  if  [ ! -f "$GIT_REPO_PKG" ]; then
+    log::info "GIT_REPO_PKG($GIT_REPO_PKG) is not a file"
+    exit 1
+  fi
+
+  mkdir -p $GIT_REPO_DIR
+  mkdir -p $BUILD_DIR
+
   # APP
   tar -zxvf $GIT_REPO_PKG -C $GIT_REPO_DIR
   # Dockerfile

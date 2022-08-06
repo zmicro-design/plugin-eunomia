@@ -1,17 +1,5 @@
 export PLUGIN_TA_MULTIVERSE_NAME=gvm
 
-if [ ! -d "$PLUGIN_TA_MULTIVERSE_VERSIONS" ]; then
-  mkdir -p $PLUGIN_TA_MULTIVERSE_VERSIONS
-fi
-
-if [ ! -f "$PLUGIN_TA_MULTIVERSE_VERSION_CURRENT" ]; then
-  touch $PLUGIN_TA_MULTIVERSE_VERSION_CURRENT
-fi
-
-if [ ! -d "$PLUGIN_TA_MULTIVERSE_GO_PATH" ]; then
-  mkdir -p $PLUGIN_TA_MULTIVERSE_GO_PATH
-fi
-
 export GIT_REPO_NAME=${GIT_REPO_NAME:-"thinking-frontend/ta-multiverse"}
 export GIT_REPO_PKG=${GIT_REPO_PKG:-"/build/flow/ta-multiverse.tgz"}
 export DOCKER_REGISTRY=${DOCKER_REGISTRY:-"docker-ta.thinkingdata.cn"}
@@ -32,5 +20,4 @@ export RUNNER_IMAGE=$DOCKER_REGISTRY/$PIPELINE_IMAGE_NAME:$PIPELINE_IMAGE_TAGS
 
 export EXPORT_DIR=${EXPORT_DIR:-"$BUILD_DIR/dist"}
 
-mkdir -p $GIT_REPO_DIR
-mkdir -p $BUILD_DIR
+
