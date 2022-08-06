@@ -17,8 +17,18 @@ core() {
   # ta-multiverse::prepare
   ta-multiverse::prepare
 
+  if [ -z "$PLUGIN_TA_MULTIVERSE_EXPORT_DIR" ]; then
+    log::error "[export] PLUGIN_TA_MULTIVERSE_EXPORT_DIR is required"
+    exit 1
+  fi
+
   if [ ! -d "$PLUGIN_TA_MULTIVERSE_BUILD_ID_DIR" ]; then
     log::error "[export] you must run build first"
+    exit 1
+  fi
+
+  if [ ! -d "$PLUGIN_TA_MULTIVERSE_EXPORT_DIR" ]; then
+    log::error "[export] PLUGIN_TA_MULTIVERSE_EXPORT_DIR(${PLUGIN_TA_MULTIVERSE_EXPORT_DIR}) is not a directory"
     exit 1
   fi
 
