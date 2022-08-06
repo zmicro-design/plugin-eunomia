@@ -17,11 +17,11 @@ core() {
 
   if [ "$(eunomia::is_built)" != "true" ]; then
     # build
-    eunomia::build build
+    eunomia::build
   fi 
 
   # export
-  eunomia::build export
+  eunomia::export
 }
 
 run() {
