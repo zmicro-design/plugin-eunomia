@@ -1,5 +1,5 @@
-PLUGIN_NAME=eunimia
-PLUGIN_DESCRIPTION="eunimia plugin for zmicro"
+PLUGIN_NAME=eunomia
+PLUGIN_DESCRIPTION="eunomia plugin for zmicro"
 PLUGIN_VERSION=v1.0.0
 
 DEPENDENCIES=(
