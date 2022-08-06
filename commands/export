@@ -27,10 +27,10 @@ core() {
     exit 1
   fi
 
-  if [ ! -d "$PLUGIN_TA_MULTIVERSE_EXPORT_DIR" ]; then
-    log::error "[export] PLUGIN_TA_MULTIVERSE_EXPORT_DIR(${PLUGIN_TA_MULTIVERSE_EXPORT_DIR}) is not a directory"
-    exit 1
-  fi
+  # if [ ! -d "$PLUGIN_TA_MULTIVERSE_EXPORT_DIR" ]; then
+  #   log::error "[export] PLUGIN_TA_MULTIVERSE_EXPORT_DIR(${PLUGIN_TA_MULTIVERSE_EXPORT_DIR}) is not a directory"
+  #   exit 1
+  # fi
 
   # clean
   rm -rf $PLUGIN_TA_MULTIVERSE_EXPORT_DIR
