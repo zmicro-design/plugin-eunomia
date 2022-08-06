@@ -29,7 +29,7 @@ core() {
   # APP
   tar -zxvf $GIT_REPO_PKG -C $GIT_REPO_DIR
   # Dockerfile
-  cp ${SERVICE_CONFIGS}/docker/Dockerfile $GIT_REPO_DIR
+  cp ${SERVICE_DIR}/docker/Dockerfile $GIT_REPO_DIR
 
   zmicro pipeline bp
 }
