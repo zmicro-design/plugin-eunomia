@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # gvm::current gets the current version of Go
-ta-multiverse::prepare() {
+eunomia::prepare() {
   # # HASH
   # # export PLUGIN_TA_MULTIVERSE_BUILD_HASH=$(md5sum $PLUGIN_TA_MULTIVERSE_GIT_REPO_PKG | awk -F " " '{print $1}')
   # export PLUGIN_TA_MULTIVERSE_BUILD_ID_DIR=${PLUGIN_TA_MULTIVERSE_BUILD_DIR}/${PLUGIN_TA_MULTIVERSE_BUILD_ID}
@@ -44,4 +44,4 @@ ta-multiverse::prepare() {
   # mkdir -p $PLUGIN_TA_MULTIVERSE_BUILD_ID_DIR
 }
 
-export -f ta-multiverse::prepare
+export -f eunomia::prepare
