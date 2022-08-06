@@ -2,6 +2,11 @@
 
 # gvm::current gets the current version of Go
 eunomia::prepare() {
+  # @TODO not works
+  # if [ -f "$PLUGIN_EUNOMIA_GIT_DOT_ENV" ]; then
+  #   dotenv::load $PLUGIN_EUNOMIA_GIT_DOT_ENV
+  # fi
+
   if [ -z "$PLUGIN_EUNOMIA_BUILD_ID" ]; then
     log::error "[prepare] PLUGIN_EUNOMIA_BUILD_ID is required"
     exit 1
