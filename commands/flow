@@ -13,7 +13,8 @@ core() {
     exit 0
   fi
 
-  if [ "$(eunomia::check_build)" = "false" ]; then
+  eunomia::check_build
+  if [ "$?" != "0" ]; then
     # build
     eunomia::build build
   fi 

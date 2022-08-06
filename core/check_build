@@ -8,9 +8,11 @@ eunomia::check_build() {
 
   docker pull $PLUGIN_EUNOMIA_RUNNER_IMAGE >> /dev/null 2>&1
   if [ "$?" != "0" ]; then
-    echo "false"
+    # echo "false"
+    exit 1
   else
-    echo "true"
+    # echo "true"
+    exit 0
   fi
 }
 
