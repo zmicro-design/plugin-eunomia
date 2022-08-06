@@ -15,6 +15,18 @@ core() {
   fi
 
   # ta-multiverse::prepare
+  if [ -z "$GIT_REPO_PKG" ]; then
+    log::info "GIT_REPO_PKG is required"
+    exit 1
+  fi
+
+  if [ ! -f "$GIT_REPO_PKG" ]; then
+    log::info "GIT_REPO_PKG($GIT_REPO_PKG) is not a file"
+    exit 1
+  fi
+
+  mkdir -p $GIT_REPO_DIR
+  mkdir -p $BUILD_DIR
 
   # clean
   rm -rf $EXPORT_DIR
