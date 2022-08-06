@@ -16,6 +16,10 @@ core() {
   # ta-multiverse::prepare
   ta-multiverse::prepare
 
+  if [ -d "$PLUGIN_TA_MULTIVERSE_BUILD_ID_DIR" ]; then
+    rm -rf $PLUGIN_TA_MULTIVERSE_BUILD_ID_DIR
+  fi
+
   # APP
   tar -zxvf $PLUGIN_TA_MULTIVERSE_GIT_REPO_PKG -C $PLUGIN_TA_MULTIVERSE_GIT_REPO_DIR
   # Dockerfile

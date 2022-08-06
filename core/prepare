@@ -28,10 +28,6 @@ ta-multiverse::prepare() {
     exit 1
   fi
 
-  if [ -d "$PLUGIN_TA_MULTIVERSE_BUILD_ID_DIR" ]; then
-    rm -rf $PLUGIN_TA_MULTIVERSE_BUILD_ID_DIR
-  fi
-
   mkdir -p $PLUGIN_TA_MULTIVERSE_GIT_REPO_DIR
   # mkdir -p $PLUGIN_TA_MULTIVERSE_BUILD_ID_DIR
 }

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -x
+# set -x
 set -e
 
 help() {
@@ -16,6 +16,11 @@ core() {
 
   # ta-multiverse::prepare
   ta-multiverse::prepare
+
+  if [ ! -d "$PLUGIN_TA_MULTIVERSE_BUILD_ID_DIR" ]; then
+    log::error "[export] you must run build first"
+    exit 1
+  fi
 
   # clean
   rm -rf $PLUGIN_TA_MULTIVERSE_EXPORT_DIR
