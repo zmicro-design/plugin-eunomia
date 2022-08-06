@@ -15,25 +15,14 @@ core() {
   fi
 
   # ta-multiverse::prepare
-  if [ -z "$GIT_REPO_PKG" ]; then
-    log::info "GIT_REPO_PKG is required"
-    exit 1
-  fi
-
-  if [ ! -f "$GIT_REPO_PKG" ]; then
-    log::info "GIT_REPO_PKG($GIT_REPO_PKG) is not a file"
-    exit 1
-  fi
-
-  mkdir -p $GIT_REPO_DIR
-  mkdir -p $BUILD_DIR
+  ta-multiverse::prepare
 
   # clean
-  rm -rf $EXPORT_DIR
+  rm -rf $PLUGIN_TA_MULTIVERSE_EXPORT_DIR
 
-  docker run -d --name $RUNNER_NAME $RUNNER_IMAGE
-  docker cp $RUNNER_NAME:/var/www/html $EXPORT_DIR
-  docker rm -f $RUNNER_NAME
+  docker run -d --name $PLUGIN_TA_MULTIVERSE_RUNNER_NAME $PLUGIN_TA_MULTIVERSE_RUNNER_IMAGE
+  docker cp $PLUGIN_TA_MULTIVERSE_RUNNER_NAME:/var/www/html $PLUGIN_TA_MULTIVERSE_EXPORT_DIR
+  docker rm -f $PLUGIN_TA_MULTIVERSE_RUNNER_NAME
 }
 
 run() {

@@ -13,23 +13,13 @@ core() {
     exit 0
   fi
 
-  if [ -z "$GIT_REPO_PKG" ]; then
-    log::info "GIT_REPO_PKG is required"
-    exit 1
-  fi
-
-  if  [ ! -f "$GIT_REPO_PKG" ]; then
-    log::info "GIT_REPO_PKG($GIT_REPO_PKG) is not a file"
-    exit 1
-  fi
-
-  mkdir -p $GIT_REPO_DIR
-  mkdir -p $BUILD_DIR
+  # ta-multiverse::prepare
+  ta-multiverse::prepare
 
   # APP
-  tar -zxvf $GIT_REPO_PKG -C $GIT_REPO_DIR
+  tar -zxvf $PLUGIN_TA_MULTIVERSE_GIT_REPO_PKG -C $PLUGIN_TA_MULTIVERSE_GIT_REPO_DIR
   # Dockerfile
-  cp ${SERVICE_DIR}/docker/Dockerfile $GIT_REPO_DIR
+  cp ${PLUGIN_DIR}/config/docker/Dockerfile $PLUGIN_TA_MULTIVERSE_GIT_REPO_DIR
 
   zmicro pipeline bp
 }
