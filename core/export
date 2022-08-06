@@ -1,0 +1,30 @@
+#!/bin/bash
+
+eunomia::export() {
+  # eunomia::prepare
+  eunomia::prepare
+
+  if [ -z "$PLUGIN_EUNOMIA_EXPORT_DIR" ]; then
+    log::error "[export] PLUGIN_EUNOMIA_EXPORT_DIR is required"
+    exit 1
+  fi
+
+  if [ ! -d "$PLUGIN_EUNOMIA_BUILD_ID_DIR" ]; then
+    log::error "[export] you must run build first"
+    exit 1
+  fi
+
+  # if [ ! -d "$PLUGIN_EUNOMIA_EXPORT_DIR" ]; then
+  #   log::error "[export] PLUGIN_EUNOMIA_EXPORT_DIR(${PLUGIN_EUNOMIA_EXPORT_DIR}) is not a directory"
+  #   exit 1
+  # fi
+
+  # clean
+  rm -rf $PLUGIN_EUNOMIA_EXPORT_DIR
+
+  docker run -d --name $PLUGIN_EUNOMIA_RUNNER_NAME $PLUGIN_EUNOMIA_RUNNER_IMAGE
+  docker cp $PLUGIN_EUNOMIA_RUNNER_NAME:/var/www/html $PLUGIN_EUNOMIA_EXPORT_DIR
+  docker rm -f $PLUGIN_EUNOMIA_RUNNER_NAME
+}
+
+export -f eunomia::export

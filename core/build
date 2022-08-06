@@ -1,0 +1,19 @@
+#!/bin/bash
+
+eunomia::build() {
+  # eunomia::prepare
+  eunomia::prepare
+
+  if [ -d "$PLUGIN_EUNOMIA_BUILD_ID_DIR" ]; then
+    rm -rf $PLUGIN_EUNOMIA_BUILD_ID_DIR
+  fi
+
+  # APP
+  tar -zxvf $PLUGIN_EUNOMIA_GIT_REPO_PKG -C $PLUGIN_EUNOMIA_GIT_REPO_DIR
+  # Dockerfile
+  cp ${PLUGIN_DIR}/config/docker/Dockerfile $PLUGIN_EUNOMIA_GIT_REPO_DIR
+
+  zmicro pipeline bp
+}
+
+export -f eunomia::build

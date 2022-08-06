@@ -1,11 +1,10 @@
 #!/bin/bash
 
-# set -x
 set -e
 
 help() {
   echo "Usage:"
-  echo "  zmicro eunomia export"
+  echo "  zmicro eunomia flow"
 }
 
 core() {
@@ -14,7 +13,10 @@ core() {
     exit 0
   fi
 
-  eunomia::export
+  # build
+  eunomia::build build
+  # export
+  eunomia::build export
 }
 
 run() {
