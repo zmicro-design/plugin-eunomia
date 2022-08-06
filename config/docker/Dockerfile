@@ -16,7 +16,7 @@ RUN  npm run build
 
 RUN  npm run dist
 
-FROM whatwewant/node:v16-2.0.0
+FROM whatwewant/eunomia-runner-unicom:v1
 
 LABEL MAINTAINER="Zero<tobewhatwewant@outlook.com>"
 
