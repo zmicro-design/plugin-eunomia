@@ -19,9 +19,19 @@ eunomia::export() {
   # clean
   rm -rf $PLUGIN_EUNOMIA_EXPORT_DIR
 
-  docker run -d --name $PLUGIN_EUNOMIA_RUNNER_NAME $PLUGIN_EUNOMIA_RUNNER_IMAGE
+  docker run -d --name $PLUGIN_EUNOMIA_RUNNER_NAME $PLUGIN_EUNOMIA_RUNNER_IMAGE >> /dev/null 2>&1
+  if [ "$?" != "0" ]; then
+    log::error "[eunomia::export] failed to start runner container"
+    exit 1
+  fi
+  
   docker cp $PLUGIN_EUNOMIA_RUNNER_NAME:/var/www/html $PLUGIN_EUNOMIA_EXPORT_DIR
-  docker rm -f $PLUGIN_EUNOMIA_RUNNER_NAME
+  if [ "$?" != "0" ]; then
+    log::error "[eunomia::export] failed to export when copying from runner"
+    exit 1
+  fi
+
+  docker rm -f $PLUGIN_EUNOMIA_RUNNER_NAME >> /dev/null 2>&1
 }
 
 export -f eunomia::export
