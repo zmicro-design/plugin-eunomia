@@ -15,8 +15,7 @@ core() {
 
   eunomia::prepare
 
-  eunomia::check_build
-  if [ "$?" != "0" ]; then
+  if [ "$(eunomia::is_built)" != "true" ]; then
     # build
     eunomia::build build
   fi 

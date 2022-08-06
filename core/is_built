@@ -1,0 +1,17 @@
+#!/bin/bash
+
+eunomia::is_built() {
+  if [ -z "$PLUGIN_EUNOMIA_RUNNER_IMAGE" ]; then
+    log::error "[is_built] PLUGIN_EUNOMIA_RUNNER_IMAGE is required"
+    exit 1
+  fi
+
+  docker pull $PLUGIN_EUNOMIA_RUNNER_IMAGE >> /dev/null 2>&1
+  if [ "$?" != "0" ]; then
+    echo "false"
+  else
+    echo "true"
+  fi
+}
+
+export -f eunomia::is_built
