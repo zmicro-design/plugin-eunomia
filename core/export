@@ -1,16 +1,13 @@
 #!/bin/bash
 
 eunomia::export() {
-  # eunomia::prepare
-  eunomia::prepare
-
   if [ -z "$PLUGIN_EUNOMIA_EXPORT_DIR" ]; then
-    log::error "[export] PLUGIN_EUNOMIA_EXPORT_DIR is required"
+    log::error "[eunomia::export] PLUGIN_EUNOMIA_EXPORT_DIR is required"
     exit 1
   fi
 
   if [ ! -d "$PLUGIN_EUNOMIA_BUILD_ID_DIR" ]; then
-    log::error "[export] you must run build first"
+    log::error "[eunomia::export] you must run build first"
     exit 1
   fi
 
@@ -18,7 +15,7 @@ eunomia::export() {
 
 
   # if [ ! -d "$PLUGIN_EUNOMIA_EXPORT_DIR" ]; then
-  #   log::error "[export] PLUGIN_EUNOMIA_EXPORT_DIR(${PLUGIN_EUNOMIA_EXPORT_DIR}) is not a directory"
+  #   log::error "[eunomia::export] PLUGIN_EUNOMIA_EXPORT_DIR(${PLUGIN_EUNOMIA_EXPORT_DIR}) is not a directory"
   #   exit 1
   # fi
 

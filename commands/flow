@@ -13,6 +13,8 @@ core() {
     exit 0
   fi
 
+  eunomia::prepare
+
   eunomia::check_build
   if [ "$?" != "0" ]; then
     # build
