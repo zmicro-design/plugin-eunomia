@@ -1,0 +1,28 @@
+#!/bin/bash
+
+set -e
+
+help() {
+  echo "Usage:"
+  echo "  zgvm use"
+}
+
+core() {
+  if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    help
+    exit 0
+  fi
+
+  # APP
+  tar -zxvf $GIT_REPO_PKG -C $GIT_REPO_DIR
+  # Dockerfile
+  cp ${SERVICE_CONFIGS}/Dockerfile $GIT_REPO_DIR
+
+  zmicro pipeline bp
+}
+
+run() {
+  core $@
+}
+
+run $@

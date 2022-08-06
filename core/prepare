@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# gvm::current gets the current version of Go
+ta-multiverse::prepare() {
+  export GIT_REPO_NAME=${GIT_REPO_NAME:-"thinking-frontend/ta-multiverse"}
+  export GIT_REPO_PKG=${GIT_REPO_PKG:-"/build/flow/ta-multiverse.tgz"}
+  export DOCKER_REGISTRY=${DOCKER_REGISTRY:-"docker-ta.thinkingdata.cn"}
+  export GIT_REPO_HASH=$(md5sum $GIT_REPO_PKG | awk -F " " '{print $1}')
+  export GIT_DIR=/git/repo
+
+  export GIT_REPO_DIR=$GIT_DIR/$GIT_REPO_HASH
+  export BUILD_DIR=/build/flow/${GIT_REPO_HASH}
+
+  export PIPELINE_BUILD_CONTEXT=$BUILD_DIR
+  export PIPELINE_GIT_REPOSITORY_DIR=$GIT_REPO_DIR
+  export PIPELINE_DOCKER_REGISTRY=$DOCKER_REGISTRY
+  export PIPELINE_IMAGE_NAME=$GIT_REPO_NAME
+  export PIPELINE_IMAGE_TAGS=build_${GIT_REPO_HASH}
+
+  export RUNNER_NAME=zpipeline_${GIT_REPO_HASH}
+  export RUNNER_IMAGE=$DOCKER_REGISTRY/$PIPELINE_IMAGE_NAME:$PIPELINE_IMAGE_TAGS
+
+  export EXPORT_DIR=${EXPORT_DIR:-"$BUILD_DIR/dist"}
+
+  mkdir -p $GIT_REPO_DIR
+  mkdir -p $BUILD_DIR
+}
+
+export -f ta-multiverse::prepare

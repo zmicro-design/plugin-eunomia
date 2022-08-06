@@ -1,0 +1,31 @@
+#!/bin/bash
+
+set -x
+set -e
+
+help() {
+  echo "Usage:"
+  echo "  zgvm use"
+}
+
+core() {
+  if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    help
+    exit 0
+  fi
+
+  # ta-multiverse::prepare
+
+  # clean
+  rm -rf $EXPORT_DIR
+
+  docker run -d --name $RUNNER_NAME $RUNNER_IMAGE
+  docker cp $RUNNER_NAME:/var/www/html $EXPORT_DIR
+  docker rm -f $RUNNER_NAME
+}
+
+run() {
+  core $@
+}
+
+run $@
