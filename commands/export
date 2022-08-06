@@ -14,30 +14,30 @@ core() {
     exit 0
   fi
 
-  # ta-multiverse::prepare
-  ta-multiverse::prepare
+  # eunomia::prepare
+  eunomia::prepare
 
-  if [ -z "$PLUGIN_TA_MULTIVERSE_EXPORT_DIR" ]; then
-    log::error "[export] PLUGIN_TA_MULTIVERSE_EXPORT_DIR is required"
+  if [ -z "$PLUGIN_EUNOMIA_EXPORT_DIR" ]; then
+    log::error "[export] PLUGIN_EUNOMIA_EXPORT_DIR is required"
     exit 1
   fi
 
-  if [ ! -d "$PLUGIN_TA_MULTIVERSE_BUILD_ID_DIR" ]; then
+  if [ ! -d "$PLUGIN_EUNOMIA_BUILD_ID_DIR" ]; then
     log::error "[export] you must run build first"
     exit 1
   fi
 
-  # if [ ! -d "$PLUGIN_TA_MULTIVERSE_EXPORT_DIR" ]; then
-  #   log::error "[export] PLUGIN_TA_MULTIVERSE_EXPORT_DIR(${PLUGIN_TA_MULTIVERSE_EXPORT_DIR}) is not a directory"
+  # if [ ! -d "$PLUGIN_EUNOMIA_EXPORT_DIR" ]; then
+  #   log::error "[export] PLUGIN_EUNOMIA_EXPORT_DIR(${PLUGIN_EUNOMIA_EXPORT_DIR}) is not a directory"
   #   exit 1
   # fi
 
   # clean
-  rm -rf $PLUGIN_TA_MULTIVERSE_EXPORT_DIR
+  rm -rf $PLUGIN_EUNOMIA_EXPORT_DIR
 
-  docker run -d --name $PLUGIN_TA_MULTIVERSE_RUNNER_NAME $PLUGIN_TA_MULTIVERSE_RUNNER_IMAGE
-  docker cp $PLUGIN_TA_MULTIVERSE_RUNNER_NAME:/var/www/html $PLUGIN_TA_MULTIVERSE_EXPORT_DIR
-  docker rm -f $PLUGIN_TA_MULTIVERSE_RUNNER_NAME
+  docker run -d --name $PLUGIN_EUNOMIA_RUNNER_NAME $PLUGIN_EUNOMIA_RUNNER_IMAGE
+  docker cp $PLUGIN_EUNOMIA_RUNNER_NAME:/var/www/html $PLUGIN_EUNOMIA_EXPORT_DIR
+  docker rm -f $PLUGIN_EUNOMIA_RUNNER_NAME
 }
 
 run() {

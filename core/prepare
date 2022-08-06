@@ -25,6 +25,11 @@ ta-multiverse::prepare() {
     exit 1
   fi
 
+  if [ -z "$PLUGIN_EUNOMIA_GIT_REPO_NAME" ]; then
+    log::error "[prepare] PLUGIN_EUNOMIA_GIT_REPO_NAME is required"
+    exit 1
+  fi
+
   if [ -z "$PLUGIN_TA_MULTIVERSE_GIT_REPO_PKG" ]; then
     log::error "[prepare] PLUGIN_TA_MULTIVERSE_GIT_REPO_PKG is required"
     exit 1

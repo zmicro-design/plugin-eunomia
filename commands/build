@@ -13,17 +13,17 @@ core() {
     exit 0
   fi
 
-  # ta-multiverse::prepare
-  ta-multiverse::prepare
+  # eunomia::prepare
+  eunomia::prepare
 
-  if [ -d "$PLUGIN_TA_MULTIVERSE_BUILD_ID_DIR" ]; then
-    rm -rf $PLUGIN_TA_MULTIVERSE_BUILD_ID_DIR
+  if [ -d "$PLUGIN_EUNOMIA_BUILD_ID_DIR" ]; then
+    rm -rf $PLUGIN_EUNOMIA_BUILD_ID_DIR
   fi
 
   # APP
-  tar -zxvf $PLUGIN_TA_MULTIVERSE_GIT_REPO_PKG -C $PLUGIN_TA_MULTIVERSE_GIT_REPO_DIR
+  tar -zxvf $PLUGIN_EUNOMIA_GIT_REPO_PKG -C $PLUGIN_EUNOMIA_GIT_REPO_DIR
   # Dockerfile
-  cp ${PLUGIN_DIR}/config/docker/Dockerfile $PLUGIN_TA_MULTIVERSE_GIT_REPO_DIR
+  cp ${PLUGIN_DIR}/config/docker/Dockerfile $PLUGIN_EUNOMIA_GIT_REPO_DIR
 
   zmicro pipeline bp
 }

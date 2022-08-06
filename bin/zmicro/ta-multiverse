@@ -1,3 +1,0 @@
-#!/bin/bash
-
-zmicro plugin run ta-multiverse $@
