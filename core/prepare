@@ -2,7 +2,6 @@
 
 # gvm::current gets the current version of Go
 ta-multiverse::prepare() {
-  echo "PLUGIN_DATA: ${PLUGIN_DATA}"
   # HASH
   export PLUGIN_TA_MULTIVERSE_GIT_REPO_HASH=$(md5sum $PLUGIN_TA_MULTIVERSE_GIT_REPO_PKG | awk -F " " '{print $1}')
   export PLUGIN_TA_MULTIVERSE_BUILD_ID_DIR=${PLUGIN_TA_MULTIVERSE_BUILD_DIR}/${PLUGIN_TA_MULTIVERSE_GIT_REPO_HASH}
