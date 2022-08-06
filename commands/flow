@@ -13,14 +13,22 @@ core() {
     exit 0
   fi
 
+  log::info "[flow] parering ..."
   eunomia::prepare
 
+  log::info "[flow] checking ..."
   if [ "$(eunomia::is_built)" != "true" ]; then
     # build
+    log::info "[flow] building ..."
     eunomia::build
+  else
+    log::info "[flow] loading cache ..."
+    # @TODO create build dir for export and other steps
+    mkdir -p $PLUGIN_EUNOMIA_BUILD_ID_DIR
   fi 
 
   # export
+  log::info "[flow] exporting ..."
   eunomia::export
 }
 
