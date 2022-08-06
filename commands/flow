@@ -13,23 +13,26 @@ core() {
     exit 0
   fi
 
-  log::info "[flow] parering ..."
+  log::info "[$(timestamp)][flow] parering ..."
   eunomia::prepare
 
-  log::info "[flow] checking ..."
+  log::info "[$(timestamp)][flow] checking ..."
   if [ "$(eunomia::is_built)" != "true" ]; then
     # build
-    log::info "[flow] building ..."
+    log::info "[$(timestamp)][flow] building ..."
     eunomia::build
   else
-    log::info "[flow] loading cache ..."
+    log::info "[$(timestamp)][flow] loading cache ..."
     # @TODO create build dir for export and other steps
     mkdir -p $PLUGIN_EUNOMIA_BUILD_ID_DIR
-  fi 
+  fi
 
   # export
   log::info "[flow] exporting ..."
   eunomia::export
+
+  # done
+  log::info "[flow] done"
 }
 
 run() {
