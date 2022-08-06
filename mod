@@ -1,6 +1,6 @@
 PLUGIN_NAME=ta-multiverse
 PLUGIN_DESCRIPTION="ta multiverse plugin for zmicro"
-PLUGIN_VERSION=v0.0.7
+PLUGIN_VERSION=v0.0.8
 
 DEPENDENCIES=(
   "pipeline@latest"
