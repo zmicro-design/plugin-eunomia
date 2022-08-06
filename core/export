@@ -11,9 +11,6 @@ eunomia::export() {
     exit 1
   fi
 
-  export PLUGIN_EUNOMIA_RUNNER_IMAGE=$PLUGIN_EUNOMIA_DOCKER_REGISTRY/$PIPELINE_IMAGE_NAME:$PIPELINE_IMAGE_TAGS
-
-
   # if [ ! -d "$PLUGIN_EUNOMIA_EXPORT_DIR" ]; then
   #   log::error "[eunomia::export] PLUGIN_EUNOMIA_EXPORT_DIR(${PLUGIN_EUNOMIA_EXPORT_DIR}) is not a directory"
   #   exit 1
