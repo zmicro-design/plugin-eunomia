@@ -5,7 +5,7 @@ export PLUGIN_EUNOMIA_BUILD_DIR=${PLUGIN_DATA}/build
 export PLUGIN_EUNOMIA_PKG_DIR=${PLUGIN_DATA}/pkg
 export PLUGIN_EUNOMIA_EXPORT_DIR=${PLUGIN_DATA}/export
 # Dockerfiles
-export PLUGIN_EUNOMIA_DOCKERFILES_DIR=$${PLUGIN_DIR}/config/dockerfiles
+export PLUGIN_EUNOMIA_DOCKERFILES_DIR=${PLUGIN_DIR}/config/dockerfiles
 
 if [ ! -d "$PLUGIN_EUNOMIA_GIT_DIR" ]; then
   mkdir -p $PLUGIN_EUNOMIA_GIT_DIR
