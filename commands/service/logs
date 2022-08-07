@@ -2,7 +2,7 @@
 
 help() {
   echo "Usage:"
-  echo "  zmicro eunomia docker service restart"
+  echo "  zmicro eunomia docker service logs"
 }
 
 core() {
@@ -12,7 +12,7 @@ core() {
   fi
 
   cd ${PLUGIN_DIR}/config/service
-  docker-compose up -d --build
+  docker-compose logs -f --tail 100
 }
 
 run() {
