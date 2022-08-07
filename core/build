@@ -14,6 +14,8 @@ eunomia::build() {
   cp ${PLUGIN_DIR}/config/docker/Dockerfile $PLUGIN_EUNOMIA_GIT_REPO_DIR
 
   zmicro pipeline bp
+
+  log::info "[eunomia::build] done"
 }
 
 export -f eunomia::build
