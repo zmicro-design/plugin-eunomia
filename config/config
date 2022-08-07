@@ -24,12 +24,12 @@ if [ ! -d "$PLUGIN_EUNOMIA_EXPORT_DIR" ]; then
 fi
 
 if [ ! -d "$PLUGIN_EUNOMIA_DOCKERFILES_DIR" ]; then
-  log::error "[eunomia::build] Dockerfiles Dir($PLUGIN_EUNOMIA_DOCKERFILES_DIR) not found"
+  log::error "[config] Dockerfiles Dir($PLUGIN_EUNOMIA_DOCKERFILES_DIR) not found"
   exit 1
 fi
 
 if [ -z "$(ls $PLUGIN_EUNOMIA_DOCKERFILES_DIR)" ]; then
-  log::error "[eunomia::build] Dockerfiles Dir($PLUGIN_EUNOMIA_DOCKERFILES_DIR) is empty"
+  log::error "[config] Dockerfiles Dir($PLUGIN_EUNOMIA_DOCKERFILES_DIR) is empty"
   exit 1
 fi
 
