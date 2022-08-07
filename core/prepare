@@ -60,7 +60,7 @@ eunomia::prepare() {
   fi
 
   if [ ! -f "$PLUGIN_EUNOMIA_GIT_REPO_PKG" ]; then
-    log::error "[prepare] PLUGIN_EUNOMIA_GIT_REPO_PKG($PLUGIN_EUNOMIA_GIT_REPO_PKG) is not a file"
+    log::error "[prepare] file($PLUGIN_EUNOMIA_GIT_REPO_PKG) is not found"
     exit 1
   fi
 
