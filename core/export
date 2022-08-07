@@ -19,14 +19,14 @@ eunomia::export() {
   # clean
   rm -rf $PLUGIN_EUNOMIA_EXPORT_ID_DIR
 
-  docker run -d --name $PLUGIN_EUNOMIA_RUNNER_NAME $PLUGIN_EUNOMIA_RUNNER_IMAGE >> /dev/null 2>&1
+  docker run -d --name $PLUGIN_EUNOMIA_RUNNER_NAME $PLUGIN_EUNOMIA_RUNNER_IMAGE >> /dev/null
   if [ "$?" != "0" ]; then
     log::error "[eunomia::export] failed to start runner container"
     exit 1
   fi
   
   log::info "[eunomia::export] copy to $PLUGIN_EUNOMIA_EXPORT_ID_DIR"
-  docker cp $PLUGIN_EUNOMIA_RUNNER_NAME:/var/www/html $PLUGIN_EUNOMIA_EXPORT_ID_DIR
+  docker cp $PLUGIN_EUNOMIA_RUNNER_NAME:/var/www/html $PLUGIN_EUNOMIA_EXPORT_ID_DIR >> /dev/null
   if [ "$?" != "0" ]; then
     log::error "[eunomia::export] failed to export when copying from runner"
     exit 1
@@ -34,7 +34,7 @@ eunomia::export() {
 
   log::info "[eunomia::export] exporting to $PLUGIN_EUNOMIA_EXPORT_ID_PKG"
   cd $PLUGIN_EUNOMIA_EXPORT_ID_DIR
-  tar -zcvf $PLUGIN_EUNOMIA_EXPORT_ID_PKG .
+  tar -zcvf $PLUGIN_EUNOMIA_EXPORT_ID_PKG . >> /dev/null
   if [ "$?" != "0" ]; then
     log::error "[eunomia::export] failed to export when compressing"
     exit 1
