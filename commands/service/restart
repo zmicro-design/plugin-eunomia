@@ -12,7 +12,15 @@ core() {
   fi
 
   cd ${PLUGIN_DIR}/config/service
-  docker-compose up -d --build
+  
+  # update image
+  if [ -z "$NO_PULL" ]; then
+    docker-compose pull
+  fi
+
+  docker-compose down
+  # docker-compose up -d --build
+  docker-compose up -d
 }
 
 run() {

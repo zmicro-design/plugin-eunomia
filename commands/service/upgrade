@@ -2,7 +2,7 @@
 
 help() {
   echo "Usage:"
-  echo "  zmicro eunomia docker service start"
+  echo "  zmicro eunomia docker service upgrade"
 }
 
 core() {
@@ -12,7 +12,12 @@ core() {
   fi
 
   cd ${PLUGIN_DIR}/config/service
-  
+
+  # update image
+  docker-compose pull
+
+  docker-compose down
+  # docker-compose up -d --build
   docker-compose up -d
 }
 
