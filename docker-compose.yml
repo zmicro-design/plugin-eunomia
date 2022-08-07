@@ -1,0 +1,25 @@
+version: '3.7'
+
+services:
+  app:
+    build:
+      context: .
+    environment:
+      PORT: 9000
+      PLUGIN_EUNOMIA_DOCKER_REGISTRY: docker-ta.thinkingdata.cn
+      PLUGIN_EUNOMIA_BUILD_ID: 666
+      PLUGIN_EUNOMIA_GIT_REPO_NAME: thinking-frontend/ta-multiverse
+      PLUGIN_EUNOMIA_GIT_REPO_PKG: /tmp/ta-multiverse.tar.gz
+      # Question: failed to solve with frontend dockerfile.v0: failed to create LLB definition: unexpected status code [manifests v1]: 401 Unauthorized
+      # Reason: Old Docker Desktop version on Mac M1
+      # Solution: https://stackoverflow.com/questions/64221861/an-error-failed-to-solve-with-frontend-dockerfile-v0
+      DOCKER_BUILDKIT: 0
+    volumes:
+      # - .:/usr/local/lib/zmicro/plugins/eunomia
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${HOME}/.docker/config.json:/root/.docker/config.json
+      #
+      - /opt/data/plugins/eunomia:/data/plugins/eunomia
+      #
+      - ./config/dockerfiles:/usr/local/lib/zmicro/plugins/eunomia/config/dockerfiles
+      - /tmp/ta-multiverse.tar.gz:/tmp/ta-multiverse.tar.gz

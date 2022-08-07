@@ -18,6 +18,8 @@ eunomia::export() {
 
   # clean
   rm -rf $PLUGIN_EUNOMIA_EXPORT_ID_DIR
+  # ensure container removed
+  docker rm -f $PLUGIN_EUNOMIA_RUNNER_NAME >> /dev/null 2>&1
 
   docker run -d --name $PLUGIN_EUNOMIA_RUNNER_NAME $PLUGIN_EUNOMIA_RUNNER_IMAGE >> /dev/null
   if [ "$?" != "0" ]; then

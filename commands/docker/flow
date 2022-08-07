@@ -1,0 +1,44 @@
+#!/bin/bash
+
+set -e
+
+help() {
+  echo "Usage:"
+  echo "  zmicro eunomia docker flow"
+}
+
+core() {
+  if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    help
+    exit 0
+  fi
+
+  if [ -z "$PLUGIN_EUNOMIA_BUILD_ID" ]; then
+    log::error "[$(timestamp)][flow] PLUGIN_EUNOMIA_BUILD_ID is required"
+    exit 1
+  fi
+  
+  if [ -z "$PLUGIN_EUNOMIA_GIT_REPO_NAME" ]; then
+    log::error "[$(timestamp)][flow] PLUGIN_EUNOMIA_GIT_REPO_NAME is required"
+    exit 1
+  fi
+
+  if [ -z "$PLUGIN_EUNOMIA_GIT_REPO_PKG" ]; then
+    log::error "[$(timestamp)][flow] PLUGIN_EUNOMIA_GIT_REPO_PKG is required"
+    exit 1
+  fi
+
+  cd ${PLUGIN_DIR}/config/service
+  docker-compose exec \
+    -e PLUGIN_EUNOMIA_BUILD_ID=${PLUGIN_EUNOMIA_BUILD_ID} \
+    -e PLUGIN_EUNOMIA_GIT_REPO_NAME=${PLUGIN_EUNOMIA_GIT_REPO_NAME} \
+    -e PLUGIN_EUNOMIA_GIT_REPO_PKG=${PLUGIN_EUNOMIA_GIT_REPO_PKG} \
+    zmicro_plugin_eunomia \
+    zmicro eunomia flow
+}
+
+run() {
+  core $@
+}
+
+run $@

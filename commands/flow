@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+# set -e
 
 help() {
   echo "Usage:"
@@ -13,18 +13,18 @@ core() {
     exit 0
   fi
 
-  log::info "[$(timestamp)][flow] parering ..."
+  log::info "[$(timestamp)][flow] preparing ..."
   eunomia::prepare
 
   if [ -n "$FORCE_BUILD" ]; then
     # build
-    log::info "[$(timestamp)][flow] building ..."
+    log::info "[$(timestamp)][flow] force building ..."
     eunomia::build
   else
     log::info "[$(timestamp)][flow] checking ..."
     if [ "$(eunomia::is_built)" != "true" ]; then
       # build
-      log::info "[$(timestamp)][flow] building ..."
+      log::info "[$(timestamp)][flow] no cache, building ..."
       eunomia::build
     else
       log::info "[$(timestamp)][flow] loading cache ..."

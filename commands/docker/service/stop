@@ -1,0 +1,22 @@
+#!/bin/bash
+
+help() {
+  echo "Usage:"
+  echo "  zmicro eunomia docker service stop"
+}
+
+core() {
+  if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    help
+    exit 0
+  fi
+
+  cd ${PLUGIN_DIR}/config/service
+  docker-compose down
+}
+
+run() {
+  core $@
+}
+
+run $@

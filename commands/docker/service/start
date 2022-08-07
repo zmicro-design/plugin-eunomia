@@ -1,0 +1,30 @@
+#!/bin/bash
+
+help() {
+  echo "Usage:"
+  echo "  zmicro eunomia docker service start"
+}
+
+core() {
+  if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    help
+    exit 0
+  fi
+
+  cd ${PLUGIN_DIR}/config/service
+  
+  # update image
+  if [ -z "$NO_PULL" ]; then
+    docker-compose pull
+  fi
+
+  docker-compose down
+  # docker-compose up -d --build
+  docker-compose up -d
+}
+
+run() {
+  core $@
+}
+
+run $@
