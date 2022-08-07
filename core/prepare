@@ -2,6 +2,11 @@
 
 # gvm::current gets the current version of Go
 eunomia::prepare() {
+  if [ -z "$PLUGIN_EUNOMIA_BUILD_ID" ]; then
+    log::error "[prepare] PLUGIN_EUNOMIA_BUILD_ID is required"
+    exit 1
+  fi
+
   # BUILD
   export PLUGIN_EUNOMIA_BUILD_ID=${PLUGIN_EUNOMIA_BUILD_ID}
   # export PLUGIN_EUNOMIA_BUILD_HASH=${PLUGIN_EUNOMIA_BUILD_HASH}
@@ -42,11 +47,6 @@ eunomia::prepare() {
 
   if [ ! -d "$PLUGIN_EUNOMIA_BUILD_DIR" ]; then
     mkdir -p $PLUGIN_EUNOMIA_BUILD_DIR
-  fi
-
-  if [ -z "$PLUGIN_EUNOMIA_BUILD_ID" ]; then
-    log::error "[prepare] PLUGIN_EUNOMIA_BUILD_ID is required"
-    exit 1
   fi
 
   if [ -z "$PLUGIN_EUNOMIA_GIT_REPO_NAME" ]; then
