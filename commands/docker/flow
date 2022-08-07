@@ -28,6 +28,12 @@ core() {
     exit 1
   fi
 
+  echo $PLUGIN_EUNOMIA_GIT_REPO_PKG | grep $PLUGIN_EUNOMIA_GIT_REPO_PKG_TMP_DIR >> /dev/null 2>&1
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)][flow] PLUGIN_EUNOMIA_GIT_REPO_PKG(${PLUGIN_EUNOMIA_GIT_REPO_PKG}) must be starts with ${PLUGIN_EUNOMIA_GIT_REPO_PKG_TMP_DIR}"
+    exit 1
+  fi
+
   cd ${PLUGIN_DIR}/config/service
   docker-compose exec \
     -T \
