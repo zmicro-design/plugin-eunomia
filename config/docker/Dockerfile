@@ -2,6 +2,8 @@ FROM whatwewant/node-builder:v16-1.5.3 as builder
 
 LABEL MAINTAINER="Zero<tobewhatwewant@outlook.com>"
 
+ENV TZ="Asia/Shanghai"
+
 WORKDIR /build
 
 COPY package.json .
@@ -27,6 +29,6 @@ COPY --from=builder /build/dist /var/www/html
 
 RUN echo "$(date)" >/var/www/html/.buildtime
 
-RUN echo "$(date)" >/var/www/html/.buildtime.js
-
 RUN echo "$(date)" >/var/www/html/buildtime.js
+
+RUN echo "$(date)" >/var/www/html/eunomia.buildtime.js
