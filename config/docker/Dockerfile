@@ -10,13 +10,14 @@ COPY .npmrc .
 
 COPY package-lock.json .
 
-RUN  npm i
+RUN npm i
 
 COPY . .
 
-RUN  npm run build 
+# RUN  npm run build
+RUN export PATH=/build/node_modules/.bin:$PATH && tant-intl build && nx run-many --target=build --projects=portal,ta,va,hermes
 
-RUN  npm run dist
+RUN npm run dist
 
 FROM whatwewant/eunomia-runner-unicom:v1
 
@@ -24,8 +25,8 @@ LABEL MAINTAINER="Zero<tobewhatwewant@outlook.com>"
 
 COPY --from=builder /build/dist /var/www/html
 
-RUN  echo "$(date)" > /var/www/html/.buildtime
+RUN echo "$(date)" >/var/www/html/.buildtime
 
-RUN  echo "$(date)" > /var/www/html/.buildtime.js
+RUN echo "$(date)" >/var/www/html/.buildtime.js
 
-RUN  echo "$(date)" > /var/www/html/buildtime.js
+RUN echo "$(date)" >/var/www/html/buildtime.js
