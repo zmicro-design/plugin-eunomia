@@ -10,8 +10,10 @@ eunomia::build() {
     log::error "[eunomia::build] you must run prepare first"
     exit 1
   fi
+
   # Dockerfile
-  cp ${PLUGIN_DIR}/config/docker/Dockerfile $PLUGIN_EUNOMIA_GIT_REPO_DIR
+  cp ${PLUGIN_EUNOMIA_GIT_REPO_DOCKERFILE} $PLUGIN_EUNOMIA_GIT_REPO_DIR
+
   # ADD build files for dockerfile
   echo "GIT_REPO_URL: $GIT_REPO_URL" >$PLUGIN_EUNOMIA_GIT_REPO_DIR/build.eunomia.js
   echo "GIT_REPO_NAME: $GIT_REPO_NAME" >>$PLUGIN_EUNOMIA_GIT_REPO_DIR/build.eunomia.js

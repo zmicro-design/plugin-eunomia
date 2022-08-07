@@ -7,6 +7,16 @@ eunomia::prepare() {
     exit 1
   fi
 
+  if [ -z "$PLUGIN_EUNOMIA_GIT_REPO_NAME" ]; then
+    log::error "[eunomia::build] PLUGIN_EUNOMIA_GIT_REPO_NAME is required"
+    exit 1
+  fi
+
+  if [ -z "$(echo $PLUGIN_EUNOMIA_GIT_REPO_NAME | awk -F='/' '{print $2}')" ]; then
+    log::error "[eunomia::build] PLUGIN_EUNOMIA_GIT_REPO_NAME is invalid, must be in the format of 'owner/repo'"
+    exit 1
+  fi
+
   # BUILD
   export PLUGIN_EUNOMIA_BUILD_ID=${PLUGIN_EUNOMIA_BUILD_ID}
   # export PLUGIN_EUNOMIA_BUILD_HASH=${PLUGIN_EUNOMIA_BUILD_HASH}
@@ -20,8 +30,18 @@ eunomia::prepare() {
 
   export PLUGIN_EUNOMIA_GIT_REPO_NAME=$PLUGIN_EUNOMIA_GIT_REPO_NAME
   export PLUGIN_EUNOMIA_GIT_REPO_PKG=$PLUGIN_EUNOMIA_GIT_REPO_PKG
+  # Dockerfile
+  export PLUGIN_EUNOMIA_GIT_REPO_DOCKERFILE=${PLUGIN_DIR}/config/docker/${PLUGIN_EUNOMIA_GIT_REPO_NAME}/Dockerfile
+  if [ ! -f "$PLUGIN_EUNOMIA_GIT_REPO_DOCKERFILE" ]; then
+    log::error "[eunomia::build] Dockerfile not found at for $PLUGIN_EUNOMIA_GIT_REPO_NAME"
+    exit 1
+  fi
 
   export PLUGIN_EUNOMIA_DOCKER_REGISTRY=${PLUGIN_EUNOMIA_DOCKER_REGISTRY:-"docker-ta.thinkingdata.cn"}
+  if [ -z "$PLUGIN_EUNOMIA_DOCKER_REGISTRY" ]; then
+    log::error "[eunomia::build] PLUGIN_EUNOMIA_DOCKER_REGISTRY is required"
+    exit 1
+  fi
 
   # # PIPELINE
   # export PIPELINE_BUILD_ID=${PLUGIN_EUNOMIA_BUILD_ID}
