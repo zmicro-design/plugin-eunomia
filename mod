@@ -1,6 +1,6 @@
 PLUGIN_NAME=eunomia
 PLUGIN_DESCRIPTION="eunomia plugin for zmicro"
-PLUGIN_VERSION=v1.0.29
+PLUGIN_VERSION=v1.0.30
 
 DEPENDENCIES=(
   "pipeline@latest"
