@@ -106,7 +106,7 @@ eunomia::prepare() {
 
   # APP
   if [ -z "$(ls $PLUGIN_EUNOMIA_GIT_REPO_DIR)" ]; then
-    tar -zxvf $PLUGIN_EUNOMIA_BUILD_ID_PKG -C $PLUGIN_EUNOMIA_GIT_REPO_DIR
+    tar -zxvf $PLUGIN_EUNOMIA_BUILD_ID_PKG -C $PLUGIN_EUNOMIA_GIT_REPO_DIR >> /dev/null
   fi
 
   # check env .eunomia
