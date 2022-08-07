@@ -33,7 +33,8 @@ eunomia::export() {
   fi
 
   log::info "[eunomia::export] exporting to $PLUGIN_EUNOMIA_EXPORT_ID_PKG"
-  tar -zcvf $PLUGIN_EUNOMIA_EXPORT_ID_PKG $PLUGIN_EUNOMIA_EXPORT_ID_DIR
+  cd $PLUGIN_EUNOMIA_EXPORT_ID_DIR
+  tar -zcvf $PLUGIN_EUNOMIA_EXPORT_ID_PKG .
   if [ "$?" != "0" ]; then
     log::error "[eunomia::export] failed to export when compressing"
     exit 1
