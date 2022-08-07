@@ -12,6 +12,21 @@ eunomia::build() {
   fi
   # Dockerfile
   cp ${PLUGIN_DIR}/config/docker/Dockerfile $PLUGIN_EUNOMIA_GIT_REPO_DIR
+  # ADD build files for dockerfile
+  echo "GIT_REPO_URL: $GIT_REPO_URL" >$PLUGIN_EUNOMIA_GIT_REPO_DIR/build.eunomia.js
+  echo "GIT_REPO_NAME: $GIT_REPO_NAME" >>$PLUGIN_EUNOMIA_GIT_REPO_DIR/build.eunomia.js
+  echo "GIT_BRANCH: $GIT_BRANCH" >>$PLUGIN_EUNOMIA_GIT_REPO_DIR/build.eunomia.js
+  echo "GIT_COMMIT_ACTOR: $GIT_COMMIT_ACTOR" >>$PLUGIN_EUNOMIA_GIT_REPO_DIR/build.eunomia.js
+  echo "GIT_COMMIT: $GIT_COMMIT" >>$PLUGIN_EUNOMIA_GIT_REPO_DIR/build.eunomia.js
+  echo "GIT_COMMIT_TIMESTAMP: $GIT_COMMIT_TIMESTAMP" >>$PLUGIN_EUNOMIA_GIT_REPO_DIR/build.eunomia.js
+  echo "PIPELINE_EXECUTOR_NAME: $PIPELINE_EXECUTOR_NAME" >>$PLUGIN_EUNOMIA_GIT_REPO_DIR/build.eunomia.js
+  echo "PIPELINE_ID: $PIPELINE_ID" >>$PLUGIN_EUNOMIA_GIT_REPO_DIR/build.eunomia.js
+  echo "PIPELINE_BUILD_ID: $PIPELINE_BUILD_ID" >>$PLUGIN_EUNOMIA_GIT_REPO_DIR/build.eunomia.js
+  echo "PIPELINE_BUILD_HASH: $PIPELINE_BUILD_HASH" >>$PLUGIN_EUNOMIA_GIT_REPO_DIR/build.eunomia.js
+
+  #
+  echo "$PLUGIN_EUNOMIA_BUILD_ID" >$PLUGIN_EUNOMIA_GIT_REPO_DIR/buildid.eunomia.js
+  echo "$(date)" >$PLUGIN_EUNOMIA_GIT_REPO_DIR/buildtime.eunomia.js
 
   zmicro pipeline bp
 

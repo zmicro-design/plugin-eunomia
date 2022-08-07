@@ -27,8 +27,16 @@ LABEL MAINTAINER="Zero<tobewhatwewant@outlook.com>"
 
 COPY --from=builder /build/dist /var/www/html
 
-RUN echo "$(date)" >/var/www/html/.buildtime
+# RUN echo "$(date)" >/var/www/html/.buildtime
 
-RUN echo "$(date)" >/var/www/html/buildtime.js
+# RUN echo "$(date)" >/var/www/html/buildtime.js
 
-RUN echo "$(date)" >/var/www/html/eunomia.buildtime.js
+# ARG EUNOMIA_PIPELINE_BUILD_ID=-1
+
+# RUN echo "${EUNOMIA_PIPELINE_BUILD_ID}" >/var/www/html/eunomia.buildid.js
+
+# RUN echo "$(date)" >/var/www/html/eunomia.buildtime.js
+
+COPY ./build.eunomia.js /var/www/html/
+COPY ./buildid.eunomia.js /var/www/html
+COPY ./buildtime.eunomia.js /var/www/html
