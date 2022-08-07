@@ -16,21 +16,21 @@ core() {
   log::info "[$(timestamp)][flow] parering ..."
   eunomia::prepare
 
-  if [ "$FORCE_BUILD" ]; then
-
-  else
-
-  fi
-
-  log::info "[$(timestamp)][flow] checking ..."
-  if [ "$(eunomia::is_built)" != "true" ]; then
+  if [ -n "$FORCE_BUILD" ]; then
     # build
     log::info "[$(timestamp)][flow] building ..."
     eunomia::build
   else
-    log::info "[$(timestamp)][flow] loading cache ..."
-    # @TODO create build dir for export and other steps
-    mkdir -p $PLUGIN_EUNOMIA_BUILD_ID_DIR
+    log::info "[$(timestamp)][flow] checking ..."
+    if [ "$(eunomia::is_built)" != "true" ]; then
+      # build
+      log::info "[$(timestamp)][flow] building ..."
+      eunomia::build
+    else
+      log::info "[$(timestamp)][flow] loading cache ..."
+      # @TODO create build dir for export and other steps
+      mkdir -p $PLUGIN_EUNOMIA_BUILD_ID_DIR
+    fi
   fi
 
   # export
