@@ -2,6 +2,7 @@ version: '3.7'
 
 services:
   zmicro_plugin_eunomia:
+    restart: always
     # build:
     #   context: ../..
     image: whatwewant/pipeline-builder-eunomia:v1
