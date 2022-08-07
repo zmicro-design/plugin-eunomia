@@ -23,3 +23,7 @@ LABEL MAINTAINER="Zero<tobewhatwewant@outlook.com>"
 COPY --from=builder /build/dist /var/www/html
 
 RUN  echo "$(date)" > /var/www/html/.buildtime
+
+RUN  echo "$(date)" > /var/www/html/.buildtime.js
+
+RUN  echo "$(date)" > /var/www/html/buildtime.js
