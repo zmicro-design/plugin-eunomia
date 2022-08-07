@@ -6,6 +6,8 @@ WORKDIR /build
 
 COPY package.json .
 
+COPY .npmrc .
+
 COPY package-lock.json .
 
 RUN  npm i
