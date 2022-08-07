@@ -16,6 +16,12 @@ core() {
   log::info "[$(timestamp)][flow] parering ..."
   eunomia::prepare
 
+  if [ "$FORCE_BUILD" ]; then
+
+  else
+
+  fi
+
   log::info "[$(timestamp)][flow] checking ..."
   if [ "$(eunomia::is_built)" != "true" ]; then
     # build
