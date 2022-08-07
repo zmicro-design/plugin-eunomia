@@ -12,7 +12,7 @@ eunomia::prepare() {
     exit 1
   fi
 
-  if [ -z "$(echo $PLUGIN_EUNOMIA_GIT_REPO_NAME | awk -F='/' '{print $2}')" ]; then
+  if [ -z "$(echo $PLUGIN_EUNOMIA_GIT_REPO_NAME | awk -F '/' '{print $2}')" ]; then
     log::error "[eunomia::build] PLUGIN_EUNOMIA_GIT_REPO_NAME is invalid, must be in the format of 'owner/repo'"
     exit 1
   fi
