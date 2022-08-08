@@ -14,7 +14,7 @@ eunomia::hook_log() {
     curl \
       -X POST \
       -d "$(cat $PLUGIN_EUNOMIA_LOG_HOOK)" \
-      $PLUGIN_EUNOMIA_LOG_HOOK
+      $PLUGIN_EUNOMIA_LOG_HOOK >> /dev/null
   fi
 }
 
@@ -29,7 +29,7 @@ eunomia::hook_start() {
       -X POST \
       -H "Content-Type: application/json" \
       -d '{"flow_pipeline_id":"'$pipelineId'","flow_build_id":"'$BUILD_NUMBER'"}' \
-      $PLUGIN_EUNOMIA_START_HOOK
+      $PLUGIN_EUNOMIA_START_HOOK >> /dev/null
   fi
 }
 
@@ -37,7 +37,7 @@ eunomia::hook_succeed() {
   if [ -n "$PLUGIN_EUNOMIA_SUCCEED_HOOK" ]; then
     log::info "[$(timestamp)][eunomia::hook_start] call $PLUGIN_EUNOMIA_SUCCEED_HOOK ..."
 
-    curl -X POST $PLUGIN_EUNOMIA_SUCCEED_HOOK
+    curl -X POST $PLUGIN_EUNOMIA_SUCCEED_HOOK >> /dev/null
 
     eunomia::hook_log
   fi
@@ -46,7 +46,7 @@ eunomia::hook_succeed() {
 eunomia::hook_failed() {
   if [ -n "$PLUGIN_EUNOMIA_FAILED_HOOK" ]; then
     log::info "[$(timestamp)][eunomia::hook_start] call $PLUGIN_EUNOMIA_FAILED_HOOK ..."
-    curl -X POST $PLUGIN_EUNOMIA_FAILED_HOOK
+    curl -X POST $PLUGIN_EUNOMIA_FAILED_HOOK >> /dev/null
 
     eunomia::hook_log
   fi
