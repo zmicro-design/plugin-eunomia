@@ -6,13 +6,21 @@ eunomia::export() {
     exit 1
   fi
 
+  if [ -d "$PLUGIN_EUNOMIA_EXPORT_ID_DIR" ]; then
+    log::error "[eunomia::export] export directory($PLUGIN_EUNOMIA_EXPORT_ID_DIR) already exists"
+    exit 1
+  fi
+
   if [ ! -d "$PLUGIN_EUNOMIA_BUILD_ID_DIR" ]; then
     log::error "[eunomia::export] you must run prepare first"
     exit 1
   fi
 
-  # clean
-  rm -rf $PLUGIN_EUNOMIA_EXPORT_ID_DIR
+  if [ -z "$(ls $PLUGIN_EUNOMIA_BUILD_ID_DIR)" ]; then
+    log::error "[eunomia::export] no build found, you must run build first"
+    exit 1
+  fi
+
   # ensure container removed
   docker rm -f $PLUGIN_EUNOMIA_RUNNER_NAME >> /dev/null 2>&1
 
@@ -36,7 +44,6 @@ eunomia::export() {
     log::error "[eunomia::export] failed to export when compressing"
     exit 1
   fi
-  rm -rf $PLUGIN_EUNOMIA_EXPORT_ID_DIR
 
   docker rm -f $PLUGIN_EUNOMIA_RUNNER_NAME >> /dev/null 2>&1
 
