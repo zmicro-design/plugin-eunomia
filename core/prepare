@@ -32,6 +32,7 @@ eunomia::prepare() {
   export PLUGIN_EUNOMIA_GIT_REPO_PKG=$PLUGIN_EUNOMIA_GIT_REPO_PKG
   # Dockerfile
   export PLUGIN_EUNOMIA_GIT_REPO_DOCKERFILE=${PLUGIN_EUNOMIA_DOCKERFILES_DIR}/${PLUGIN_EUNOMIA_GIT_REPO_NAME}/Dockerfile
+  export PLUGIN_EUNOMIA_GIT_REPO_DOCKERFILE_ENV=${PLUGIN_EUNOMIA_DOCKERFILES_DIR}/${PLUGIN_EUNOMIA_GIT_REPO_NAME}/.eunomia
   if [ ! -f "$PLUGIN_EUNOMIA_GIT_REPO_DOCKERFILE" ]; then
     log::error "[eunomia::build] Dockerfile not found at for $PLUGIN_EUNOMIA_GIT_REPO_NAME"
     exit 1
@@ -120,6 +121,10 @@ eunomia::prepare() {
   if [ -f "$PLUGIN_EUNOMIA_GIT_DOT_ENV" ]; then
     # echo "load env .eunomia: $PLUGIN_EUNOMIA_GIT_DOT_ENV"
     dotenv::load $PLUGIN_EUNOMIA_GIT_DOT_ENV
+    if [ "$?" != "0" ]; then
+      log::error "[prepare] failed to load repo env($PLUGIN_EUNOMIA_GIT_DOT_ENV)"
+      exit 1
+    fi
 
     # echo "check env PLUGIN_EUNOMIA_BUILD_HASH: $PLUGIN_EUNOMIA_BUILD_HASH"
     # echo "check env PIPELINE_BUILD_HASH: $PIPELINE_BUILD_HASH"
@@ -130,6 +135,16 @@ eunomia::prepare() {
     fi
 
     export PLUGIN_EUNOMIA_RUNNER_IMAGE=$PLUGIN_EUNOMIA_DOCKER_REGISTRY/$PIPELINE_IMAGE_NAME:$PIPELINE_IMAGE_TAGS
+  fi
+
+   # Dockerfile env
+   # support custom PLUGIN_EUNOMIA_RUNNER_DIST_DIR and others
+  if [ -f "${PLUGIN_EUNOMIA_GIT_REPO_DOCKERFILE_ENV}" ]; then
+    dotenv::load $PLUGIN_EUNOMIA_GIT_REPO_DOCKERFILE_ENV
+    if [ "$?" != "0" ]; then
+      log::error "[prepare] failed to load dockerfile .eunomia($PLUGIN_EUNOMIA_GIT_REPO_DOCKERFILE_ENV)"
+      exit 1
+    fi
   fi
 }
 
