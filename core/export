@@ -11,11 +11,6 @@ eunomia::export() {
     exit 1
   fi
 
-  # if [ ! -d "$PLUGIN_EUNOMIA_EXPORT_ID_DIR" ]; then
-  #   log::error "[eunomia::export] PLUGIN_EUNOMIA_EXPORT_ID_DIR(${PLUGIN_EUNOMIA_EXPORT_ID_DIR}) is not a directory"
-  #   exit 1
-  # fi
-
   # clean
   rm -rf $PLUGIN_EUNOMIA_EXPORT_ID_DIR
   # ensure container removed
