@@ -1,7 +1,7 @@
 #!/bin/bash
 
 eunomia::hook_log() {
-  if [ ! -z "$PLUGIN_EUNOMIA_BUILD_ID_DIR" ]; then
+  if [ -z "$PLUGIN_EUNOMIA_BUILD_ID_DIR" ]; then
     log::error "[eunomia::hook_log] PLUGIN_EUNOMIA_BUILD_ID_DIR is required"
     exit 1
   fi
