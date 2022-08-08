@@ -13,6 +13,11 @@ core() {
     exit 0
   fi
 
+  if [ "$(zmicro fn os::is_docker)" != "true" ]; then
+    log::error "[$(timestamp)][flow] the command(flow) can only be run in docker"
+    exit 1
+  fi
+
   if [ -z "$PLUGIN_EUNOMIA_BUILD_ID" ]; then
     log::error "[$(timestamp)][flow] PLUGIN_EUNOMIA_BUILD_ID is required"
     exit 1
