@@ -22,7 +22,7 @@ eunomia::hook_log() {
     curl \
       -s \
       -X POST \
-      -d "$(cat $PLUGIN_EUNOMIA_LOG_HOOK)" \
+      -d "$(cat $PLUGIN_EUNOMIA_BUILD_LOG)" \
       $PLUGIN_EUNOMIA_LOG_HOOK >> /dev/null
   fi
 }
