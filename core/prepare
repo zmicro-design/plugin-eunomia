@@ -119,7 +119,8 @@ eunomia::prepare() {
   # check env .eunomia
   # echo "check env .eunomia: $PLUGIN_EUNOMIA_GIT_DOT_ENV"
   if [ -f "$PLUGIN_EUNOMIA_GIT_DOT_ENV" ]; then
-    # echo "load env .eunomia: $PLUGIN_EUNOMIA_GIT_DOT_ENV"
+    log::info "[prepare] load user env .eunomia: $PLUGIN_EUNOMIA_GIT_DOT_ENV"
+    
     dotenv::load $PLUGIN_EUNOMIA_GIT_DOT_ENV
     if [ "$?" != "0" ]; then
       log::error "[prepare] failed to load repo env($PLUGIN_EUNOMIA_GIT_DOT_ENV)"
@@ -140,6 +141,8 @@ eunomia::prepare() {
    # Dockerfile env
    # support custom PLUGIN_EUNOMIA_RUNNER_DIST_DIR and others
   if [ -f "${PLUGIN_EUNOMIA_GIT_REPO_DOCKERFILE_ENV}" ]; then
+    log::info "[prepare] load docker env(${PLUGIN_EUNOMIA_GIT_REPO_DOCKERFILE_ENV})"
+
     dotenv::load $PLUGIN_EUNOMIA_GIT_REPO_DOCKERFILE_ENV
     if [ "$?" != "0" ]; then
       log::error "[prepare] failed to load dockerfile .eunomia($PLUGIN_EUNOMIA_GIT_REPO_DOCKERFILE_ENV)"
