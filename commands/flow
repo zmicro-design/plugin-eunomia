@@ -49,8 +49,6 @@ core() {
       eunomia::build
     else
       log::info "[$(timestamp)][flow] loading cache ..."
-      # @TODO create build dir for export and other steps
-      mkdir -p $PLUGIN_EUNOMIA_BUILD_ID_DIR
     fi
   fi
 

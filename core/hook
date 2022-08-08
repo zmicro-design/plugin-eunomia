@@ -1,11 +1,20 @@
 #!/bin/bash
 
 eunomia::hook_log() {
-  local PIPELINE_BUILD_CONTEXT_LOG=$PIPELINE_BUILD_CONTEXT/log
+  if [ ! -z "$PLUGIN_EUNOMIA_BUILD_ID_DIR" ]; then
+    log::error "[eunomia::hook_log] PLUGIN_EUNOMIA_BUILD_ID_DIR is required"
+    exit 1
+  fi
 
+  if [ ! -d "$PLUGIN_EUNOMIA_BUILD_ID_DIR" ]; then
+    log::error "[eunomia::hook_log] PLUGIN_EUNOMIA_BUILD_ID_DIR($PLUGIN_EUNOMIA_BUILD_ID_DIR) not found"
+    exit 1
+  fi
+
+  local PLUGIN_EUNOMIA_BUILD_LOG=$PLUGIN_EUNOMIA_BUILD_ID_DIR/log
   if [ -n "$PLUGIN_EUNOMIA_LOG_HOOK" ]; then
-    if [ ! -f "$PIPELINE_BUILD_CONTEXT_LOG" ]; then
-      log::info "[$(timestamp)][eunomia::hook_log] build log($PIPELINE_BUILD_CONTEXT_LOG) is not found"
+    if [ ! -f "$PLUGIN_EUNOMIA_BUILD_LOG" ]; then
+      log::info "[$(timestamp)][eunomia::hook_log] build log($PLUGIN_EUNOMIA_BUILD_LOG) is not found"
       return
     fi
 

@@ -7,7 +7,7 @@ eunomia::export() {
   fi
 
   if [ ! -d "$PLUGIN_EUNOMIA_BUILD_ID_DIR" ]; then
-    log::error "[eunomia::export] you must run build first"
+    log::error "[eunomia::export] you must run prepare first"
     exit 1
   fi
 
