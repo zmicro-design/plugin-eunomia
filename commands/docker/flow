@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+# set -e
 
 help() {
   echo "Usage:"
@@ -34,6 +34,9 @@ core() {
     exit 1
   fi
 
+  # start
+  eunomia::hook_start
+
   cd ${PLUGIN_DIR}/config/service
   docker-compose exec \
     -T \
@@ -42,6 +45,14 @@ core() {
     -e PLUGIN_EUNOMIA_GIT_REPO_PKG=${PLUGIN_EUNOMIA_GIT_REPO_PKG} \
     zmicro_plugin_eunomia \
     zmicro eunomia flow
+  # end
+  if [ "$?" != "0" ]; then
+    eunomia::hook_failed
+    exit 1
+  fi
+    eunomia::hook_succeed
+    exit 0
+  fi
 }
 
 run() {
