@@ -45,6 +45,7 @@ core() {
     -e PLUGIN_EUNOMIA_GIT_REPO_PKG=${PLUGIN_EUNOMIA_GIT_REPO_PKG} \
     zmicro_plugin_eunomia \
     zmicro eunomia flow
+
   # end
   if [ "$?" != "0" ]; then
     eunomia::hook_failed
