@@ -49,7 +49,7 @@ core() {
   if [ "$?" != "0" ]; then
     eunomia::hook_failed
     exit 1
-  fi
+  else
     eunomia::hook_succeed
     exit 0
   fi
