@@ -68,10 +68,6 @@ eunomia::prepare() {
     exit 1
   fi
 
-  # prepare dirs
-  if [ -d "$PLUGIN_EUNOMIA_BUILD_ID_DIR" ]; then
-    rm -rf $PLUGIN_EUNOMIA_BUILD_ID_DIR
-  fi
   mkdir -p $PLUGIN_EUNOMIA_GIT_REPO_DIR
   mkdir -p $PLUGIN_EUNOMIA_BUILD_ID_DIR
   
