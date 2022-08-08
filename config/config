@@ -40,6 +40,11 @@ if [ ! -d "$PLUGIN_EUNOMIA_EXPORT_DIR" ]; then
   mkdir -p $PLUGIN_EUNOMIA_EXPORT_DIR
 fi
 
+# @TODO make sure tee log(PLUGIN_EUNOMIA_BUILD_LOG) ok
+if [ ! -d "$PLUGIN_EUNOMIA_BUILD_ID_DIR" ]; then
+  mkdir -p $PLUGIN_EUNOMIA_BUILD_ID_DIR
+fi
+
 if [ ! -d "$PLUGIN_EUNOMIA_GIT_REPO_PKG_TMP_DIR" ]; then
   mkdir -p $PLUGIN_EUNOMIA_GIT_REPO_PKG_TMP_DIR
 fi

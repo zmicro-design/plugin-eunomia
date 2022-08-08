@@ -69,7 +69,7 @@ eunomia::prepare() {
   fi
 
   mkdir -p $PLUGIN_EUNOMIA_GIT_REPO_DIR
-  mkdir -p $PLUGIN_EUNOMIA_BUILD_ID_DIR
+  # mkdir -p $PLUGIN_EUNOMIA_BUILD_ID_DIR
   
   # PIPELINE
   export PIPELINE_BUILD_ID=${PLUGIN_EUNOMIA_BUILD_ID}
