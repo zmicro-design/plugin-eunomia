@@ -16,10 +16,10 @@ eunomia::export() {
     exit 1
   fi
 
-  if [ -z "$(ls $PLUGIN_EUNOMIA_BUILD_ID_DIR)" ]; then
-    log::error "[eunomia::export] no build found, you must run build first"
-    exit 1
-  fi
+  # if [ -z "$(ls $PLUGIN_EUNOMIA_BUILD_ID_DIR)" ]; then
+  #   log::error "[eunomia::export] no build found, you must run build first"
+  #   exit 1
+  # fi
 
   # ensure container removed
   docker rm -f $PLUGIN_EUNOMIA_RUNNER_NAME >> /dev/null 2>&1
