@@ -23,9 +23,9 @@ eunomia::export() {
 
   # @TODO if no user found, do something
   if [ -z "$PLUGIN_EUNOMIA_EXECUTOR_EMAIL" ]; then
-    # wait 300ms
-    log::info "[eunomia::export] no user found, wait 300ms"
-    os::wait 300
+    # wait 1000ms
+    log::info "[eunomia::export] no user found, wait 1000ms"
+    os::wait 1000
   fi
 
   # # @TODO if no environment found, do something
