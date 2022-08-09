@@ -21,6 +21,12 @@ eunomia::export() {
   #   exit 1
   # fi
 
+  # @TODO if no user found, do something
+  if [ -z "$PLUGIN_EUNOMIA_EXECUTOR_EMAIL" ]; then
+    # wait 300ms
+    os::wait 300
+  fi
+
   # ensure container removed
   docker rm -f $PLUGIN_EUNOMIA_RUNNER_NAME >> /dev/null 2>&1
 
