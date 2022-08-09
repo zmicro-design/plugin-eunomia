@@ -42,6 +42,11 @@ core() {
   log::info "[$(timestamp)][flow] preparing ..."
   eunomia::prepare
 
+  # @TODO if no user found, do something
+  if [ -z "$PLUGIN_EUNOMIA_EXECUTOR_EMAIL" ]; then
+    export FORCE_BUILD="true"
+  fi
+
   if [ -n "$FORCE_BUILD" ]; then
     # build
     log::info "[$(timestamp)][flow] force building ..."
