@@ -1,0 +1,48 @@
+#!/bin/bash
+
+eunomia::docker_flow() {
+  if [ -z "$PLUGIN_EUNOMIA_BUILD_ID" ]; then
+    log::error "[$(timestamp)][flow] PLUGIN_EUNOMIA_BUILD_ID is required"
+    exit 1
+  fi
+  
+  if [ -z "$PLUGIN_EUNOMIA_GIT_REPO_NAME" ]; then
+    log::error "[$(timestamp)][flow] PLUGIN_EUNOMIA_GIT_REPO_NAME is required"
+    exit 1
+  fi
+
+  if [ -z "$PLUGIN_EUNOMIA_GIT_REPO_PKG" ]; then
+    log::error "[$(timestamp)][flow] PLUGIN_EUNOMIA_GIT_REPO_PKG is required"
+    exit 1
+  fi
+
+  echo $PLUGIN_EUNOMIA_GIT_REPO_PKG | grep $PLUGIN_EUNOMIA_GIT_REPO_PKG_TMP_DIR >> /dev/null 2>&1
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)][flow] PLUGIN_EUNOMIA_GIT_REPO_PKG(${PLUGIN_EUNOMIA_GIT_REPO_PKG}) must be starts with ${PLUGIN_EUNOMIA_GIT_REPO_PKG_TMP_DIR}"
+    exit 1
+  fi
+
+  # start
+  eunomia::hook_start
+
+  cd ${PLUGIN_DIR}/config/service
+  docker-compose exec \
+    -T \
+    -e PLUGIN_EUNOMIA_BUILD_ID="${PLUGIN_EUNOMIA_BUILD_ID}" \
+    -e PLUGIN_EUNOMIA_GIT_REPO_NAME="${PLUGIN_EUNOMIA_GIT_REPO_NAME}" \
+    -e PLUGIN_EUNOMIA_GIT_REPO_PKG="${PLUGIN_EUNOMIA_GIT_REPO_PKG}" \
+    -e FORCE_BUILD="${FORCE_BUILD}" \
+    zmicro_plugin_eunomia \
+    zmicro eunomia flow
+
+  # end
+  if [ "$?" != "0" ]; then
+    eunomia::hook_failed
+    exit 1
+  else
+    eunomia::hook_succeed
+    exit 0
+  fi
+}
+
+export -f eunomia::docker_flow
