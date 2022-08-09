@@ -1,0 +1,69 @@
+#!/bin/bash
+
+eunomia::task_queue_is_available() {
+  local rest=$(eunomia::task_queue_count_rest)
+  if [ "$rest" -gt "0" ]; then
+    echo "true"
+  else
+    echo "false"
+  fi
+}
+
+eunomia::task_queue_count_running() {
+  if [ ! -f "$PLUGIN_EUNOMIA_TASK_QUEUE_LOCK" ]; then
+    echo "0"
+    return
+  fi
+
+  local running=$(cat $PLUGIN_EUNOMIA_TASK_QUEUE_LOCK)
+  # local re='^[0-9]+$'
+  # if ! [[ $running =~ $re ]] ; then
+  #   echo "invalid_number"
+  #   return
+  # fi
+
+  echo $running
+}
+
+eunomia::task_queue_count_rest() {
+  local running=$(eunomia::task_queue_count_running)
+  local rest=$(($PLUGIN_EUNOMIA_TASK_QUEUE_COCURRENCY - $running))
+  echo $rest
+}
+
+eunomia::task_queue_count_total() {
+  echo $PLUGIN_EUNOMIA_TASK_QUEUE_COCURRENCY
+}
+
+eunomia::task_queue_start() {
+  local rest=$(eunomia::task_queue_count_rest)
+  if [ "$rest" -lt "0" ] || [ "$rest" -eq "0" ]; then
+    echo "false"
+    return
+  fi
+  
+  local running=$(eunomia::task_queue_count_running)
+  local next=$(($running + 1))
+  echo $next > $PLUGIN_EUNOMIA_TASK_QUEUE_LOCK
+  echo "true"
+}
+
+eunomia::task_queue_done() {
+  local running=$(eunomia::task_queue_count_running)
+  if [ "$running" -eq "0" ]; then
+    echo "false"
+    return
+  fi
+  
+  local next=$(($running - 1))
+  echo $next > $PLUGIN_EUNOMIA_TASK_QUEUE_LOCK
+  echo "true"
+}
+
+export -f eunomia::task_queue_is_available
+export -f eunomia::task_queue_count_running
+export -f eunomia::task_queue_count_rest
+export -f eunomia::task_queue_count_total
+
+export -f eunomia::task_queue_start
+export -f eunomia::task_queue_done

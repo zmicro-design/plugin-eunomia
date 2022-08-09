@@ -13,35 +13,40 @@ export PLUGIN_EUNOMIA_DOCKER_CONTAINER_PREFIX=zmicro_plugin_eunomia_
 export PLUGIN_EUNOMIA_SERVICE_NAME=zmicro_plugin_eunomia
 export PLUGIN_EUNOMIA_SERVICE_PORT=${PLUGIN_EUNOMIA_SERVICE_PORT:-9000}
 
-if [ ! -d "$PLUGIN_EUNOMIA_GIT_DIR" ]; then
-  mkdir -p $PLUGIN_EUNOMIA_GIT_DIR
-fi
+# Queue
+export PLUGIN_EUNOMIA_TASK_QUEUE_IS_ENABLED=${PLUGIN_EUNOMIA_TASK_QUEUE_IS_ENABLED:-"true"}
+export PLUGIN_EUNOMIA_TASK_QUEUE_COCURRENCY=${PLUGIN_EUNOMIA_TASK_QUEUE_COCURRENCY:-"2"}
+export PLUGIN_EUNOMIA_TASK_QUEUE_LOCK=${PLUGIN_EUNOMIA_TASK_QUEUE_LOCK:-"/tmp/zmicro_plugin_eunomia_task_queue.lock"}
 
-if [ ! -d "$PLUGIN_EUNOMIA_BUILD_DIR" ]; then
-  mkdir -p $PLUGIN_EUNOMIA_BUILD_DIR
-fi
+# if [ ! -d "$PLUGIN_EUNOMIA_GIT_DIR" ]; then
+#   mkdir -p $PLUGIN_EUNOMIA_GIT_DIR
+# fi
 
-if [ ! -d "$PLUGIN_EUNOMIA_PKG_DIR" ]; then
-  mkdir -p $PLUGIN_EUNOMIA_PKG_DIR
-fi
+# if [ ! -d "$PLUGIN_EUNOMIA_BUILD_DIR" ]; then
+#   mkdir -p $PLUGIN_EUNOMIA_BUILD_DIR
+# fi
 
-if [ ! -d "$PLUGIN_EUNOMIA_EXPORT_DIR" ]; then
-  mkdir -p $PLUGIN_EUNOMIA_EXPORT_DIR
-fi
+# if [ ! -d "$PLUGIN_EUNOMIA_PKG_DIR" ]; then
+#   mkdir -p $PLUGIN_EUNOMIA_PKG_DIR
+# fi
 
-if [ ! -d "$PLUGIN_EUNOMIA_GIT_REPO_PKG_TMP_DIR" ]; then
-  mkdir -p $PLUGIN_EUNOMIA_GIT_REPO_PKG_TMP_DIR
-fi
+# if [ ! -d "$PLUGIN_EUNOMIA_EXPORT_DIR" ]; then
+#   mkdir -p $PLUGIN_EUNOMIA_EXPORT_DIR
+# fi
 
-if [ ! -d "$PLUGIN_EUNOMIA_DOCKERFILES_DIR" ]; then
-  log::error "[config] Dockerfiles Dir($PLUGIN_EUNOMIA_DOCKERFILES_DIR) not found"
-  exit 1
-fi
+# if [ ! -d "$PLUGIN_EUNOMIA_GIT_REPO_PKG_TMP_DIR" ]; then
+#   mkdir -p $PLUGIN_EUNOMIA_GIT_REPO_PKG_TMP_DIR
+# fi
 
-if [ -z "$(ls $PLUGIN_EUNOMIA_DOCKERFILES_DIR)" ]; then
-  log::error "[config] Dockerfiles Dir($PLUGIN_EUNOMIA_DOCKERFILES_DIR) is empty"
-  exit 1
-fi
+# if [ ! -d "$PLUGIN_EUNOMIA_DOCKERFILES_DIR" ]; then
+#   log::error "[config] Dockerfiles Dir($PLUGIN_EUNOMIA_DOCKERFILES_DIR) not found"
+#   exit 1
+# fi
+
+# if [ -z "$(ls $PLUGIN_EUNOMIA_DOCKERFILES_DIR)" ]; then
+#   log::error "[config] Dockerfiles Dir($PLUGIN_EUNOMIA_DOCKERFILES_DIR) is empty"
+#   exit 1
+# fi
 
 
 # # BUILD

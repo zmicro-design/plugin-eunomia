@@ -1,0 +1,250 @@
+#!/bin/bash
+
+function test_eunomia::task_queue_count_running() {
+  export PLUGIN_EUNOMIA_TASK_QUEUE_LOCK=/tmp/eunomia_task_queue_lock
+
+  rm -f $PLUGIN_EUNOMIA_TASK_QUEUE_LOCK
+
+  testing::expect \
+    "${FUNCNAME[0]}" \
+    "to_equal" \
+    "0" \
+    "$(eunomia::task_queue_count_running)"
+
+  echo "1" >$PLUGIN_EUNOMIA_TASK_QUEUE_LOCK
+
+  testing::expect \
+    "${FUNCNAME[0]}" \
+    "to_equal" \
+    "1" \
+    "$(eunomia::task_queue_count_running)"
+
+  rm -f $PLUGIN_EUNOMIA_TASK_QUEUE_LOCK
+}
+
+function test_eunomia::task_queue_rest_running() {
+  export PLUGIN_EUNOMIA_TASK_QUEUE_COCURRENCY=2
+  export PLUGIN_EUNOMIA_TASK_QUEUE_LOCK=/tmp/eunomia_task_queue_lock
+
+  rm -f $PLUGIN_EUNOMIA_TASK_QUEUE_LOCK
+  
+  testing::expect \
+    "${FUNCNAME[0]}" \
+    "to_equal" \
+    "2" \
+    "$(eunomia::task_queue_count_rest)"
+
+  echo "1" >$PLUGIN_EUNOMIA_TASK_QUEUE_LOCK
+  testing::expect \
+    "${FUNCNAME[0]}" \
+    "to_equal" \
+    "1" \
+    "$(eunomia::task_queue_count_rest)"
+    
+  echo "2" > $PLUGIN_EUNOMIA_TASK_QUEUE_LOCK
+  testing::expect \
+    "${FUNCNAME[0]}" \
+    "to_equal" \
+    "0" \
+    "$(eunomia::task_queue_count_rest)"
+
+  echo "0" > $PLUGIN_EUNOMIA_TASK_QUEUE_LOCK
+  testing::expect \
+    "${FUNCNAME[0]}" \
+    "to_equal" \
+    "2" \
+    "$(eunomia::task_queue_count_rest)"
+
+  rm -f $PLUGIN_EUNOMIA_TASK_QUEUE_LOCK
+}
+
+function test_eunomia::task_queue_is_available() {
+  export PLUGIN_EUNOMIA_TASK_QUEUE_COCURRENCY=2
+  export PLUGIN_EUNOMIA_TASK_QUEUE_LOCK=/tmp/eunomia_task_queue_lock
+  rm -f $PLUGIN_EUNOMIA_TASK_QUEUE_LOCK
+  
+  testing::expect \
+    "${FUNCNAME[0]}" \
+    "to_equal" \
+    "true" \
+    "$(eunomia::task_queue_is_available)"
+    
+  echo "1" > $PLUGIN_EUNOMIA_TASK_QUEUE_LOCK
+  testing::expect \
+    "${FUNCNAME[0]}" \
+    "to_equal" \
+    "true" \
+    "$(eunomia::task_queue_is_available)"
+
+  echo "2" > $PLUGIN_EUNOMIA_TASK_QUEUE_LOCK
+  testing::expect \
+    "${FUNCNAME[0]}" \
+    "to_equal" \
+    "false" \
+    "$(eunomia::task_queue_is_available)"
+    
+  rm -f $PLUGIN_EUNOMIA_TASK_QUEUE_LOCK
+}
+
+function test_eunomia::task_queue_start_done() {
+  export PLUGIN_EUNOMIA_TASK_QUEUE_COCURRENCY=2
+  export PLUGIN_EUNOMIA_TASK_QUEUE_LOCK=/tmp/eunomia_task_queue_lock
+  rm -f $PLUGIN_EUNOMIA_TASK_QUEUE_LOCK
+  
+  # initial
+  testing::expect \
+    "${FUNCNAME[0]}" \
+    "to_equal" \
+    "0" \
+    "$(eunomia::task_queue_count_running)"
+
+  testing::expect \
+    "${FUNCNAME[0]}" \
+    "to_equal" \
+    "$PLUGIN_EUNOMIA_TASK_QUEUE_COCURRENCY" \
+    "$(eunomia::task_queue_count_rest)"
+    
+  testing::expect \
+    "${FUNCNAME[0]}" \
+    "to_equal" \
+    "true" \
+    "$(eunomia::task_queue_is_available)"
+
+  # start
+  testing::expect \
+    "${FUNCNAME[0]}" \
+    "to_equal" \
+    "true" \
+    "$(eunomia::task_queue_start)"
+  
+  testing::expect \
+    "${FUNCNAME[0]}" \
+    "to_equal" \
+    "1" \
+    "$(eunomia::task_queue_count_running)"
+
+  testing::expect \
+    "${FUNCNAME[0]}" \
+    "to_equal" \
+    "$(($PLUGIN_EUNOMIA_TASK_QUEUE_COCURRENCY - 1))" \
+    "$(eunomia::task_queue_count_rest)"
+
+  testing::expect \
+    "${FUNCNAME[0]}" \
+    "to_equal" \
+    "true" \
+    "$(eunomia::task_queue_is_available)"
+
+  # start 2
+  testing::expect \
+    "${FUNCNAME[0]}" \
+    "to_equal" \
+    "true" \
+    "$(eunomia::task_queue_start)"
+
+  testing::expect \
+    "${FUNCNAME[0]}" \
+    "to_equal" \
+    "2" \
+    "$(eunomia::task_queue_count_running)"
+
+  testing::expect \
+    "${FUNCNAME[0]}" \
+    "to_equal" \
+    "$(($PLUGIN_EUNOMIA_TASK_QUEUE_COCURRENCY - 2))" \
+    "$(eunomia::task_queue_count_rest)"
+
+  testing::expect \
+    "${FUNCNAME[0]}" \
+    "to_equal" \
+    "false" \
+    "$(eunomia::task_queue_is_available)"
+
+  # start 3
+  testing::expect \
+    "${FUNCNAME[0]}" \
+    "to_equal" \
+    "false" \
+    "$(eunomia::task_queue_start)"
+    
+  testing::expect \
+    "${FUNCNAME[0]}" \
+    "to_equal" \
+    "2" \
+    "$(eunomia::task_queue_count_running)"
+
+  testing::expect \
+    "${FUNCNAME[0]}" \
+    "to_equal" \
+    "$(($PLUGIN_EUNOMIA_TASK_QUEUE_COCURRENCY - 2))" \
+    "$(eunomia::task_queue_count_rest)"
+
+  # done
+  testing::expect \
+    "${FUNCNAME[0]}" \
+    "to_equal" \
+    "true" \
+    "$(eunomia::task_queue_done)"
+
+  testing::expect \
+    "${FUNCNAME[0]}" \
+    "to_equal" \
+    "1" \
+    "$(eunomia::task_queue_count_running)"
+
+  testing::expect \
+    "${FUNCNAME[0]}" \
+    "to_equal" \
+    "$(($PLUGIN_EUNOMIA_TASK_QUEUE_COCURRENCY - 1))" \
+    "$(eunomia::task_queue_count_rest)"
+
+  testing::expect \
+    "${FUNCNAME[0]}" \
+    "to_equal" \
+    "true" \
+    "$(eunomia::task_queue_is_available)"
+
+  # done 2
+  testing::expect \
+    "${FUNCNAME[0]}" \
+    "to_equal" \
+    "true" \
+    "$(eunomia::task_queue_done)"
+
+  testing::expect \
+    "${FUNCNAME[0]}" \
+    "to_equal" \
+    "0" \
+    "$(eunomia::task_queue_count_running)"
+
+  testing::expect \
+    "${FUNCNAME[0]}" \
+    "to_equal" \
+    "$PLUGIN_EUNOMIA_TASK_QUEUE_COCURRENCY" \
+    "$(eunomia::task_queue_count_rest)"
+
+  testing::expect \
+    "${FUNCNAME[0]}" \
+    "to_equal" \
+    "true" \
+    "$(eunomia::task_queue_is_available)"
+
+  # done 3
+  testing::expect \
+    "${FUNCNAME[0]}" \
+    "to_equal" \
+    "false" \
+    "$(eunomia::task_queue_done)"
+
+  testing::expect \
+    "${FUNCNAME[0]}" \
+    "to_equal" \
+    "0" \
+    "$(eunomia::task_queue_count_running)"
+
+  testing::expect \
+    "${FUNCNAME[0]}" \
+    "to_equal" \
+    "$PLUGIN_EUNOMIA_TASK_QUEUE_COCURRENCY" \
+    "$(eunomia::task_queue_count_rest)"
+}

@@ -69,6 +69,28 @@ eunomia::prepare() {
     mkdir -p $PLUGIN_EUNOMIA_BUILD_DIR
   fi
 
+  if [ ! -d "$PLUGIN_EUNOMIA_PKG_DIR" ]; then
+    mkdir -p $PLUGIN_EUNOMIA_PKG_DIR
+  fi
+
+  if [ ! -d "$PLUGIN_EUNOMIA_EXPORT_DIR" ]; then
+    mkdir -p $PLUGIN_EUNOMIA_EXPORT_DIR
+  fi
+
+  if [ ! -d "$PLUGIN_EUNOMIA_GIT_REPO_PKG_TMP_DIR" ]; then
+    mkdir -p $PLUGIN_EUNOMIA_GIT_REPO_PKG_TMP_DIR
+  fi
+
+  if [ ! -d "$PLUGIN_EUNOMIA_DOCKERFILES_DIR" ]; then
+    log::error "[config] Dockerfiles Dir($PLUGIN_EUNOMIA_DOCKERFILES_DIR) not found"
+    exit 1
+  fi
+
+  if [ -z "$(ls $PLUGIN_EUNOMIA_DOCKERFILES_DIR)" ]; then
+    log::error "[config] Dockerfiles Dir($PLUGIN_EUNOMIA_DOCKERFILES_DIR) is empty"
+    exit 1
+  fi
+
   if [ -z "$PLUGIN_EUNOMIA_GIT_REPO_NAME" ]; then
     log::error "[prepare] PLUGIN_EUNOMIA_GIT_REPO_NAME is required"
     exit 1
@@ -87,11 +109,10 @@ eunomia::prepare() {
   mkdir -p $PLUGIN_EUNOMIA_GIT_REPO_DIR
   # mkdir -p $PLUGIN_EUNOMIA_BUILD_ID_DIR
 
-
   if [ -d "$PLUGIN_EUNOMIA_BUILD_ID_DIR" ]; then
     rm -rf $PLUGIN_EUNOMIA_BUILD_ID_DIR
   fi
-  
+
   # PIPELINE
   export PIPELINE_BUILD_ID=${PLUGIN_EUNOMIA_BUILD_ID}
   export PIPELINE_BUILD_CONTEXT=$PLUGIN_EUNOMIA_BUILD_ID_DIR
@@ -110,7 +131,7 @@ eunomia::prepare() {
 
   # APP
   if [ -z "$(ls $PLUGIN_EUNOMIA_GIT_REPO_DIR)" ]; then
-    tar -zxvf $PLUGIN_EUNOMIA_BUILD_ID_PKG -C $PLUGIN_EUNOMIA_GIT_REPO_DIR >> /dev/null
+    tar -zxvf $PLUGIN_EUNOMIA_BUILD_ID_PKG -C $PLUGIN_EUNOMIA_GIT_REPO_DIR >>/dev/null
   fi
 
   # check env .eunomia

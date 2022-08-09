@@ -25,7 +25,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${HOME}/.docker/config.json:/root/.docker/config.json
       #
-      - ${PLUGIN_DATA}:${PLUGIN_DATA}
+      - ${PLUGIN_DATA}:/data/plugins/eunomia
       #
       - ${PLUGIN_EUNOMIA_DOCKERFILES_DIR}:${PLUGIN_EUNOMIA_DOCKERFILES_DIR}
       - ${PLUGIN_EUNOMIA_GIT_REPO_PKG_TMP_DIR}:${PLUGIN_EUNOMIA_GIT_REPO_PKG_TMP_DIR}
