@@ -70,7 +70,7 @@ eunomia::prepare() {
 
   mkdir -p $PLUGIN_EUNOMIA_GIT_REPO_DIR
   # mkdir -p $PLUGIN_EUNOMIA_BUILD_ID_DIR
-  
+
   # PIPELINE
   export PIPELINE_BUILD_ID=${PLUGIN_EUNOMIA_BUILD_ID}
   export PIPELINE_BUILD_CONTEXT=$PLUGIN_EUNOMIA_BUILD_ID_DIR
@@ -90,7 +90,7 @@ eunomia::prepare() {
 
   # Extract Git Repo
   if [ -z "$(ls $PLUGIN_EUNOMIA_GIT_REPO_DIR)" ]; then
-    tar -zxvf $PLUGIN_EUNOMIA_BUILD_ID_PKG -C $PLUGIN_EUNOMIA_GIT_REPO_DIR >> /dev/null
+    tar -zxvf $PLUGIN_EUNOMIA_BUILD_ID_PKG -C $PLUGIN_EUNOMIA_GIT_REPO_DIR >>/dev/null
   fi
 
   # check env .eunomia
@@ -115,8 +115,8 @@ eunomia::prepare() {
     export PLUGIN_EUNOMIA_RUNNER_IMAGE=$PLUGIN_EUNOMIA_DOCKER_REGISTRY/$PIPELINE_IMAGE_NAME:$PIPELINE_IMAGE_TAGS
   fi
 
-   # Dockerfile env
-   # support custom PLUGIN_EUNOMIA_RUNNER_DIST_DIR and others
+  # Dockerfile env
+  # support custom PLUGIN_EUNOMIA_RUNNER_DIST_DIR and others
   if [ -f "${PLUGIN_EUNOMIA_GIT_REPO_DOCKERFILE_ENV}" ]; then
     log::info "[prepare] load docker env(${PLUGIN_EUNOMIA_GIT_REPO_DOCKERFILE_ENV})"
 
@@ -133,6 +133,20 @@ eunomia::prepare() {
   export PLUGIN_EUNOMIA_EXECUTOR_EMAIL=${PLUGIN_EUNOMIA_EXECUTOR_EMAIL:-$PIPELINE_EXECUTOR_EMAIL}
   export PLUGIN_EUNOMIA_EXECUTOR_NAME=${PLUGIN_EUNOMIA_EXECUTOR_NAME:-$PIPELINE_EXECUTOR_NAME}
   export PLUGIN_EUNOMIA_EXECUTOR_ID=${PLUGIN_EUNOMIA_EXECUTOR_ID:-$PIPELINE_EXECUTOR_ID}
+
+  # @TODO Eunomia Manager
+  export EUNOMIA_PROJECT_ID=${EUNOMIA_PROJECT_ID:-$PIPELINE_PROJECT_ID}
+  export EUNOMIA_TASK_ID=${EUNOMIA_TASK_ID:-$PIPELINE_TASK_ID}
+  export EUNOMIA_DEPLOYMENT_ID=${EUNOMIA_DEPLOYMENT_ID:-$PIPELINE_DEPLOYMENT_ID}
+  export EUNOMIA_JOB_ID=${EUNOMIA_JOB_ID:-$PIPELINE_JOB_ID}
+
+  # Log Eunomia Manager Info
+  if [ -n "$EUNOMIA_PROJECT_ID" ]; then
+    log::info "[prepare] EUNOMIA_PROJECT_ID: $EUNOMIA_PROJECT_ID"
+    log::info "[prepare] EUNOMIA_TASK_ID: $EUNOMIA_TASK_ID"
+    log::info "[prepare] EUNOMIA_DEPLOYMENT_ID: $EUNOMIA_DEPLOYMENT_ID"
+    log::info "[prepare] EUNOMIA_JOB_ID: $EUNOMIA_JOB_ID"
+  fi
 }
 
 export -f eunomia::prepare
