@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# set -e
+# fix tee modify the exit code: https://stackoverflow.com/questions/6871859/piping-command-output-to-tee-but-also-save-exit-code-of-command
+set -o pipefail
 
 help() {
   echo "Usage:"
@@ -34,6 +35,9 @@ core() {
     exit 1
   fi
 
+  # start
+  eunomia::hook_start
+
   cd ${PLUGIN_DIR}/config/service
   docker-compose exec \
     -T \
@@ -42,10 +46,19 @@ core() {
     -e PLUGIN_EUNOMIA_GIT_REPO_PKG=${PLUGIN_EUNOMIA_GIT_REPO_PKG} \
     zmicro_plugin_eunomia \
     zmicro eunomia flow
+
+  # end
+  if [ "$?" != "0" ]; then
+    eunomia::hook_failed
+    exit 1
+  else
+    eunomia::hook_succeed
+    exit 0
+  fi
 }
 
 run() {
-  core $@
+  core $@ | tee -a $PLUGIN_EUNOMIA_BUILD_LOG
 }
 
 run $@

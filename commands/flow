@@ -13,6 +13,32 @@ core() {
     exit 0
   fi
 
+  if [ "$(zmicro fn os::is_docker)" != "true" ]; then
+    log::error "[$(timestamp)][flow] the command(flow) can only be run in docker"
+    exit 1
+  fi
+
+  if [ -z "$PLUGIN_EUNOMIA_BUILD_ID" ]; then
+    log::error "[$(timestamp)][flow] PLUGIN_EUNOMIA_BUILD_ID is required"
+    exit 1
+  fi
+  
+  if [ -z "$PLUGIN_EUNOMIA_GIT_REPO_NAME" ]; then
+    log::error "[$(timestamp)][flow] PLUGIN_EUNOMIA_GIT_REPO_NAME is required"
+    exit 1
+  fi
+
+  if [ -z "$PLUGIN_EUNOMIA_GIT_REPO_PKG" ]; then
+    log::error "[$(timestamp)][flow] PLUGIN_EUNOMIA_GIT_REPO_PKG is required"
+    exit 1
+  fi
+
+  echo $PLUGIN_EUNOMIA_GIT_REPO_PKG | grep $PLUGIN_EUNOMIA_GIT_REPO_PKG_TMP_DIR >> /dev/null 2>&1
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)][flow] PLUGIN_EUNOMIA_GIT_REPO_PKG(${PLUGIN_EUNOMIA_GIT_REPO_PKG}) must be starts with ${PLUGIN_EUNOMIA_GIT_REPO_PKG_TMP_DIR}"
+    exit 1
+  fi
+
   log::info "[$(timestamp)][flow] preparing ..."
   eunomia::prepare
 
@@ -42,6 +68,11 @@ core() {
       fi
     done
   fi
+  
+  # # @TODO if no user found, do something
+  # if [ -z "$PLUGIN_EUNOMIA_EXECUTOR_EMAIL" ]; then
+  #   export FORCE_BUILD="true"
+  # fi
 
   if [ -n "$FORCE_BUILD" ]; then
     # build
@@ -55,8 +86,6 @@ core() {
       eunomia::build
     else
       log::info "[$(timestamp)][flow] loading cache ..."
-      # @TODO create build dir for export and other steps
-      mkdir -p $PLUGIN_EUNOMIA_BUILD_ID_DIR
     fi
   fi
 

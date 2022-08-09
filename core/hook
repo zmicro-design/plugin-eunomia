@@ -1,0 +1,67 @@
+#!/bin/bash
+
+eunomia::hook_log() {
+  if [ -z "$PLUGIN_EUNOMIA_BUILD_ID_DIR" ]; then
+    log::error "[eunomia::hook_log] PLUGIN_EUNOMIA_BUILD_ID_DIR is required"
+    exit 1
+  fi
+
+  if [ ! -d "$PLUGIN_EUNOMIA_BUILD_ID_DIR" ]; then
+    log::error "[eunomia::hook_log] PLUGIN_EUNOMIA_BUILD_ID_DIR($PLUGIN_EUNOMIA_BUILD_ID_DIR) not found"
+    exit 1
+  fi
+
+  if [ -n "$PLUGIN_EUNOMIA_LOG_HOOK" ]; then
+    if [ ! -f "$PLUGIN_EUNOMIA_BUILD_LOG" ]; then
+      log::info "[$(timestamp)][eunomia::hook_log] build log($PLUGIN_EUNOMIA_BUILD_LOG) is not found"
+      return
+    fi
+
+    log::info "[$(timestamp)][eunomia::hook_log] call $PLUGIN_EUNOMIA_LOG_HOOK ..."
+
+    curl \
+      -s \
+      -X POST \
+      -d "$(cat $PLUGIN_EUNOMIA_BUILD_LOG)" \
+      $PLUGIN_EUNOMIA_LOG_HOOK >> /dev/null
+  fi
+}
+
+eunomia::hook_start() {
+  if [ -n "$PLUGIN_EUNOMIA_START_HOOK" ]; then
+    log::info "[$(timestamp)][eunomia::hook_start] call $PLUGIN_EUNOMIA_START_HOOK ..."
+
+    local pipelineId=$(echo $PLUGIN_EUNOMIA_BUILD_ID | awk -F '_' '{print $1}')
+    local BUILD_NUMBER=$(echo $PLUGIN_EUNOMIA_BUILD_ID | awk -F '_' '{print $2}')
+
+    curl \
+      -s \
+      -X POST \
+      -H "Content-Type: application/json" \
+      -d '{"flow_pipeline_id":"'$pipelineId'","flow_build_id":"'$BUILD_NUMBER'"}' \
+      $PLUGIN_EUNOMIA_START_HOOK >> /dev/null
+  fi
+}
+
+eunomia::hook_succeed() {
+  if [ -n "$PLUGIN_EUNOMIA_SUCCEED_HOOK" ]; then
+    log::info "[$(timestamp)][eunomia::hook_succeed] call $PLUGIN_EUNOMIA_SUCCEED_HOOK ..."
+    curl -s -X POST $PLUGIN_EUNOMIA_SUCCEED_HOOK >> /dev/null
+
+    eunomia::hook_log
+  fi
+}
+
+eunomia::hook_failed() {
+  if [ -n "$PLUGIN_EUNOMIA_FAILED_HOOK" ]; then
+    log::info "[$(timestamp)][eunomia::hook_failed] call $PLUGIN_EUNOMIA_FAILED_HOOK ..."
+    curl -s -X POST $PLUGIN_EUNOMIA_FAILED_HOOK >> /dev/null
+
+    eunomia::hook_log
+  fi
+}
+
+export -f eunomia::hook_log
+export -f eunomia::hook_start
+export -f eunomia::hook_succeed
+export -f eunomia::hook_failed
