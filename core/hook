@@ -3,12 +3,12 @@
 eunomia::hook_log() {
   if [ -z "$PLUGIN_EUNOMIA_BUILD_ID_DIR" ]; then
     log::error "[eunomia::hook_log] PLUGIN_EUNOMIA_BUILD_ID_DIR is required"
-    exit 1
+    return 1
   fi
 
   if [ ! -d "$PLUGIN_EUNOMIA_BUILD_ID_DIR" ]; then
     log::error "[eunomia::hook_log] PLUGIN_EUNOMIA_BUILD_ID_DIR($PLUGIN_EUNOMIA_BUILD_ID_DIR) not found"
-    exit 1
+    return 1
   fi
 
   if [ -n "$PLUGIN_EUNOMIA_LOG_HOOK" ]; then

@@ -14,8 +14,16 @@ core() {
   fi
 
   eunomia::prepare
+  if [ "$?" != "0" ]; then
+    log::error "[build] failed to prepare"
+    exit 1
+  fi
 
   eunomia::build
+  if [ "$?" != "0" ]; then
+    log::error "[build] failed to build"
+    exit 1
+  fi
 }
 
 run() {

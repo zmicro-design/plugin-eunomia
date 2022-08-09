@@ -15,8 +15,16 @@ core() {
   fi
 
   eunomia::prepare
+  if [ "$?" != "0" ]; then
+    log::error "[build] failed to prepare"
+    exit 1
+  fi
 
   eunomia::export
+  if [ "$?" != "0" ]; then
+    log::error "[build] failed to export"
+    exit 1
+  fi
 }
 
 run() {

@@ -3,7 +3,7 @@
 eunomia::is_built() {
   if [ -z "$PLUGIN_EUNOMIA_RUNNER_IMAGE" ]; then
     log::error "[is_built] PLUGIN_EUNOMIA_RUNNER_IMAGE is required"
-    exit 1
+    return 1
   fi
 
   docker pull $PLUGIN_EUNOMIA_RUNNER_IMAGE >> /dev/null 2>&1

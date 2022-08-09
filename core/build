@@ -3,12 +3,12 @@
 eunomia::build() {
   if [ -z "$PLUGIN_EUNOMIA_GIT_REPO_DIR" ]; then
     log::error "[eunomia::build] PLUGIN_EUNOMIA_GIT_REPO_DIR is required"
-    exit 1
+    return 1
   fi
 
   if [ ! -d "$PLUGIN_EUNOMIA_GIT_REPO_DIR" ]; then
     log::error "[eunomia::build] you must run prepare first"
-    exit 1
+    return 1
   fi
 
   # Dockerfile

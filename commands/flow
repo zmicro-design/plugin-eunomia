@@ -22,7 +22,7 @@ core() {
     log::error "[$(timestamp)][flow] PLUGIN_EUNOMIA_BUILD_ID is required"
     exit 1
   fi
-  
+
   if [ -z "$PLUGIN_EUNOMIA_GIT_REPO_NAME" ]; then
     log::error "[$(timestamp)][flow] PLUGIN_EUNOMIA_GIT_REPO_NAME is required"
     exit 1
@@ -33,7 +33,7 @@ core() {
     exit 1
   fi
 
-  echo $PLUGIN_EUNOMIA_GIT_REPO_PKG | grep $PLUGIN_EUNOMIA_GIT_REPO_PKG_TMP_DIR >> /dev/null 2>&1
+  echo $PLUGIN_EUNOMIA_GIT_REPO_PKG | grep $PLUGIN_EUNOMIA_GIT_REPO_PKG_TMP_DIR >>/dev/null 2>&1
   if [ "$?" != "0" ]; then
     log::error "[$(timestamp)][flow] PLUGIN_EUNOMIA_GIT_REPO_PKG(${PLUGIN_EUNOMIA_GIT_REPO_PKG}) must be starts with ${PLUGIN_EUNOMIA_GIT_REPO_PKG_TMP_DIR}"
     exit 1
@@ -41,6 +41,10 @@ core() {
 
   log::info "[$(timestamp)][flow] preparing ..."
   eunomia::prepare
+  if [ "$?" != "0" ]; then
+    log::error "[build] failed to prepare"
+    exit 1
+  fi
 
   if [ "$PLUGIN_EUNOMIA_TASK_QUEUE_IS_ENABLED" = "true" ]; then
     log::info "[$(timestamp)][flow] task queue is enabled"
@@ -78,12 +82,22 @@ core() {
     # build
     log::info "[$(timestamp)][flow] force building ..."
     eunomia::build
+    if [ "$?" != "0" ]; then
+      log::error "[$(timestamp)][flow] failed to build"
+      eunomia::task_queue_done
+      exit 1
+    fi
   else
     log::info "[$(timestamp)][flow] checking ..."
     if [ "$(eunomia::is_built)" != "true" ]; then
       # build
       log::info "[$(timestamp)][flow] no cache, building ..."
       eunomia::build
+      if [ "$?" != "0" ]; then
+        log::error "[$(timestamp)][flow] failed to build (2)"
+        eunomia::task_queue_done
+        exit 1
+      fi
     else
       log::info "[$(timestamp)][flow] loading cache ..."
     fi
@@ -92,6 +106,11 @@ core() {
   # export
   log::info "[flow] exporting ..."
   eunomia::export
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)][flow] failed to export"
+    eunomia::task_queue_done
+    exit 1
+  fi
 
   # done
   log::info "[flow] done"

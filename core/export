@@ -3,22 +3,22 @@
 eunomia::export() {
   if [ -z "$PLUGIN_EUNOMIA_EXPORT_ID_DIR" ]; then
     log::error "[eunomia::export] PLUGIN_EUNOMIA_EXPORT_ID_DIR is required"
-    exit 1
+    return 1
   fi
 
   if [ -d "$PLUGIN_EUNOMIA_EXPORT_ID_DIR" ]; then
     log::error "[eunomia::export] export directory($PLUGIN_EUNOMIA_EXPORT_ID_DIR) already exists"
-    exit 1
+    return 1
   fi
 
   if [ ! -d "$PLUGIN_EUNOMIA_BUILD_ID_DIR" ]; then
     log::error "[eunomia::export] you must run prepare first"
-    exit 1
+    return 1
   fi
 
   # if [ -z "$(ls $PLUGIN_EUNOMIA_BUILD_ID_DIR)" ]; then
   #   log::error "[eunomia::export] no build found, you must run build first"
-  #   exit 1
+  #   return 1
   # fi
 
   # # @TODO if no user found, do something
@@ -42,14 +42,14 @@ eunomia::export() {
   docker run -d --name $PLUGIN_EUNOMIA_RUNNER_NAME $PLUGIN_EUNOMIA_RUNNER_IMAGE >> /dev/null
   if [ "$?" != "0" ]; then
     log::error "[eunomia::export] failed to start runner container"
-    exit 1
+    return 1
   fi
   
   log::info "[eunomia::export] copy from docker:$PLUGIN_EUNOMIA_RUNNER_DIST_DIR to host:$PLUGIN_EUNOMIA_EXPORT_ID_DIR"
   docker cp $PLUGIN_EUNOMIA_RUNNER_NAME:${PLUGIN_EUNOMIA_RUNNER_DIST_DIR} $PLUGIN_EUNOMIA_EXPORT_ID_DIR >> /dev/null
   if [ "$?" != "0" ]; then
     log::error "[eunomia::export] failed to export when copying from runner"
-    exit 1
+    return 1
   fi
 
   log::info "[eunomia::export] exporting to $PLUGIN_EUNOMIA_EXPORT_ID_PKG"
@@ -57,7 +57,7 @@ eunomia::export() {
   tar -zcvf $PLUGIN_EUNOMIA_EXPORT_ID_PKG . >> /dev/null
   if [ "$?" != "0" ]; then
     log::error "[eunomia::export] failed to export when compressing"
-    exit 1
+    return 1
   fi
 
   docker rm -f $PLUGIN_EUNOMIA_RUNNER_NAME >> /dev/null 2>&1

@@ -4,17 +4,17 @@
 eunomia::prepare() {
   if [ -z "$PLUGIN_EUNOMIA_BUILD_ID" ]; then
     log::error "[prepare] PLUGIN_EUNOMIA_BUILD_ID is required"
-    exit 1
+    return 1
   fi
 
   if [ -z "$PLUGIN_EUNOMIA_GIT_REPO_NAME" ]; then
     log::error "[eunomia::build] PLUGIN_EUNOMIA_GIT_REPO_NAME is required"
-    exit 1
+    return 1
   fi
 
   if [ -z "$(echo $PLUGIN_EUNOMIA_GIT_REPO_NAME | awk -F '/' '{print $2}')" ]; then
     log::error "[eunomia::build] PLUGIN_EUNOMIA_GIT_REPO_NAME is invalid, must be in the format of 'owner/repo'"
-    exit 1
+    return 1
   fi
 
   export PLUGIN_EUNOMIA_GIT_REPO_DIR=$PLUGIN_EUNOMIA_GIT_DIR/$PLUGIN_EUNOMIA_BUILD_ID
@@ -27,13 +27,13 @@ eunomia::prepare() {
   export PLUGIN_EUNOMIA_GIT_REPO_DOCKERFILE_ENV=${PLUGIN_EUNOMIA_DOCKERFILES_DIR}/${PLUGIN_EUNOMIA_GIT_REPO_NAME}/.eunomia
   if [ ! -f "$PLUGIN_EUNOMIA_GIT_REPO_DOCKERFILE" ]; then
     log::error "[eunomia::build] Dockerfile not found at for $PLUGIN_EUNOMIA_GIT_REPO_NAME"
-    exit 1
+    return 1
   fi
 
   export PLUGIN_EUNOMIA_DOCKER_REGISTRY=${PLUGIN_EUNOMIA_DOCKER_REGISTRY:-"docker-ta.thinkingdata.cn"}
   if [ -z "$PLUGIN_EUNOMIA_DOCKER_REGISTRY" ]; then
     log::error "[eunomia::build] PLUGIN_EUNOMIA_DOCKER_REGISTRY is required"
-    exit 1
+    return 1
   fi
 
   # EXPORT
@@ -67,27 +67,27 @@ eunomia::prepare() {
 
   if [ ! -d "$PLUGIN_EUNOMIA_DOCKERFILES_DIR" ]; then
     log::error "[config] Dockerfiles Dir($PLUGIN_EUNOMIA_DOCKERFILES_DIR) not found"
-    exit 1
+    return 1
   fi
 
   if [ -z "$(ls $PLUGIN_EUNOMIA_DOCKERFILES_DIR)" ]; then
     log::error "[config] Dockerfiles Dir($PLUGIN_EUNOMIA_DOCKERFILES_DIR) is empty"
-    exit 1
+    return 1
   fi
 
   if [ -z "$PLUGIN_EUNOMIA_GIT_REPO_NAME" ]; then
     log::error "[prepare] PLUGIN_EUNOMIA_GIT_REPO_NAME is required"
-    exit 1
+    return 1
   fi
 
   if [ -z "$PLUGIN_EUNOMIA_GIT_REPO_PKG" ]; then
     log::error "[prepare] PLUGIN_EUNOMIA_GIT_REPO_PKG is required"
-    exit 1
+    return 1
   fi
 
   if [ ! -f "$PLUGIN_EUNOMIA_GIT_REPO_PKG" ]; then
     log::error "[prepare] file($PLUGIN_EUNOMIA_GIT_REPO_PKG) is not found"
-    exit 1
+    return 1
   fi
 
   mkdir -p $PLUGIN_EUNOMIA_GIT_REPO_DIR
@@ -125,7 +125,7 @@ eunomia::prepare() {
     dotenv::load $PLUGIN_EUNOMIA_GIT_DOT_ENV
     if [ "$?" != "0" ]; then
       log::error "[prepare] failed to load repo env($PLUGIN_EUNOMIA_GIT_DOT_ENV)"
-      exit 1
+      return 1
     fi
 
     # echo "check env PLUGIN_EUNOMIA_BUILD_HASH: $PLUGIN_EUNOMIA_BUILD_HASH"
@@ -149,7 +149,7 @@ eunomia::prepare() {
     dotenv::load $PLUGIN_EUNOMIA_GIT_REPO_DOCKERFILE_ENV
     if [ "$?" != "0" ]; then
       log::error "[prepare] failed to load dockerfile .eunomia($PLUGIN_EUNOMIA_GIT_REPO_DOCKERFILE_ENV)"
-      exit 1
+      return 1
     fi
   fi
 
