@@ -21,13 +21,13 @@ eunomia::export() {
   #   exit 1
   # fi
 
-  # @TODO if no user found, do something
-  if [ -z "$PLUGIN_EUNOMIA_EXECUTOR_EMAIL" ]; then
-    # wait 1000ms
-    # log::info "[eunomia::export] no user found, wait 1000ms"
-    log::info "[eunomia::export] working ..."
-    os::wait 1000
-  fi
+  # # @TODO if no user found, do something
+  # if [ -z "$PLUGIN_EUNOMIA_EXECUTOR_EMAIL" ]; then
+  #   # wait 1000ms
+  #   # log::info "[eunomia::export] no user found, wait 1000ms"
+  #   log::info "[eunomia::export] working ..."
+  #   os::wait 1000
+  # fi
 
   # # @TODO if no environment found, do something
   # if [ -z "$EUNOMIA_VERSION" ]; then
