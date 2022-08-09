@@ -47,8 +47,8 @@ core() {
 
     while true; do
       # random sleep
-      local wait_time=$(os::random_int 10)
-      log::info "[$(timestamp)][flow] wait $wait_time seconds before checking task queue ..."
+      local wait_time=$(os::random_int 30 10)
+      # log::info "[$(timestamp)][flow] wait $wait_time seconds before checking task queue ..."
       os::wait $wait_time
 
       local total=$(eunomia::task_queue_count_total)
@@ -68,7 +68,7 @@ core() {
       fi
     done
   fi
-  
+
   # # @TODO if no user found, do something
   # if [ -z "$PLUGIN_EUNOMIA_EXECUTOR_EMAIL" ]; then
   #   export FORCE_BUILD="true"
