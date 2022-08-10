@@ -19,7 +19,11 @@ services:
       # Question: failed to solve with frontend dockerfile.v0: failed to create LLB definition: unexpected status code [manifests v1]: 401 Unauthorized
       # Reason: Old Docker Desktop version on Mac M1
       # Solution: https://stackoverflow.com/questions/64221861/an-error-failed-to-solve-with-frontend-dockerfile-v0
-      DOCKER_BUILDKIT: 0
+      # DOCKER_BUILDKIT: 0
+      #
+      # Question: the --mount option requires BuildKit. Refer to https://docs.docker.com/go/buildkit/ to learn how to build images with BuildKit enabled
+      # Solution: https://docs.docker.com/develop/develop-images/build_enhancements/
+      DOCKER_BUILDKIT: 1
     volumes:
       # - .:/usr/local/lib/zmicro/plugins/eunomia
       - /var/run/docker.sock:/var/run/docker.sock
