@@ -13,7 +13,6 @@ services:
       PLUGIN_EUNOMIA_DOCKER_REGISTRY: docker-ta.thinkingdata.cn
       # 3 required
       # PLUGIN_EUNOMIA_BUILD_ID: 666
-      # PLUGIN_EUNOMIA_GIT_REPO_NAME: thinking-frontend/ta-multiverse
       # PLUGIN_EUNOMIA_GIT_REPO_PKG: /data/flow/ta-multiverse.tar.gz
       #
       # Question: failed to solve with frontend dockerfile.v0: failed to create LLB definition: unexpected status code [manifests v1]: 401 Unauthorized

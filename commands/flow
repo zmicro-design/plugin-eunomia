@@ -23,11 +23,6 @@ core() {
     exit 1
   fi
 
-  if [ -z "$PLUGIN_EUNOMIA_GIT_REPO_NAME" ]; then
-    log::error "[$(timestamp)][flow] PLUGIN_EUNOMIA_GIT_REPO_NAME is required"
-    exit 1
-  fi
-
   if [ -z "$PLUGIN_EUNOMIA_GIT_REPO_PKG" ]; then
     log::error "[$(timestamp)][flow] PLUGIN_EUNOMIA_GIT_REPO_PKG is required"
     exit 1

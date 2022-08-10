@@ -16,26 +16,6 @@ eunomia::export() {
     return 1
   fi
 
-  # if [ -z "$(ls $PLUGIN_EUNOMIA_BUILD_ID_DIR)" ]; then
-  #   log::error "[eunomia::export] no build found, you must run build first"
-  #   return 1
-  # fi
-
-  # # @TODO if no user found, do something
-  # if [ -z "$PLUGIN_EUNOMIA_EXECUTOR_EMAIL" ]; then
-  #   # wait 1000ms
-  #   # log::info "[eunomia::export] no user found, wait 1000ms"
-  #   log::info "[eunomia::export] working ..."
-  #   os::wait 1000
-  # fi
-
-  # # @TODO if no environment found, do something
-  # if [ -z "$EUNOMIA_VERSION" ]; then
-  #   # wait 300ms
-  #   log::info "[eunomia::export] no eunomia version found, wait 300ms"
-  #   os::wait 300
-  # fi
-
   # ensure container removed
   docker rm -f $PLUGIN_EUNOMIA_RUNNER_NAME >> /dev/null 2>&1
 
