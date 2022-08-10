@@ -7,7 +7,7 @@ eunomia::build() {
   fi
 
   if [ ! -d "$PLUGIN_EUNOMIA_GIT_REPO_DIR" ]; then
-    log::error "[eunomia::build] you must run prepare first"
+    log::error "[eunomia::build] PLUGIN_EUNOMIA_GIT_REPO_DIR($PLUGIN_EUNOMIA_GIT_REPO_DIR) not found, you must run prepare first"
     return 1
   fi
 
