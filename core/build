@@ -35,7 +35,11 @@ eunomia::build() {
   echo "$(date)" >$PLUGIN_EUNOMIA_GIT_REPO_DIR/buildtime.eunomia.js
 
   zmicro pipeline bp
-
+  if [ "$?" != "0" ]; then
+    log::error "[eunomia::build] failed to build"
+    return 1
+  fi
+  
   log::info "[eunomia::build] done"
 }
 
