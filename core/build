@@ -33,6 +33,10 @@ eunomia::build() {
   echo "EUNOMIA_DEPLOYMENT_ID: $PLUGIN_EUNOMIA_DEPLOYMENT_ID" >>$PLUGIN_EUNOMIA_BUILD_GIT_DIR/build.eunomia.js
   echo "EUNOMIA_JOB_ID: $PLUGIN_EUNOMIA_JOB_ID" >>$PLUGIN_EUNOMIA_BUILD_GIT_DIR/build.eunomia.js
 
+  # @DEPRECIATED @TO_REMOVE
+  echo "$PLUGIN_EUNOMIA_BUILD_ID" >$PLUGIN_EUNOMIA_BUILD_GIT_DIR/buildid.eunomia.js
+  echo "$PLUGIN_EUNOMIA_BUILD_TIMESTAMP" >$PLUGIN_EUNOMIA_BUILD_GIT_DIR/buildtime.eunomia.js
+
   zmicro pipeline bp
   if [ "$?" != "0" ]; then
     log::error "[eunomia::build] failed to build"

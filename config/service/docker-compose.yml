@@ -3,9 +3,7 @@ version: '3.7'
 services:
   zmicro_plugin_eunomia:
     restart: always
-    build:
-      context: ../..
-    # image: whatwewant/pipeline-builder-eunomia:v1
+    image: whatwewant/pipeline-builder-eunomia:v1
     # container_name: ${PLUGIN_EUNOMIA_SERVICE_NAME}
     ports:
       - 0.0.0.0:${PLUGIN_EUNOMIA_SERVICE_PORT}:8080
@@ -23,8 +21,10 @@ services:
       # Question: the --mount option requires BuildKit. Refer to https://docs.docker.com/go/buildkit/ to learn how to build images with BuildKit enabled
       # Solution: https://docs.docker.com/develop/develop-images/build_enhancements/
       DOCKER_BUILDKIT: 1
+      # PLUGIN_EUNOMIA_TASK_QUEUE_IS_ENABLED: false
     volumes:
-      - /usr/local/lib/zmicro:/usr/local/lib/zmicro
+      # - /usr/local/lib/zmicro:/usr/local/lib/zmicro
+      #
       - /var/run/docker.sock:/var/run/docker.sock
       - ${HOME}/.docker/config.json:/root/.docker/config.json
       #

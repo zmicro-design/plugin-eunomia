@@ -22,6 +22,8 @@ eunomia::docker_flow() {
     return 1
   fi
 
+  log::info "[$(timestamp)][docker_flow] flow start ..."
+
   # start
   eunomia::hook_start
 
@@ -37,9 +39,11 @@ eunomia::docker_flow() {
   # end
   if [ "$?" != "0" ]; then
     eunomia::hook_failed
+    log::info "[$(timestamp)][docker_flow] flow failed."
     return 1
   else
     eunomia::hook_succeed
+    log::info "[$(timestamp)][docker_flow] flow succeed."
     return 0
   fi
 }
