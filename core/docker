@@ -31,7 +31,6 @@ eunomia::docker_flow() {
     -e PLUGIN_EUNOMIA_BUILD_ID="${PLUGIN_EUNOMIA_BUILD_ID}" \
     -e PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG="${PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG}" \
     -e FORCE_BUILD="${FORCE_BUILD}" \
-    -e PLUGIN_EUNOMIA_TASK_QUEUE_IS_ENABLED="fasle" \
     zmicro_plugin_eunomia \
     zmicro eunomia flow
 
