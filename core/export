@@ -2,17 +2,17 @@
 
 eunomia::export() {
   if [ -z "$PLUGIN_EUNOMIA_EXPORT_ID_DIR" ]; then
-    log::error "[eunomia::export] PLUGIN_EUNOMIA_EXPORT_ID_DIR is required"
+    log::error "[$(timestamp)][eunomia::export] PLUGIN_EUNOMIA_EXPORT_ID_DIR is required"
     return 1
   fi
 
   if [ -d "$PLUGIN_EUNOMIA_EXPORT_ID_DIR" ]; then
-    log::error "[eunomia::export] export directory($PLUGIN_EUNOMIA_EXPORT_ID_DIR) already exists"
+    log::error "[$(timestamp)][eunomia::export] export directory($PLUGIN_EUNOMIA_EXPORT_ID_DIR) already exists"
     return 1
   fi
 
   if [ ! -d "$PLUGIN_EUNOMIA_BUILD_ID_DIR" ]; then
-    log::error "[eunomia::export] PLUGIN_EUNOMIA_BUILD_GIT_DIR($PLUGIN_EUNOMIA_BUILD_GIT_DIR) not found, you must run prepare first"
+    log::error "[$(timestamp)][eunomia::export] PLUGIN_EUNOMIA_BUILD_GIT_DIR($PLUGIN_EUNOMIA_BUILD_GIT_DIR) not found, you must run prepare first"
     return 1
   fi
 
@@ -21,33 +21,34 @@ eunomia::export() {
 
   docker run -d --name $PLUGIN_EUNOMIA_EXPORT_RUNNER_NAME $PLUGIN_EUNOMIA_EXPORT_RUNNER_IMAGE >> /dev/null
   if [ "$?" != "0" ]; then
-    log::error "[eunomia::export] failed to start runner container"
+    log::error "[$(timestamp)][eunomia::export] failed to start runner container"
     return 1
   fi
   
-  log::info "[eunomia::export] copy from docker:$PLUGIN_EUNOMIA_EXPORT_RUNNER_DIST_DIR to host:$PLUGIN_EUNOMIA_EXPORT_ID_DIR"
+  log::info "[$(timestamp)][eunomia::export] copy from docker:$PLUGIN_EUNOMIA_EXPORT_RUNNER_DIST_DIR to host:$PLUGIN_EUNOMIA_EXPORT_ID_DIR"
   docker cp $PLUGIN_EUNOMIA_EXPORT_RUNNER_NAME:${PLUGIN_EUNOMIA_EXPORT_RUNNER_DIST_DIR} $PLUGIN_EUNOMIA_EXPORT_ID_DIR >> /dev/null
   if [ "$?" != "0" ]; then
-    log::error "[eunomia::export] failed to export when copying from runner"
+    log::error "[$(timestamp)][eunomia::export] failed to export when copying from runner"
     return 1
   fi
 
-  log::info "[eunomia::export] exporting to $PLUGIN_EUNOMIA_EXPORT_ID_PKG"
+  log::info "[$(timestamp)][eunomia::export] exporting to $PLUGIN_EUNOMIA_EXPORT_ID_PKG"
   cd $PLUGIN_EUNOMIA_EXPORT_ID_DIR
   tar -zcvf $PLUGIN_EUNOMIA_EXPORT_ID_PKG . >> /dev/null
   if [ "$?" != "0" ]; then
-    log::error "[eunomia::export] failed to export when compressing"
+    log::error "[$(timestamp)][eunomia::export] failed to export when compressing"
     return 1
   fi
 
   docker rm -f $PLUGIN_EUNOMIA_EXPORT_RUNNER_NAME >> /dev/null 2>&1
+  rm -rf $PLUGIN_EUNOMIA_EXPORT_ID_DIR
 
   if [ -n "$PLUGIN_EUNOMIA_EXPORT_DIST" ]; then
-    log::info "[eunomia::export] alias to $PLUGIN_EUNOMIA_EXPORT_DIST"
+    log::info "[$(timestamp)][eunomia::export] alias to $PLUGIN_EUNOMIA_EXPORT_DIST"
     cp $PLUGIN_EUNOMIA_EXPORT_ID_PKG $PLUGIN_EUNOMIA_EXPORT_DIST
   fi
 
-  log::info "[eunomia::export] done"
+  log::info "[$(timestamp)][eunomia::export] done"
 }
 
 export -f eunomia::export

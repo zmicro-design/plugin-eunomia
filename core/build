@@ -39,6 +39,9 @@ eunomia::build() {
     return 1
   fi
 
+  # clean
+  rm -rf $PLUGIN_EUNOMIA_BUILD_GIT_DIR
+
   log::info "[eunomia::build] done"
 }
 

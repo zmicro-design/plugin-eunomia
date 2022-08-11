@@ -1,16 +1,20 @@
+FROM whatwewant/serve:v1 as base
+
 FROM whatwewant/pipeline-builder:v1
 
 LABEL MAINTAINER="Zero<tobewhatwewant@outlook.com>"
 
-RUN zmicro plugin run workspace env initialize nodejs
+COPY --from=base /bin/serve /bin/serve
+
+# RUN zmicro plugin run workspace env initialize nodejs
 
 ARG VERSION=latest
 
-RUN zmicro update -a
+# RUN zmicro update -a
 
-COPY . /usr/local/lib/zmicro/plugins/eunomia
+# COPY . /usr/local/lib/zmicro/plugins/eunomia
 
-RUN zmicro plugin register eunomia
+# RUN zmicro plugin register eunomia
 
 COPY ./entrypoint.sh /entrypoint.sh
 

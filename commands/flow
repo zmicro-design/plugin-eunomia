@@ -37,7 +37,7 @@ core() {
   log::info "[$(timestamp)][flow] preparing ..."
   eunomia::prepare
   if [ "$?" != "0" ]; then
-    log::error "[build] failed to prepare"
+    log::error "[$(timestamp)][build] failed to prepare"
     exit 1
   fi
 
@@ -79,7 +79,7 @@ core() {
     eunomia::build
     if [ "$?" != "0" ]; then
       log::error "[$(timestamp)][flow] failed to build"
-      eunomia::task_queue_done
+      eunomia::task_queue_done >>/dev/null
       exit 1
     fi
   else
@@ -90,7 +90,7 @@ core() {
       eunomia::build
       if [ "$?" != "0" ]; then
         log::error "[$(timestamp)][flow] failed to build (2)"
-        eunomia::task_queue_done
+        eunomia::task_queue_done >>/dev/null
         exit 1
       fi
     else
@@ -99,17 +99,17 @@ core() {
   fi
 
   # export
-  log::info "[flow] exporting ..."
+  log::info "[$(timestamp)][flow] exporting ..."
   eunomia::export
   if [ "$?" != "0" ]; then
     log::error "[$(timestamp)][flow] failed to export"
-    eunomia::task_queue_done
+    eunomia::task_queue_done >>/dev/null
     exit 1
   fi
 
   # done
-  log::info "[flow] done"
-  eunomia::task_queue_done
+  log::info "[$(timestamp)][flow] done"
+  eunomia::task_queue_done >>/dev/null
 }
 
 run() {

@@ -1,10 +1,15 @@
 #!/bin/bash
 
-# ZMICRO_NVM
-export NODE_HOME=/usr/local/node
-export NODE_USER_HOME=$HOME/.node
-export PATH=$NODE_HOME/bin:$NODE_USER_HOME/bin:$PATH
+# # ZMICRO_NVM
+# export NODE_HOME=/usr/local/node
+# export NODE_USER_HOME=$HOME/.node
+# export PATH=$NODE_HOME/bin:$NODE_USER_HOME/bin:$PATH
 
-http-server \
+# http-server \
+#   -p ${PORT:-8080} \
+#   -d /data/plugins/eunomia/export
+
+serve \
   -p ${PORT:-8080} \
-  -d /data/plugins/eunomia/export
+  -d ${DIR:-"/data/plugins/eunomia/export"} \
+  --prefix ${PREFIX:-"/"}

@@ -3,17 +3,17 @@
 # gvm::current gets the current version of Go
 eunomia::prepare() {
   if [ -z "$PLUGIN_EUNOMIA_BUILD_ID" ]; then
-    log::error "[prepare] PLUGIN_EUNOMIA_BUILD_ID is required"
+    log::error "[$(timestamp)][prepare] PLUGIN_EUNOMIA_BUILD_ID is required"
     return 1
   fi
 
   if [ -z "$PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG" ]; then
-    log::error "[prepare] PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG is required"
+    log::error "[$(timestamp)][prepare] PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG is required"
     return 1
   fi
 
   if [ ! -f "$PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG" ]; then
-    log::error "[prepare] file($PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG) is not found"
+    log::error "[$(timestamp)][prepare] file($PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG) is not found"
     return 1
   fi
 
@@ -31,21 +31,16 @@ eunomia::prepare() {
     return 1
   fi
 
-  if [ -z "$PLUGIN_EUNOMIA_GIT_REPO_NAME" ]; then
-    log::error "[prepare] PLUGIN_EUNOMIA_GIT_REPO_NAME is required"
-    return 1
-  fi
-
   # @TODO PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG 很可能是固定路径，这里用于快速备份，避免被后续部署覆盖
-  cp $PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG $PLUGIN_EUNOMIA_BUILD_ID_PKG
-  # PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG 使命完成，后续使用 PLUGIN_EUNOMIA_BUILD_ID_PKG
+  cp $PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG $PLUGIN_EUNOMIA_BUILD_GIT_PKG
+  # PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG 使命完成，后续使用 PLUGIN_EUNOMIA_BUILD_GIT_PKG
 
   # Extract Git Repo
   if [ ! -d "$PLUGIN_EUNOMIA_BUILD_GIT_DIR" ]; then
     mkdir -p $PLUGIN_EUNOMIA_BUILD_GIT_DIR
-    tar -zxvf $PLUGIN_EUNOMIA_BUILD_ID_PKG -C $PLUGIN_EUNOMIA_BUILD_GIT_DIR >>/dev/null
+    tar -zxvf $PLUGIN_EUNOMIA_BUILD_GIT_PKG -C $PLUGIN_EUNOMIA_BUILD_GIT_DIR >>/dev/null
   fi
-  # PLUGIN_EUNOMIA_BUILD_ID_PKG 使命完成
+  # PLUGIN_EUNOMIA_BUILD_GIT_PKG 使命完成
 
   # Go to Git Repo Dir
   cd $PLUGIN_EUNOMIA_BUILD_GIT_DIR
@@ -53,13 +48,13 @@ eunomia::prepare() {
   # @LOAD Git Repo Env
   # echo "check env .eunomia: $PLUGIN_EUNOMIA_BUILD_GIT_DOT_ENV"
   if [ -f "$PLUGIN_EUNOMIA_BUILD_GIT_DOT_ENV" ]; then
-    log::info "[prepare] load user env .eunomia: $PLUGIN_EUNOMIA_BUILD_GIT_DOT_ENV"
+    log::info "[$(timestamp)][prepare] load user env .eunomia: $PLUGIN_EUNOMIA_BUILD_GIT_DOT_ENV"
 
     cat $PLUGIN_EUNOMIA_BUILD_GIT_DOT_ENV
 
     dotenv::load $PLUGIN_EUNOMIA_BUILD_GIT_DOT_ENV
     if [ "$?" != "0" ]; then
-      log::error "[prepare] failed to load repo env($PLUGIN_EUNOMIA_BUILD_GIT_DOT_ENV)"
+      log::error "[$(timestamp)][prepare] failed to load repo env($PLUGIN_EUNOMIA_BUILD_GIT_DOT_ENV)"
       return 1
     fi
   fi
@@ -76,10 +71,10 @@ eunomia::prepare() {
 
   # Log Eunomia Manager Info
   if [ -n "$PLUGIN_EUNOMIA_PROJECT_ID" ]; then
-    log::info "[prepare] PLUGIN_EUNOMIA_PROJECT_ID: $PLUGIN_EUNOMIA_PROJECT_ID"
-    log::info "[prepare] PLUGIN_EUNOMIA_TASK_ID: $PLUGIN_EUNOMIA_TASK_ID"
-    log::info "[prepare] PLUGIN_EUNOMIA_DEPLOYMENT_ID: $PLUGIN_EUNOMIA_DEPLOYMENT_ID"
-    log::info "[prepare] PLUGIN_EUNOMIA_JOB_ID: $PLUGIN_EUNOMIA_JOB_ID"
+    log::info "[$(timestamp)][prepare] PLUGIN_EUNOMIA_PROJECT_ID: $PLUGIN_EUNOMIA_PROJECT_ID"
+    log::info "[$(timestamp)][prepare] PLUGIN_EUNOMIA_TASK_ID: $PLUGIN_EUNOMIA_TASK_ID"
+    log::info "[$(timestamp)][prepare] PLUGIN_EUNOMIA_DEPLOYMENT_ID: $PLUGIN_EUNOMIA_DEPLOYMENT_ID"
+    log::info "[$(timestamp)][prepare] PLUGIN_EUNOMIA_JOB_ID: $PLUGIN_EUNOMIA_JOB_ID"
   fi
 
   # Hook with Eunomia
@@ -100,6 +95,11 @@ eunomia::prepare() {
   export PLUGIN_EUNOMIA_GIT_COMMIT_AUTHOR=$(git show -s --format='%ae' $GIT_COMMIT)
   export PLUGIN_EUNOMIA_GIT_COMMIT_TIMESTAMP="$(git show -s --format=%cd --date='format:%Y-%m-%d_%H:%M:%S')"
 
+  if [ -z "$PLUGIN_EUNOMIA_GIT_REPO_NAME" ]; then
+    log::error "[$(timestamp)][prepare] PLUGIN_EUNOMIA_GIT_REPO_NAME is required"
+    return 1
+  fi
+
   # @COPY Dockerfile
   export PLUGIN_EUNOMIA_DOCKERFILE_FOR_GIT_REPO=${PLUGIN_EUNOMIA_DOCKERFILES_DIR}/${PLUGIN_EUNOMIA_GIT_REPO_NAME}/Dockerfile
   export PLUGIN_EUNOMIA_DOCKERFILE_ENV_FOR_GIT_REPO=${PLUGIN_EUNOMIA_DOCKERFILES_DIR}/${PLUGIN_EUNOMIA_GIT_REPO_NAME}/.eunomia
@@ -111,13 +111,15 @@ eunomia::prepare() {
   # @LOAD Dockerfile Repo Env
   # support custom PLUGIN_EUNOMIA_EXPORT_RUNNER_DIST_DIR and others
   if [ -f "${PLUGIN_EUNOMIA_DOCKERFILE_ENV_FOR_GIT_REPO}" ]; then
-    log::info "[prepare] load dockerfile env(${PLUGIN_EUNOMIA_DOCKERFILE_ENV_FOR_GIT_REPO})"
+    log::info "[$(timestamp)][prepare] load dockerfile env(${PLUGIN_EUNOMIA_DOCKERFILE_ENV_FOR_GIT_REPO})"
 
+    echo ""
     cat $PLUGIN_EUNOMIA_DOCKERFILE_ENV_FOR_GIT_REPO
+    echo ""
 
     dotenv::load $PLUGIN_EUNOMIA_DOCKERFILE_ENV_FOR_GIT_REPO
     if [ "$?" != "0" ]; then
-      log::error "[prepare] failed to load dockerfile .eunomia($PLUGIN_EUNOMIA_DOCKERFILE_ENV_FOR_GIT_REPO)"
+      log::error "[$(timestamp)][prepare] failed to load dockerfile .eunomia($PLUGIN_EUNOMIA_DOCKERFILE_ENV_FOR_GIT_REPO)"
       return 1
     fi
   fi

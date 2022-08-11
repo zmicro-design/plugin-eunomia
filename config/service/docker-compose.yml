@@ -3,9 +3,9 @@ version: '3.7'
 services:
   zmicro_plugin_eunomia:
     restart: always
-    # build:
-    #   context: ../..
-    image: whatwewant/pipeline-builder-eunomia:v1
+    build:
+      context: ../..
+    # image: whatwewant/pipeline-builder-eunomia:v1
     # container_name: ${PLUGIN_EUNOMIA_SERVICE_NAME}
     ports:
       - 0.0.0.0:${PLUGIN_EUNOMIA_SERVICE_PORT}:8080
@@ -24,7 +24,7 @@ services:
       # Solution: https://docs.docker.com/develop/develop-images/build_enhancements/
       DOCKER_BUILDKIT: 1
     volumes:
-      # - .:/usr/local/lib/zmicro/plugins/eunomia
+      - /usr/local/lib/zmicro:/usr/local/lib/zmicro
       - /var/run/docker.sock:/var/run/docker.sock
       - ${HOME}/.docker/config.json:/root/.docker/config.json
       #
