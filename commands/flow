@@ -83,7 +83,7 @@ core() {
       exit 1
     fi
   else
-    log::info "[$(timestamp)][flow] checking ..."
+    log::info "[$(timestamp)][flow] checking ${PLUGIN_EUNOMIA_EXPORT_RUNNER_IMAGE} ..."
     if [ "$(eunomia::is_built)" != "true" ]; then
       # build
       log::info "[$(timestamp)][flow] no cache, building ..."
