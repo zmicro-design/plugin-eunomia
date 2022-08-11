@@ -12,8 +12,8 @@ eunomia::hook_log() {
   fi
 
   if [ -n "$PLUGIN_EUNOMIA_LOG_HOOK" ]; then
-    if [ ! -f "$PLUGIN_EUNOMIA_BUILD_LOG" ]; then
-      log::info "[$(timestamp)][eunomia::hook_log] build log($PLUGIN_EUNOMIA_BUILD_LOG) is not found"
+    if [ ! -f "$PLUGIN_EUNOMIA_BUILD_ID_LOG" ]; then
+      log::info "[$(timestamp)][eunomia::hook_log] build log($PLUGIN_EUNOMIA_BUILD_ID_LOG) is not found"
       return
     fi
 
@@ -22,8 +22,8 @@ eunomia::hook_log() {
     curl \
       -s \
       -X POST \
-      -d "$(cat $PLUGIN_EUNOMIA_BUILD_LOG)" \
-      $PLUGIN_EUNOMIA_LOG_HOOK >> /dev/null
+      -d "$(cat $PLUGIN_EUNOMIA_BUILD_ID_LOG)" \
+      $PLUGIN_EUNOMIA_LOG_HOOK >>/dev/null
   fi
 }
 
@@ -31,22 +31,37 @@ eunomia::hook_start() {
   if [ -n "$PLUGIN_EUNOMIA_START_HOOK" ]; then
     log::info "[$(timestamp)][eunomia::hook_start] call $PLUGIN_EUNOMIA_START_HOOK ..."
 
-    local pipelineId=$(echo $PLUGIN_EUNOMIA_BUILD_ID | awk -F '_' '{print $1}')
-    local BUILD_NUMBER=$(echo $PLUGIN_EUNOMIA_BUILD_ID | awk -F '_' '{print $2}')
+    local FLOW_PIPELINE_ID=$(echo $PLUGIN_EUNOMIA_BUILD_ID | awk -F '_' '{print $1}')
+    local FLOW_BUILD_ID=$(echo $PLUGIN_EUNOMIA_BUILD_ID | awk -F '_' '{print $2}')
 
     curl \
       -s \
-      -X POST \
+      -X POST $PLUGIN_EUNOMIA_START_HOOK \
       -H "Content-Type: application/json" \
-      -d '{"flow_pipeline_id":"'$pipelineId'","flow_build_id":"'$BUILD_NUMBER'"}' \
-      $PLUGIN_EUNOMIA_START_HOOK >> /dev/null
+      --data-binary @- <<EOF
+{
+    "flow_pipeline_id": "$FLOW_PIPELINE_ID",
+    "flow_build_id": "$FLOW_BUILD_ID",
+    "git_repo_url": "$PLUGIN_EUNOMIA_GIT_REPO_URL",
+    "git_repo_name": "$PLUGIN_EUNOMIA_GIT_REPO_NAME",
+    "git_branch": "$PLUGIN_EUNOMIA_GIT_BRANCH",
+    "git_commit": "$PLUGIN_EUNOMIA_GIT_COMMIT",
+    "git_commit_message": "$PLUGIN_EUNOMIA_GIT_COMMIT_MESSAGE",
+    "git_commit_author": "$PLUGIN_EUNOMIA_GIT_COMMIT_AUTHOR",
+    "git_commit_timestamp": "$PLUGIN_EUNOMIA_GIT_COMMIT_TIMESTAMP",
+    "build_id": "$PLUGIN_EUNOMIA_BUILD_ID",
+    "build_timestamp": "$PLUGIN_EUNOMIA_BUILD_TIMESTAMP",
+    "build_author": "$PLUGIN_EUNOMIA_BUILD_AUTHOR",
+    "build_author_email": "$PLUGIN_EUNOMIA_BUILD_AUTHOR_EMAIL"
+}
+EOF
   fi
 }
 
 eunomia::hook_succeed() {
   if [ -n "$PLUGIN_EUNOMIA_SUCCEED_HOOK" ]; then
     log::info "[$(timestamp)][eunomia::hook_succeed] call $PLUGIN_EUNOMIA_SUCCEED_HOOK ..."
-    curl -s -X POST $PLUGIN_EUNOMIA_SUCCEED_HOOK >> /dev/null
+    curl -s -X POST $PLUGIN_EUNOMIA_SUCCEED_HOOK >>/dev/null
 
     eunomia::hook_log
   fi
@@ -55,7 +70,7 @@ eunomia::hook_succeed() {
 eunomia::hook_failed() {
   if [ -n "$PLUGIN_EUNOMIA_FAILED_HOOK" ]; then
     log::info "[$(timestamp)][eunomia::hook_failed] call $PLUGIN_EUNOMIA_FAILED_HOOK ..."
-    curl -s -X POST $PLUGIN_EUNOMIA_FAILED_HOOK >> /dev/null
+    curl -s -X POST $PLUGIN_EUNOMIA_FAILED_HOOK >>/dev/null
 
     eunomia::hook_log
   fi

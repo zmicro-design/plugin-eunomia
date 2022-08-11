@@ -14,18 +14,24 @@ core() {
     exit 0
   fi
 
+  echo "PLUGIN_EUNOMIA_BUILD_ID_DIR: $PLUGIN_EUNOMIA_BUILD_ID_DIR"
+  echo "PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG: $PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG"
+
   eunomia::docker_flow
 }
 
 run() {
+  if [ -z "$PLUGIN_EUNOMIA_BUILD_ID" ]; then
+    log::error "[$(timestamp)][flow] PLUGIN_EUNOMIA_BUILD_ID is required"
+    exit 1
+  fi
+
   # must mkdir or tee log file not found in docker flow
   if [ ! -d "$PLUGIN_EUNOMIA_BUILD_ID_DIR" ]; then
     mkdir -p $PLUGIN_EUNOMIA_BUILD_ID_DIR
   fi
 
-  echo "PLUGIN_EUNOMIA_BUILD_ID_DIR: $PLUGIN_EUNOMIA_BUILD_ID_DIR"
-
-  core $@ | tee -a $PLUGIN_EUNOMIA_BUILD_LOG
+  core $@ | tee -a $PLUGIN_EUNOMIA_BUILD_ID_LOG
 }
 
 run $@

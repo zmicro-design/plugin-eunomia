@@ -23,14 +23,14 @@ core() {
     exit 1
   fi
 
-  if [ -z "$PLUGIN_EUNOMIA_GIT_REPO_PKG" ]; then
-    log::error "[$(timestamp)][flow] PLUGIN_EUNOMIA_GIT_REPO_PKG is required"
+  if [ -z "$PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG" ]; then
+    log::error "[$(timestamp)][flow] PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG is required"
     exit 1
   fi
 
-  echo $PLUGIN_EUNOMIA_GIT_REPO_PKG | grep $PLUGIN_EUNOMIA_GIT_REPO_PKG_TMP_DIR >>/dev/null 2>&1
+  echo $PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG | grep $PLUGIN_EUNOMIA_TMP_DIR >>/dev/null 2>&1
   if [ "$?" != "0" ]; then
-    log::error "[$(timestamp)][flow] PLUGIN_EUNOMIA_GIT_REPO_PKG(${PLUGIN_EUNOMIA_GIT_REPO_PKG}) must be starts with ${PLUGIN_EUNOMIA_GIT_REPO_PKG_TMP_DIR}"
+    log::error "[$(timestamp)][flow] PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG(${PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG}) must be starts with ${PLUGIN_EUNOMIA_TMP_DIR}"
     exit 1
   fi
 
@@ -69,7 +69,7 @@ core() {
   fi
 
   # # @TODO if no user found, do something
-  # if [ -z "$PLUGIN_EUNOMIA_EXECUTOR_EMAIL" ]; then
+  # if [ -z "$PLUGIN_EUNOMIA_BUILD_AUTHOR_EMAIL" ]; then
   #   export FORCE_BUILD="true"
   # fi
 
