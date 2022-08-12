@@ -54,7 +54,7 @@ eunomia::hook_start() {
     "build_author": "$PLUGIN_EUNOMIA_BUILD_AUTHOR",
     "build_author_email": "$PLUGIN_EUNOMIA_BUILD_AUTHOR_EMAIL"
 }
-EOF
+EOF >>/dev/null
   fi
 }
 
