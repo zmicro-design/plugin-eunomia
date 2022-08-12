@@ -14,6 +14,8 @@ core() {
     exit 0
   fi
 
+  eunomia::show_version_info
+
   eunomia::prepare
   if [ "$?" != "0" ]; then
     log::error "[build] failed to prepare"

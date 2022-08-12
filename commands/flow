@@ -34,6 +34,8 @@ core() {
     exit 1
   fi
 
+  eunomia::show_version_info
+
   log::info "[$(timestamp)][flow] preparing ..."
   eunomia::prepare
   if [ "$?" != "0" ]; then

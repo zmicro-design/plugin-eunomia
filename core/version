@@ -1,0 +1,7 @@
+#!/bin/bash
+
+eunomia::show_version_info() {
+  log::info "[$(timestamp)] Eunomia Version: ${PLUGIN_VERSION}"
+}
+
+export -f eunomia::show_version_info

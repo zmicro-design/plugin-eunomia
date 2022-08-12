@@ -14,6 +14,8 @@ core() {
     exit 0
   fi
 
+  eunomia::show_version_info
+
   echo "PLUGIN_EUNOMIA_BUILD_ID_DIR: $PLUGIN_EUNOMIA_BUILD_ID_DIR"
   echo "PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG: $PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG"
 
