@@ -9,6 +9,18 @@
 #   -p ${PORT:-8080} \
 #   -d /data/plugins/eunomia/export
 
+PLUGIN_EUNOMIA_DOCKERFILES_DIR=/usr/local/lib/zmicro/plugins/eunomia/config/dockerfiles
+
+if [ ! -d "$PLUGIN_EUNOMIA_DOCKERFILES_DIR" ]; then
+  echo "ERROR: dockerfiles not found (path: $PLUGIN_EUNOMIA_DOCKERFILES_DIR)"
+  exit 1
+fi
+
+if [ -z "$(ls $PLUGIN_EUNOMIA_DOCKERFILES_DIR)" ]; then
+  echo "ERROR: dockerfiles is empty (path: $PLUGIN_EUNOMIA_DOCKERFILES_DIR)"
+  exit 1
+fi
+
 serve \
   -p ${PORT:-8080} \
   -d ${DIR:-"/data/plugins/eunomia/export"} \

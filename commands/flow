@@ -47,7 +47,7 @@ core() {
     while true; do
       # random sleep
       local wait_time=$(os::random_int 30 10)
-      # log::info "[$(timestamp)][flow] wait $wait_time seconds before checking task queue ..."
+      log::info "[$(timestamp)][flow] wait $wait_time seconds ..."
       os::wait $wait_time
 
       local total=$(eunomia::task_queue_count_total)
@@ -57,10 +57,10 @@ core() {
         log::info "[$(timestamp)][flow] task queue is available(running: ${running}, total: ${total}), go ..."
         local start_result=$(eunomia::task_queue_start)
         if [ "$start_result" = "true" ]; then
-          log::info "[$(timestamp)][flow] task queue is started"
+          log::info "[$(timestamp)][flow] task is started"
           break
         else
-          log::info "[$(timestamp)][flow] task queue start error($start_result), waiting ..."
+          log::info "[$(timestamp)][flow] task start error($start_result), waiting ..."
         fi
       else
         log::info "[$(timestamp)][flow] task queue is full(running: ${running}, total: ${total}), waiting ..."
