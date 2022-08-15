@@ -1,0 +1,26 @@
+#!/bin/bash
+
+eunomia::sync_dockerfiles() {
+  if [ -z "$PLUGIN_EUNOMIA_DOCKERFILES_DIR" ]; then
+    log::error "[$(timestamp)][eunomia::sync_dockerfiles] PLUGIN_EUNOMIA_DOCKERFILES_DIR is required"
+    return 1
+  fi
+
+  if [ ! -d "$PLUGIN_EUNOMIA_DOCKERFILES_DIR" ]; then
+    log::error "[$(timestamp)][eunomia::sync_dockerfiles] export directory($PLUGIN_EUNOMIA_DOCKERFILES_DIR) already exists"
+    return 1
+  fi
+
+  log::info "[$(timestamp)][eunomia::sync_dockerfiles] start ..."
+
+  cd $PLUGIN_EUNOMIA_DOCKERFILES_DIR
+  git pull origin master >>/dev/null
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)][eunomia::sync_dockerfiles] failed to sync dockerfiles"
+    return 1
+  fi
+
+  log::info "[$(timestamp)][eunomia::sync_dockerfiles] done"
+}
+
+export -f eunomia::sync_dockerfiles

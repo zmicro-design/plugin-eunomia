@@ -1,0 +1,23 @@
+#!/bin/bash
+
+set -e
+
+help() {
+  echo "Usage:"
+  echo "  zmicro eunomia sync dockerfiles"
+}
+
+core() {
+  if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    help
+    exit 0
+  fi
+
+  eunomia::sync_dockerfiles
+}
+
+run() {
+  core $@
+}
+
+run $@

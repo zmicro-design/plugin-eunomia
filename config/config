@@ -4,6 +4,8 @@ export PLUGIN_EUNOMIA_NAME=gvm
 export PLUGIN_EUNOMIA_GIT_DIR=${PLUGIN_DATA}/git/repo
 export PLUGIN_EUNOMIA_BUILD_DIR=${PLUGIN_DATA}/build
 export PLUGIN_EUNOMIA_EXPORT_DIR=${PLUGIN_DATA}/export
+export PLUGIN_EUNOMIA_LOG_DIR=${PLUGIN_DATA}/log
+#######
 # Git Repo PKG TMP DIR
 export PLUGIN_EUNOMIA_TMP_DIR=${PLUGIN_DATA}/tmp
 # Dockerfiles
@@ -55,6 +57,10 @@ fi
 
 if [ ! -d "$PLUGIN_EUNOMIA_EXPORT_DIR" ]; then
   mkdir -p $PLUGIN_EUNOMIA_EXPORT_DIR
+fi
+
+if [ ! -d "$PLUGIN_EUNOMIA_LOG_DIR" ]; then
+  mkdir -p $PLUGIN_EUNOMIA_LOG_DIR
 fi
 
 if [ ! -d "$PLUGIN_EUNOMIA_TMP_DIR" ]; then
