@@ -6,7 +6,7 @@ LABEL MAINTAINER="Zero<tobewhatwewant@outlook.com>"
 
 COPY --from=base /bin/serve /bin/serve
 
-RUN apt update && apt install -yqq rsync
+RUN apt update -y && apt install -yqq rsync
 
 # RUN zmicro plugin run workspace env initialize nodejs
 
