@@ -1,0 +1,35 @@
+#!/bin/bash
+
+set -e
+
+help() {
+  echo "Usage:"
+  echo "  zmicro eunomia run"
+}
+
+core() {
+  if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    help
+    exit 0
+  fi
+
+  eunomia::show_version_info
+
+  eunomia::prepare
+  if [ "$?" != "0" ]; then
+    log::error "[run] failed to prepare"
+    exit 1
+  fi
+
+  eunomia::run
+  if [ "$?" != "0" ]; then
+    log::error "[run] failed to run"
+    exit 1
+  fi
+}
+
+run() {
+  core $@
+}
+
+run $@
