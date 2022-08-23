@@ -1,6 +1,9 @@
 #!/bin/bash
 
 eunomia::show_version_info() {
+  # @TODO load mod
+  config::load_file $ZMICRO_PLUGINS_PATH/eunomia/mod
+
   log::info "[$(timestamp)] Eunomia Version: ${PLUGIN_VERSION}"
 }
 
