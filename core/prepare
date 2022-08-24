@@ -68,6 +68,12 @@ eunomia::prepare() {
   export PLUGIN_EUNOMIA_TASK_ID=${PLUGIN_EUNOMIA_TASK_ID:-$EUNOMIA_TASK_ID}
   export PLUGIN_EUNOMIA_DEPLOYMENT_ID=${PLUGIN_EUNOMIA_DEPLOYMENT_ID:-$EUNOMIA_DEPLOYMENT_ID}
   export PLUGIN_EUNOMIA_JOB_ID=${PLUGIN_EUNOMIA_JOB_ID:-$EUNOMIA_JOB_ID}
+  # 用于获取 定义 dockerfiles 目录项目 Dockerfile 子模块
+  # 一般的，一个 Git Repo 对应一个 Dockerfile Dir，
+  # 但是这个项目有不同的功能，需要不同的 Dockerfile，比如 UI 组件库不止要发布组件，还有可能要发布文档
+  #   那么此时 PLUGIN_EUNOMIA_DOCKERFILE_MODULE 就起作用了，
+  #     这时候可以自定义 PLUGIN_EUNOMIA_DOCKERFILE_MODULE 为 doc，那么就会在 DockerfileDir/doc 下去找寻使用的 Dockerfile
+  export PLUGIN_EUNOMIA_DOCKERFILE_MODULE=${PLUGIN_EUNOMIA_DOCKERFILE_MODULE:-$EUNOMIA_DOCKERFILE_MODULE}
 
   # Log Eunomia Manager Info
   if [ -n "$PLUGIN_EUNOMIA_PROJECT_ID" ]; then
