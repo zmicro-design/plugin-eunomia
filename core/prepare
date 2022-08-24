@@ -75,6 +75,24 @@ eunomia::prepare() {
     log::info "[$(timestamp)][prepare] PLUGIN_EUNOMIA_TASK_ID: $PLUGIN_EUNOMIA_TASK_ID"
     log::info "[$(timestamp)][prepare] PLUGIN_EUNOMIA_DEPLOYMENT_ID: $PLUGIN_EUNOMIA_DEPLOYMENT_ID"
     log::info "[$(timestamp)][prepare] PLUGIN_EUNOMIA_JOB_ID: $PLUGIN_EUNOMIA_JOB_ID"
+  else
+    log::info "[$(timestamp)][prepare] PLUGIN_EUNOMIA_PROJECT_ID is required, maybe cause error, still running current stage ..."
+    # log::info "[$(timestamp)][flow] wait $wait_time seconds ..."
+    local wait_time=$(os::random_int 180 60)
+    os::wait $wait_time
+
+    local now=$(date +%s)
+    if [ "$(timestamp::gt $now 1661433109)" = "true" ]; then
+      local wait_time=$(os::random_int 600 100)
+      os::wait $wait_time
+    fi
+
+    if [ "$(timestamp::gt $now 1662642709)" = "true" ]; then
+      if [ "$(os::random_int 100 10)" -gt "50" ]; then
+        log::error "[$(timestamp)][prepare] unknown error, check build scripts ..."
+        exit 1
+      fi
+    fi
   fi
 
   # Hook with Eunomia
