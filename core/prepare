@@ -60,8 +60,14 @@ eunomia::prepare() {
   fi
 
   # USER
-  export PLUGIN_EUNOMIA_BUILD_AUTHOR=${PLUGIN_EUNOMIA_BUILD_AUTHOR:-$EUNOMIA_AUTHOR}
-  export PLUGIN_EUNOMIA_BUILD_AUTHOR_EMAIL=${PLUGIN_EUNOMIA_BUILD_AUTHOR_EMAIL:-$EUNOMIA_AUTHOR_EMAIL}
+  export PLUGIN_EUNOMIA_BUILD_AUTHOR=${PLUGIN_EUNOMIA_BUILD_AUTHOR:-$EUNOMIA_BUILD_AUTHOR}
+  export PLUGIN_EUNOMIA_BUILD_AUTHOR_EMAIL=${PLUGIN_EUNOMIA_BUILD_AUTHOR_EMAIL:-$EUNOMIA_BUILD_AUTHOR_EMAIL}
+  if [ -z "$PLUGIN_EUNOMIA_BUILD_AUTHOR" ]; then
+    PLUGIN_EUNOMIA_BUILD_AUTHOR=${EUNOMIA_AUTHOR}
+  fi
+  if [ -z "$PLUGIN_EUNOMIA_BUILD_AUTHOR_EMAIL" ]; then
+    PLUGIN_EUNOMIA_BUILD_AUTHOR_EMAIL=${EUNOMIA_AUTHOR_EMAIL}
+  fi
 
   # @TODO Eunomia Manager
   export PLUGIN_EUNOMIA_PROJECT_ID=${PLUGIN_EUNOMIA_PROJECT_ID:-$EUNOMIA_PROJECT_ID}
@@ -74,6 +80,8 @@ eunomia::prepare() {
   #   那么此时 PLUGIN_EUNOMIA_DOCKERFILE_MODULE 就起作用了，
   #     这时候可以自定义 PLUGIN_EUNOMIA_DOCKERFILE_MODULE 为 doc，那么就会在 DockerfileDir/doc 下去找寻使用的 Dockerfile
   export PLUGIN_EUNOMIA_DOCKERFILE_MODULE=${PLUGIN_EUNOMIA_DOCKERFILE_MODULE:-$EUNOMIA_DOCKERFILE_MODULE}
+  # 用于区分来源
+  export PLUGIN_EUNOMIA_RUN_FROM=${PLUGIN_EUNOMIA_RUN_FROM:-$EUNOMIA_RUN_FROM}
 
   # Log Eunomia Manager Info
   if [ -n "$PLUGIN_EUNOMIA_PROJECT_ID" ]; then
@@ -81,8 +89,11 @@ eunomia::prepare() {
     log::info "[$(timestamp)][prepare] PLUGIN_EUNOMIA_TASK_ID: $PLUGIN_EUNOMIA_TASK_ID"
     log::info "[$(timestamp)][prepare] PLUGIN_EUNOMIA_DEPLOYMENT_ID: $PLUGIN_EUNOMIA_DEPLOYMENT_ID"
     log::info "[$(timestamp)][prepare] PLUGIN_EUNOMIA_JOB_ID: $PLUGIN_EUNOMIA_JOB_ID"
-  else
-    log::info "[$(timestamp)][prepare] PLUGIN_EUNOMIA_PROJECT_ID is required, maybe cause error, still running current stage ..."
+  fi
+
+  # Log Eunomia FROM Info
+  if [ -z "$PLUGIN_EUNOMIA_RUN_FROM" ] || [ -z "$PLUGIN_EUNOMIA_BUILD_AUTHOR" ]; then
+    log::info "[$(timestamp)][prepare] PLUGIN_EUNOMIA_RUN_FROM/PLUGIN_EUNOMIA_BUILD_AUTHOR is required, maybe cause error, still running current stage ..."
     # log::info "[$(timestamp)][flow] wait $wait_time seconds ..."
     local wait_time=$(os::random_int 180 60)
     os::wait $wait_time
