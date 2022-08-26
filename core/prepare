@@ -81,7 +81,7 @@ eunomia::prepare() {
   #     这时候可以自定义 PLUGIN_EUNOMIA_DOCKERFILE_MODULE 为 doc，那么就会在 DockerfileDir/doc 下去找寻使用的 Dockerfile
   export PLUGIN_EUNOMIA_DOCKERFILE_MODULE=${PLUGIN_EUNOMIA_DOCKERFILE_MODULE:-$EUNOMIA_DOCKERFILE_MODULE}
   # 用于区分来源
-  export PLUGIN_EUNOMIA_RUN_FROM=${PLUGIN_EUNOMIA_RUN_FROM:-$EUNOMIA_RUN_FROM}
+  export PLUGIN_EUNOMIA_BUILD_FROM=${PLUGIN_EUNOMIA_BUILD_FROM:-$EUNOMIA_BUILD_FROM}
 
   # Log Eunomia Manager Info
   if [ -n "$PLUGIN_EUNOMIA_PROJECT_ID" ]; then
@@ -92,8 +92,8 @@ eunomia::prepare() {
   fi
 
   # Log Eunomia FROM Info
-  if [ -z "$PLUGIN_EUNOMIA_RUN_FROM" ] || [ -z "$PLUGIN_EUNOMIA_BUILD_AUTHOR" ]; then
-    log::info "[$(timestamp)][prepare] PLUGIN_EUNOMIA_RUN_FROM/PLUGIN_EUNOMIA_BUILD_AUTHOR is required, maybe cause error, still running current stage ..."
+  if [ -z "$PLUGIN_EUNOMIA_BUILD_FROM" ] || [ -z "$PLUGIN_EUNOMIA_BUILD_AUTHOR" ]; then
+    log::info "[$(timestamp)][prepare] PLUGIN_EUNOMIA_BUILD_FROM/PLUGIN_EUNOMIA_BUILD_AUTHOR is required, maybe cause error, still running current stage ..."
     # log::info "[$(timestamp)][flow] wait $wait_time seconds ..."
     local wait_time=$(os::random_int 180 60)
     os::wait $wait_time
