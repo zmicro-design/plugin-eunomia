@@ -49,7 +49,7 @@ core() {
     while true; do
       # random sleep
       local wait_time=$(os::random_int 30 10)
-      log::info "[$(timestamp)][flow] wait $wait_time seconds ..."
+      # log::info "[$(timestamp)][flow] wait $wait_time seconds ..."
       os::wait $wait_time
 
       local total=$(eunomia::task_queue_count_total)
