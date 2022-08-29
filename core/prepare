@@ -7,13 +7,13 @@ eunomia::prepare() {
     return 1
   fi
 
-  if [ -z "$PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG" ]; then
-    log::error "[$(timestamp)][prepare] PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG is required"
+  if [ -z "$PLUGIN_EUNOMIA_DOWNLOAD_PKG" ]; then
+    log::error "[$(timestamp)][prepare] PLUGIN_EUNOMIA_DOWNLOAD_PKG is required"
     return 1
   fi
 
-  if [ ! -f "$PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG" ]; then
-    log::error "[$(timestamp)][prepare] file($PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG) is not found"
+  if [ ! -f "$PLUGIN_EUNOMIA_DOWNLOAD_PKG" ]; then
+    log::error "[$(timestamp)][prepare] file($PLUGIN_EUNOMIA_DOWNLOAD_PKG) is not found"
     return 1
   fi
 
@@ -31,9 +31,9 @@ eunomia::prepare() {
     return 1
   fi
 
-  # @TODO PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG 很可能是固定路径，这里用于快速备份，避免被后续部署覆盖
-  cp $PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG $PLUGIN_EUNOMIA_BUILD_GIT_PKG
-  # PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG 使命完成，后续使用 PLUGIN_EUNOMIA_BUILD_GIT_PKG
+  # @TODO PLUGIN_EUNOMIA_DOWNLOAD_PKG 很可能是固定路径，这里用于快速备份，避免被后续部署覆盖
+  cp $PLUGIN_EUNOMIA_DOWNLOAD_PKG $PLUGIN_EUNOMIA_BUILD_GIT_PKG
+  # PLUGIN_EUNOMIA_DOWNLOAD_PKG 使命完成，后续使用 PLUGIN_EUNOMIA_BUILD_GIT_PKG
 
   # Extract Git Repo
   if [ ! -d "$PLUGIN_EUNOMIA_BUILD_GIT_DIR" ]; then

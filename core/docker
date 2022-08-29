@@ -6,19 +6,19 @@ eunomia::docker_flow() {
     return 1
   fi
 
-  if [ -z "$PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG" ]; then
-    log::error "[$(timestamp)][docker_flow] PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG is required"
+  if [ -z "$PLUGIN_EUNOMIA_DOWNLOAD_PKG" ]; then
+    log::error "[$(timestamp)][docker_flow] PLUGIN_EUNOMIA_DOWNLOAD_PKG is required"
     return 1
   fi
 
-  if [ ! -f "$PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG" ]; then
-    log::error "[$(timestamp)][docker_flow] PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG($PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG) not found"
+  if [ ! -f "$PLUGIN_EUNOMIA_DOWNLOAD_PKG" ]; then
+    log::error "[$(timestamp)][docker_flow] PLUGIN_EUNOMIA_DOWNLOAD_PKG($PLUGIN_EUNOMIA_DOWNLOAD_PKG) not found"
     return 1
   fi
 
-  echo $PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG | grep $PLUGIN_EUNOMIA_TMP_DIR >>/dev/null 2>&1
+  echo $PLUGIN_EUNOMIA_DOWNLOAD_PKG | grep $PLUGIN_EUNOMIA_TMP_DIR >>/dev/null 2>&1
   if [ "$?" != "0" ]; then
-    log::error "[$(timestamp)][docker_flow] PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG(${PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG}) must be starts with ${PLUGIN_EUNOMIA_TMP_DIR}"
+    log::error "[$(timestamp)][docker_flow] PLUGIN_EUNOMIA_DOWNLOAD_PKG(${PLUGIN_EUNOMIA_DOWNLOAD_PKG}) must be starts with ${PLUGIN_EUNOMIA_TMP_DIR}"
     return 1
   fi
 
@@ -31,7 +31,7 @@ eunomia::docker_flow() {
   docker-compose exec \
     -T \
     -e PLUGIN_EUNOMIA_BUILD_ID="${PLUGIN_EUNOMIA_BUILD_ID}" \
-    -e PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG="${PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG}" \
+    -e PLUGIN_EUNOMIA_DOWNLOAD_PKG="${PLUGIN_EUNOMIA_DOWNLOAD_PKG}" \
     -e FORCE_BUILD="${FORCE_BUILD}" \
     zmicro_plugin_eunomia \
     zmicro eunomia flow
@@ -48,53 +48,4 @@ eunomia::docker_flow() {
   fi
 }
 
-eunomia::docker_run() {
-  if [ -z "$PLUGIN_EUNOMIA_BUILD_ID" ]; then
-    log::error "[$(timestamp)][docker_run] PLUGIN_EUNOMIA_BUILD_ID is required"
-    return 1
-  fi
-
-  if [ -z "$PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG" ]; then
-    log::error "[$(timestamp)][docker_run] PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG is required"
-    return 1
-  fi
-
-  if [ ! -f "$PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG" ]; then
-    log::error "[$(timestamp)][docker_run] PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG($PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG) not found"
-    return 1
-  fi
-
-  echo $PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG | grep $PLUGIN_EUNOMIA_TMP_DIR >>/dev/null 2>&1
-  if [ "$?" != "0" ]; then
-    log::error "[$(timestamp)][docker_run] PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG(${PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG}) must be starts with ${PLUGIN_EUNOMIA_TMP_DIR}"
-    return 1
-  fi
-
-  log::info "[$(timestamp)][docker_run] run start ..."
-
-  # start
-  eunomia::hook_start
-
-  cd ${PLUGIN_DIR}/config/service
-  docker-compose exec \
-    -T \
-    -e PLUGIN_EUNOMIA_BUILD_ID="${PLUGIN_EUNOMIA_BUILD_ID}" \
-    -e PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG="${PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG}" \
-    -e FORCE_BUILD="${FORCE_BUILD}" \
-    zmicro_plugin_eunomia \
-    zmicro eunomia run
-
-  # end
-  if [ "$?" != "0" ]; then
-    eunomia::hook_failed
-    log::info "[$(timestamp)][docker_run] run failed."
-    return 1
-  else
-    eunomia::hook_succeed
-    log::info "[$(timestamp)][docker_run] run succeed."
-    return 0
-  fi
-}
-
 export -f eunomia::docker_flow
-export -f eunomia::docker_run

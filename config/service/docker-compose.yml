@@ -11,7 +11,7 @@ services:
       PLUGIN_EUNOMIA_DOCKER_REGISTRY: docker-ta.thinkingdata.cn
       # 3 required
       # PLUGIN_EUNOMIA_BUILD_ID: 666
-      # PLUGIN_EUNOMIA_DOWNLOAD_GIT_PKG: /data/flow/ta-multiverse.tar.gz
+      # PLUGIN_EUNOMIA_DOWNLOAD_PKG: /data/flow/ta-multiverse.tar.gz
       #
       # Question: failed to solve with frontend dockerfile.v0: failed to create LLB definition: unexpected status code [manifests v1]: 401 Unauthorized
       # Reason: Old Docker Desktop version on Mac M1
