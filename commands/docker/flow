@@ -24,7 +24,7 @@ core() {
 
 run() {
   if [ -z "$PLUGIN_EUNOMIA_BUILD_ID" ]; then
-    log::error "[$(timestamp)][flow] PLUGIN_EUNOMIA_BUILD_ID is required"
+    log::error "[$(timestamp)][docker][flow] PLUGIN_EUNOMIA_BUILD_ID is required"
     exit 1
   fi
 
