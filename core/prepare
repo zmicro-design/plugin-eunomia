@@ -82,7 +82,7 @@ eunomia::prepare() {
   export PLUGIN_EUNOMIA_DOCKERFILE_MODULE=${PLUGIN_EUNOMIA_DOCKERFILE_MODULE:-$EUNOMIA_DOCKERFILE_MODULE}
   # 用于区分来源
   export PLUGIN_EUNOMIA_BUILD_FROM=${PLUGIN_EUNOMIA_BUILD_FROM:-$EUNOMIA_BUILD_FROM}
-  # 用于区分类型，默认为空
+  # 用于自定义构建类型，默认为空
   #   可选值：
   #     - 空：默认值，表示需要从 Dockerfile Dir 对应的 Git Repo 中找到 Dockerfile
   #     - default/frontend: 前端项目默认
@@ -90,6 +90,18 @@ eunomia::prepare() {
   #     - default/command: 命令行项目默认
   #
   export PLUGIN_EUNOMIA_BUILD_TYPE=${PLUGIN_EUNOMIA_BUILD_TYPE:-$EUNOMIA_BUILD_TYPE}
+  # 用于默认构建类型，默认为空
+  #   可选值：
+  #     - 空：默认值，表示需要从 Dockerfile Dir 对应的 Git Repo 中找到 Dockerfile
+  #     - frontend: 前端项目默认，类似 default/frontend
+  #     - backend: 后端项目默认，类似 default/backend
+  #     - command: 命令行项目默认，类似 default/command
+  #
+  export PLUGIN_EUNOMIA_BUILD_TYPE_DEFAULT=${PLUGIN_EUNOMIA_BUILD_TYPE_DEFAULT:-$EUNOMIA_BUILD_TYPE_DEFAULT}
+  if [ -n "$PLUGIN_EUNOMIA_BUILD_TYPE_DEFAULT" ]; then
+    log::info "[$(timestamp)][prepare] set build type default: $PLUGIN_EUNOMIA_BUILD_TYPE_DEFAULT"
+    PLUGIN_EUNOMIA_BUILD_TYPE="default/$PLUGIN_EUNOMIA_BUILD_TYPE_DEFAULT"
+  fi
 
   # Log Eunomia Manager Info
   if [ -n "$PLUGIN_EUNOMIA_PROJECT_ID" ]; then
