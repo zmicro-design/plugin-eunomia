@@ -90,6 +90,23 @@ eunomia::prepare() {
   #     - default/command: 命令行项目默认
   #
   export PLUGIN_EUNOMIA_BUILD_TYPE=${PLUGIN_EUNOMIA_BUILD_TYPE:-$EUNOMIA_BUILD_TYPE}
+
+  # 自定义构建模式，默认为空，也就是 app 模式
+  #  可选值：
+  #   - app: 默认值，面对 Flow 需要 Export（流程上：构建 + 部署）
+  #   - command: 命令行模式，区别于 app 模式，执行 command.sh，不需要 export（流程上：只有构建）
+  export PLUGIN_EUNOMIA_BUILD_MODE=${PLUGIN_EUNOMIA_BUILD_MODE:-$EUNOMIA_BUILD_MODE}
+  if [ -z "$PLUGIN_EUNOMIA_BUILD_MODE" ]; then
+    # 默认是 app 模式
+    export PLUGIN_EUNOMIA_BUILD_MODE="app"
+  fi
+  # 当 PLUGIN_EUNOMIA_BUILD_MODE 是 command 时，其实类似于 PLUGIN_EUNOMIA_BUILD_TYPE_TEMPLATE 的一个别名
+  # 此时，自定义 EUNOMIA_BUILD_TYPE_TEMPLATE 会失效
+  if [ "$PLUGIN_EUNOMIA_BUILD_MODE" = "command" ]; then
+    # export PLUGIN_EUNOMIA_BUILD_TYPE_TEMPLATE=$PLUGIN_EUNOMIA_BUILD_MODE
+    export PLUGIN_EUNOMIA_BUILD_TYPE_TEMPLATE="command"
+  fi
+
   # 用于构建类型模板，简化 PLUGIN_EUNOMIA_BUILD_TYPE，默认为空
   #   可选值：
   #     - 空：默认值，表示需要从 Dockerfile Dir 对应的 Git Repo 中找到 Dockerfile
@@ -97,7 +114,7 @@ eunomia::prepare() {
   #     - backend: 后端项目默认，类似 default/backend
   #     - command: 命令行项目默认，类似 default/command
   #
-  export PLUGIN_EUNOMIA_BUILD_TYPE_TEMPLATE=${PLUGIN_EUNOMIA_BUILD_TYPE_TEMPLATE:-$EUNOMIA_BUILD_TYPE_DEFAULT}
+  export PLUGIN_EUNOMIA_BUILD_TYPE_TEMPLATE=${PLUGIN_EUNOMIA_BUILD_TYPE_TEMPLATE:-$EUNOMIA_BUILD_TYPE_TEMPLATE}
   if [ -n "$PLUGIN_EUNOMIA_BUILD_TYPE_TEMPLATE" ]; then
     if [ -z "$PLUGIN_EUNOMIA_BUILD_TYPE" ]; then
       log::info "[$(timestamp)][prepare] set build type default: $PLUGIN_EUNOMIA_BUILD_TYPE_TEMPLATE"
