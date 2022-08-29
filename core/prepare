@@ -145,20 +145,9 @@ eunomia::prepare() {
     return 1
   fi
 
-  # @LOAD Dockerfile Repo Env
-  # support custom PLUGIN_EUNOMIA_EXPORT_RUNNER_DIST_DIR and others
-  if [ -f "${PLUGIN_EUNOMIA_DOCKERFILE_ENV_FOR_GIT_REPO}" ]; then
-    log::info "[$(timestamp)][prepare] load dockerfile env(${PLUGIN_EUNOMIA_DOCKERFILE_ENV_FOR_GIT_REPO})"
-
-    echo ""
-    cat $PLUGIN_EUNOMIA_DOCKERFILE_ENV_FOR_GIT_REPO
-    echo ""
-
-    dotenv::load $PLUGIN_EUNOMIA_DOCKERFILE_ENV_FOR_GIT_REPO
-    if [ "$?" != "0" ]; then
-      log::error "[$(timestamp)][prepare] failed to load dockerfile .eunomia($PLUGIN_EUNOMIA_DOCKERFILE_ENV_FOR_GIT_REPO)"
-      return 1
-    fi
+  if [ -f "$PLUGIN_EUNOMIA_DOCKERFILE_ENV_FOR_GIT_REPO" ]; then
+    log::error "[eunomia::build] .eunomia found at for $PLUGIN_EUNOMIA_GIT_REPO_NAME, please remove it"
+    return 1
   fi
 
   ##############
