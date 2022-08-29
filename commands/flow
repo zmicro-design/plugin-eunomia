@@ -100,13 +100,16 @@ core() {
     fi
   fi
 
-  # export
-  log::info "[$(timestamp)][flow] exporting ..."
-  eunomia::export
-  if [ "$?" != "0" ]; then
-    log::error "[$(timestamp)][flow] failed to export"
-    eunomia::task_queue_done >>/dev/null
-    exit 1
+  log::info "[$(timestamp)][flow] env PLUGIN_EUNOMIA_EXPORT_DISABLE: $PLUGIN_EUNOMIA_EXPORT_DISABLE"
+  if [ "$PLUGIN_EUNOMIA_EXPORT_DISABLE" != "true" ]; then
+    # export
+    log::info "[$(timestamp)][flow] exporting ..."
+    eunomia::export
+    if [ "$?" != "0" ]; then
+      log::error "[$(timestamp)][flow] failed to export"
+      eunomia::task_queue_done >>/dev/null
+      exit 1
+    fi
   fi
 
   # done

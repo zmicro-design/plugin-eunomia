@@ -98,9 +98,16 @@ eunomia::prepare() {
   #     - command: 命令行项目默认，类似 default/command
   #
   export PLUGIN_EUNOMIA_BUILD_TYPE_TEMPLATE=${PLUGIN_EUNOMIA_BUILD_TYPE_TEMPLATE:-$EUNOMIA_BUILD_TYPE_DEFAULT}
-  if [ -n "$PLUGIN_EUNOMIA_BUILD_TYPE_TEMPLATE" ] && [ -z "$PLUGIN_EUNOMIA_BUILD_TYPE" ]; then
-    log::info "[$(timestamp)][prepare] set build type default: $PLUGIN_EUNOMIA_BUILD_TYPE_TEMPLATE"
-    PLUGIN_EUNOMIA_BUILD_TYPE="templates/$PLUGIN_EUNOMIA_BUILD_TYPE_TEMPLATE"
+  if [ -n "$PLUGIN_EUNOMIA_BUILD_TYPE_TEMPLATE" ]; then
+    if [ -z "$PLUGIN_EUNOMIA_BUILD_TYPE" ]; then
+      log::info "[$(timestamp)][prepare] set build type default: $PLUGIN_EUNOMIA_BUILD_TYPE_TEMPLATE"
+      export PLUGIN_EUNOMIA_BUILD_TYPE="templates/$PLUGIN_EUNOMIA_BUILD_TYPE_TEMPLATE"
+    fi
+
+    # 如果 PLUGIN_EUNOMIA_BUILD_TYPE_TEMPLATE 是 command，那么禁用 EXPORT
+    if [ "$PLUGIN_EUNOMIA_BUILD_TYPE_TEMPLATE" = "command" ]; then
+      export PLUGIN_EUNOMIA_EXPORT_DISABLE=true
+    fi
   fi
 
   # Log Eunomia Manager Info
@@ -139,16 +146,22 @@ eunomia::prepare() {
   export PLUGIN_EUNOMIA_FAILED_HOOK=${PLUGIN_EUNOMIA_FAILED_HOOK:-"$EUNOMIA_FAILED_HOOK"}
 
   # @ Repo
-  GIT_REPO_NAMESPACE=$(git config --get remote.origin.url | awk -F '/' '{print $4}')
-  GIT_REPO_BASE_NAME=$(git config --get remote.origin.url | awk -F '/' '{print $5}' | awk -F '.git' '{print $1}')
-  GIT_COMMIT=$(git rev-parse HEAD)
-  export PLUGIN_EUNOMIA_GIT_REPO_URL=$(git config --get remote.origin.url)
-  export PLUGIN_EUNOMIA_GIT_REPO_NAME=${GIT_REPO_NAMESPACE}/${GIT_REPO_BASE_NAME}
-  export PLUGIN_EUNOMIA_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-  export PLUGIN_EUNOMIA_GIT_COMMIT=$(git rev-parse HEAD)
-  export PLUGIN_EUNOMIA_GIT_COMMIT_MESSAGE=$(git log --format=%B -n 1 $GIT_COMMIT)
-  export PLUGIN_EUNOMIA_GIT_COMMIT_AUTHOR=$(git show -s --format='%ae' $GIT_COMMIT)
-  export PLUGIN_EUNOMIA_GIT_COMMIT_TIMESTAMP="$(git show -s --format=%cd --date='format:%Y-%m-%d_%H:%M:%S')"
+  if [ -d ".git" ]; then
+    GIT_REPO_NAMESPACE=$(git config --get remote.origin.url | awk -F '/' '{print $4}')
+    GIT_REPO_BASE_NAME=$(git config --get remote.origin.url | awk -F '/' '{print $5}' | awk -F '.git' '{print $1}')
+    GIT_COMMIT=$(git rev-parse HEAD)
+    export PLUGIN_EUNOMIA_GIT_REPO_URL=$(git config --get remote.origin.url)
+    export PLUGIN_EUNOMIA_GIT_REPO_NAME=${GIT_REPO_NAMESPACE}/${GIT_REPO_BASE_NAME}
+    export PLUGIN_EUNOMIA_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+    export PLUGIN_EUNOMIA_GIT_COMMIT=$(git rev-parse HEAD)
+    export PLUGIN_EUNOMIA_GIT_COMMIT_MESSAGE=$(git log --format=%B -n 1 $GIT_COMMIT)
+    export PLUGIN_EUNOMIA_GIT_COMMIT_AUTHOR=$(git show -s --format='%ae' $GIT_COMMIT)
+    export PLUGIN_EUNOMIA_GIT_COMMIT_TIMESTAMP="$(git show -s --format=%cd --date='format:%Y-%m-%d_%H:%M:%S')"
+  else
+    # if not git repo, use default value
+    # used for PLUGIN_EUNOMIA_BUILD_TYPE_TEMPLATE == command project
+    export PLUGIN_EUNOMIA_GIT_REPO_NAME="zmicro/eunomia_build_tmp"
+  fi
 
   if [ -z "$PLUGIN_EUNOMIA_GIT_REPO_NAME" ]; then
     log::error "[$(timestamp)][prepare] PLUGIN_EUNOMIA_GIT_REPO_NAME is required"
