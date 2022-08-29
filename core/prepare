@@ -98,7 +98,7 @@ eunomia::prepare() {
   #     - command: 命令行项目默认，类似 default/command
   #
   export PLUGIN_EUNOMIA_BUILD_TYPE_DEFAULT=${PLUGIN_EUNOMIA_BUILD_TYPE_DEFAULT:-$EUNOMIA_BUILD_TYPE_DEFAULT}
-  if [ -n "$PLUGIN_EUNOMIA_BUILD_TYPE_DEFAULT" ]; then
+  if [ -n "$PLUGIN_EUNOMIA_BUILD_TYPE_DEFAULT" ] && [ -z "$PLUGIN_EUNOMIA_BUILD_TYPE" ]; then
     log::info "[$(timestamp)][prepare] set build type default: $PLUGIN_EUNOMIA_BUILD_TYPE_DEFAULT"
     PLUGIN_EUNOMIA_BUILD_TYPE="default/$PLUGIN_EUNOMIA_BUILD_TYPE_DEFAULT"
   fi
