@@ -164,15 +164,12 @@ eunomia::prepare() {
 
   # @ Repo
   if [ -d ".git" ]; then
-    GIT_REPO_NAMESPACE=$(git config --get remote.origin.url | awk -F '/' '{print $4}')
-    GIT_REPO_BASE_NAME=$(git config --get remote.origin.url | awk -F '/' '{print $5}' | awk -F '.git' '{print $1}')
-    GIT_COMMIT=$(git rev-parse HEAD)
-    export PLUGIN_EUNOMIA_GIT_REPO_URL=$(git config --get remote.origin.url)
-    export PLUGIN_EUNOMIA_GIT_REPO_NAME=${GIT_REPO_NAMESPACE}/${GIT_REPO_BASE_NAME}
+    export PLUGIN_EUNOMIA_GIT_REPO_URL=$(git::origin_url)
+    export PLUGIN_EUNOMIA_GIT_REPO_NAME=$(git::repo_name)
     export PLUGIN_EUNOMIA_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-    export PLUGIN_EUNOMIA_GIT_COMMIT=$(git rev-parse HEAD)
-    export PLUGIN_EUNOMIA_GIT_COMMIT_MESSAGE=$(git log --format=%B -n 1 $GIT_COMMIT)
-    export PLUGIN_EUNOMIA_GIT_COMMIT_AUTHOR=$(git show -s --format='%ae' $GIT_COMMIT)
+    export PLUGIN_EUNOMIA_GIT_COMMIT=$(git::commit_hash_full)
+    export PLUGIN_EUNOMIA_GIT_COMMIT_MESSAGE=$(git::commit_message)
+    export PLUGIN_EUNOMIA_GIT_COMMIT_AUTHOR=$(git::commit_author)
     export PLUGIN_EUNOMIA_GIT_COMMIT_TIMESTAMP="$(git show -s --format=%cd --date='format:%Y-%m-%d_%H:%M:%S')"
   else
     # if not git repo, use default value
