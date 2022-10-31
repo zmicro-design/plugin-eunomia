@@ -12,11 +12,6 @@ core() {
   fi
 
   cd ${PLUGIN_DIR}/config/service
-  
-  # update image
-  if [ -z "$NO_PULL" ]; then
-    docker-compose pull
-  fi
 
   docker-compose down
   # docker-compose up -d --build
