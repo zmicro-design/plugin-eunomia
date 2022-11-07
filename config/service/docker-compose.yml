@@ -35,3 +35,8 @@ services:
       #
       - ${PLUGIN_EUNOMIA_DOCKERFILES_DIR}:${PLUGIN_EUNOMIA_DOCKERFILES_DIR}
       - ${PLUGIN_EUNOMIA_TMP_DIR}:${PLUGIN_EUNOMIA_TMP_DIR}
+
+networks:
+  default:
+    external: true
+    name: compose-ingress
