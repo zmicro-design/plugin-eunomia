@@ -12,7 +12,7 @@ core() {
   fi
 
   cd ${PLUGIN_DIR}/config/service
-  docker-compose exec $PLUGIN_EUNOMIA_SERVICE_NAME "echo 0 > $PLUGIN_EUNOMIA_TASK_QUEUE_LOCK"
+  docker-compose exec $PLUGIN_EUNOMIA_SERVICE_NAME sh -c "echo 0 > $PLUGIN_EUNOMIA_TASK_QUEUE_LOCK"
 }
 
 run() {
