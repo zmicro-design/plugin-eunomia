@@ -40,7 +40,7 @@ eunomia::docker_flow() {
     -e PLUGIN_EUNOMIA_DOWNLOAD_PKG="${PLUGIN_EUNOMIA_DOWNLOAD_PKG}" \
     -e FORCE_BUILD="${FORCE_BUILD}" \
     -e PLUGIN_EUNOMIA_EXPORT_DISABLE="${PLUGIN_EUNOMIA_EXPORT_DISABLE}" \
-    zmicro_plugin_eunomia \
+    $PLUGIN_EUNOMIA_SERVICE_NAME \
     zmicro eunomia flow
 
   # end

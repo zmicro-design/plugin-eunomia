@@ -2,7 +2,7 @@
 
 help() {
   echo "Usage:"
-  echo "  zmicro eunomia service exec"
+  echo "  zmicro eunomia service queue current"
 }
 
 core() {
@@ -12,7 +12,7 @@ core() {
   fi
 
   cd ${PLUGIN_DIR}/config/service
-  docker-compose exec $PLUGIN_EUNOMIA_SERVICE_NAME "${@:-bash}"
+  docker-compose exec $PLUGIN_EUNOMIA_SERVICE_NAME "cat $PLUGIN_EUNOMIA_TASK_QUEUE_LOCK"
 }
 
 run() {
