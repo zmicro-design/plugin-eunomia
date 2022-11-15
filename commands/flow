@@ -56,7 +56,7 @@ core() {
       local running=$(eunomia::task_queue_count_running)
 
       # @TODO >= 80%
-      if [ "$running" -gt "4" ]; then
+      if [ "$running" -gt "3" ]; then
         notify::feishu $PLUGIN_EUNOMIA_NOTIFICATION_FEISHU_URL "[$(timestamp)] 任务队列预警" "状态: 当前队列利用率 > 80%（${running}/${total}）\n当前时间: $timestamp"
       fi
 
