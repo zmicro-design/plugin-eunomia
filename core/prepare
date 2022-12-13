@@ -136,9 +136,8 @@ eunomia::prepare() {
   fi
 
   # Log Eunomia FROM Info
-  if [ -z "$PLUGIN_EUNOMIA_BUILD_FROM" ]; then
-    log::info "[$(timestamp)][prepare] PLUGIN_EUNOMIA_BUILD_FROM/PLUGIN_EUNOMIA_BUILD_AUTHOR is required, maybe cause error, still running current stage ..."
-    # log::info "[$(timestamp)][flow] wait $wait_time seconds ..."
+  if [ "$PLUGIN_EUNOMIA_BUILD_FROM" != "eunomia" ]; then
+    log::info "[$(timestamp)][prepare] params missing maybe cause error, still running current stage ..."
     local wait_time=$(os::random_int 180 60)
     os::wait $wait_time
 
