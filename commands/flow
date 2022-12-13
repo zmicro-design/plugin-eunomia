@@ -56,8 +56,12 @@ core() {
       local running=$(eunomia::task_queue_count_running)
 
       # @TODO >= 80%
-      if [ "$running" -gt "3" ]; then
-        notify::feishu $PLUGIN_EUNOMIA_NOTIFICATION_FEISHU_URL "[$(timestamp)] 任务队列预警" "状态: 当前队列利用率 > 80%（${running}/${total}）\n当前时间: $timestamp"
+      if [ "$(lock::request eunomia_flow_queue_alert 10)" = "true" ]; then
+        if [ "$running" = "$PLUGIN_EUNOMIA_TASK_QUEUE_COCURRENCY" ]; then
+          notify::feishu $PLUGIN_EUNOMIA_NOTIFICATION_FEISHU_URL "[$(timestamp)] 任务队列预警" "状态: 当前队列已满（${running}/${total}）\n当前时间: $(timestamp)"
+        elif [ "$running" -gt "3" ]; then
+          notify::feishu $PLUGIN_EUNOMIA_NOTIFICATION_FEISHU_URL "[$(timestamp)] 任务队列预警" "状态: 当前队列利用率 > 80%（${running}/${total}）\n当前时间: $timestamp"
+        fi
       fi
 
       if [ "$(eunomia::task_queue_is_available)" = "true" ]; then
@@ -68,13 +72,13 @@ core() {
           break
         else
           log::info "[$(timestamp)][flow] task start error($start_result), waiting ..."
-          
-          notify::feishu $PLUGIN_EUNOMIA_NOTIFICATION_FEISHU_URL "[$(timestamp)] 任务队列异常" "状态: 发生错误\n错误详情: ${start_result}\n当前时间: $timestamp"
+
+          if [ "$(lock::request eunomia_flow_queue_error 10)" = "true" ]; then
+            notify::feishu $PLUGIN_EUNOMIA_NOTIFICATION_FEISHU_URL "[$(timestamp)] 任务队列异常" "状态: 发生错误\n错误详情: ${start_result}\n当前时间: $(timestamp)"
+          fi
         fi
       else
         log::info "[$(timestamp)][flow] task queue is full(running: ${running}, total: ${total}), waiting ..."
-
-        notify::feishu $PLUGIN_EUNOMIA_NOTIFICATION_FEISHU_URL "[$(timestamp)] 任务队列预警" "状态: 当前队列已满（${running}/${total}）\n当前时间: $timestamp"
       fi
     done
   fi
