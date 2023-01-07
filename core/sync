@@ -24,8 +24,8 @@ eunomia::sync_dockerfiles() {
   local git_hash=$(git::commit_hash)
   local git_commit_message=$(git::commit_message)
   local git_commit_author=$(git::commit_author)
-  local git_repo_url=$(git::repo_url)
-  notify::feishu $PLUGIN_EUNOMIA_NOTIFICATION_FEISHU_URL "[$(timestamp)] Dockerfiles 同步" "状态: 成功\n变更: ${git_commit_message}\n修改人: ${git_commit_author}\nHash: ${git_hash}\nURL: ${git_repo_url}\n当前时间: $timestamp"
+  # local git_repo_url=$(git::repo_url)
+  notify::feishu $PLUGIN_EUNOMIA_NOTIFICATION_FEISHU_URL "[$(timestamp)] Dockerfiles 同步" "状态: 成功\n变更: ${git_commit_message}\n修改人: ${git_commit_author}\nHash: ${git_hash}\n当前时间: $timestamp"
 
   log::info "[$(timestamp)][eunomia::sync_dockerfiles] done"
 }
