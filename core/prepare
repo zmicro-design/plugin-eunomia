@@ -31,6 +31,9 @@ eunomia::prepare() {
     return 1
   fi
 
+  # Show Docker Info
+  eunomia::prepare_show_docker_info
+
   # @TODO PLUGIN_EUNOMIA_DOWNLOAD_PKG 很可能是固定路径，这里用于快速备份，避免被后续部署覆盖
   cp $PLUGIN_EUNOMIA_DOWNLOAD_PKG $PLUGIN_EUNOMIA_BUILD_GIT_PKG
   # PLUGIN_EUNOMIA_DOWNLOAD_PKG 使命完成，后续使用 PLUGIN_EUNOMIA_BUILD_GIT_PKG
@@ -217,4 +220,10 @@ eunomia::prepare() {
   export PLUGIN_EUNOMIA_EXPORT_RUNNER_IMAGE=$PLUGIN_EUNOMIA_DOCKER_REGISTRY/$PIPELINE_IMAGE_NAME:$PIPELINE_IMAGE_TAGS
 }
 
+eunomia::prepare_show_docker_info() {
+  docker info
+}
+
 export -f eunomia::prepare
+
+export -f eunomia::prepare_show_docker_info
