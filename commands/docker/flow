@@ -16,6 +16,29 @@ core() {
 
   eunomia::show_version_info
 
+  if [ -n "$EUNOMIA_GIT_REPOSITORY" ] && [ -n "$EUNOMIA_GIT_COMMIT_HASH" ]; then
+    export EUNOMIA_GIT_CHECKOUT_DIR=$(os::tmp_dir)
+    export PLUGIN_EUNOMIA_DOWNLOAD_PKG="${PLUGIN_EUNOMIA_TMP_DIR}/${EUNOMIA_GIT_COMMIT_HASH}.tar.gz"
+
+    log::info "[$(timestamp)][docker][flow] checkouting with $EUNOMIA_GIT_REPOSITORY at $EUNOMIA_GIT_COMMIT_HASH ..."
+    eunomia::checkout
+    if [ "$?" != "0" ]; then
+      log::error "[$(timestamp)][docker][flow] failed to checkout git repo."
+      return 1
+    fi
+
+    log::success "[$(timestamp)][docker][flow] succeed to checkout git repo."
+    
+    log::info "[$(timestamp)][docker][flow] creating DOWNLOAD_PKG at $PLUGIN_EUNOMIA_DOWNLOAD_PKG ..."
+    cd $EUNOMIA_GIT_CHECKOUT_DIR
+    tar -zcvf $PLUGIN_EUNOMIA_DOWNLOAD_PKG *
+    if [ "$?" != "0" ]; then
+      log::error "[$(timestamp)][docker][flow] failed to create DOWNLOAD_PKG."
+      return 1
+    fi
+    cd -
+  fi
+
   echo "PLUGIN_EUNOMIA_BUILD_ID_DIR: $PLUGIN_EUNOMIA_BUILD_ID_DIR"
   echo "PLUGIN_EUNOMIA_DOWNLOAD_PKG: $PLUGIN_EUNOMIA_DOWNLOAD_PKG"
 
