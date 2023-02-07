@@ -87,6 +87,9 @@ jobs:
         run: |
           echo "Docker Tags: ${{ steps.meta.outputs.tags }}"
 
+      - name: Setup Docker
+        uses: zmicro-design/action-setup-docker@v1
+
       # - name: Fix QEMU depends on Docker CLI
       #   run: zmicro package install docker
 
