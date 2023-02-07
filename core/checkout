@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# eunomia::checkout - Git clone and checkout a branch of a repository
+eunomia::checkout() {
+  if [ -z "$EUNOMIA_GIT_COMMIT_HASH" ]; then
+    log::error "[eunomia::checkout] env EUNOMIA_GIT_COMMIT_HASH is required"
+    exit 1
+  fi
+
+  if [ -z "$EUNOMIA_GIT_REPOSITORY" ]; then
+    log::error "[eunomia::checkout] env EUNOMIA_GIT_REPOSITORY is required"
+    exit 1
+  fi
+
+  if [ -z "$EUNOMIA_GIT_CHECKOUT_DIR" ]; then
+    log::error "[eunomia::checkout] env EUNOMIA_GIT_CHECKOUT_DIR is required"
+    exit 1
+  fi
+
+  log::info "[eunomia::checkout] checkouting $EUNOMIA_GIT_REPOSITORY at commit $EUNOMIA_GIT_COMMIT_HASH ..."
+  git::checkout commit $EUNOMIA_GIT_COMMIT_HASH $EUNOMIA_GIT_REPOSITORY $EUNOMIA_GIT_CHECKOUT_DIR
+  if [ "$?" != "0" ]; then
+    log::error "[eunomia::checkout] failed to checkout $EUNOMIA_GIT_REPOSITORY at commit $EUNOMIA_GIT_COMMIT_HASH."
+    return 1
+  fi
+
+  log::success "[eunomia::checkout] successfully checkout $EUNOMIA_GIT_REPOSITORY at commit $EUNOMIA_GIT_COMMIT_HASH."
+}
+
+export -f eunomia::checkout

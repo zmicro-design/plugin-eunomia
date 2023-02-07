@@ -1,0 +1,25 @@
+#!/bin/bash
+
+help() {
+  echo "Usage:"
+  echo "  zmicro eunomia checkout"
+}
+
+core() {
+  if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    help
+    exit 0
+  fi
+
+  eunomia::checkout
+  if [ "$?" != "0" ]; then
+    log::error "[checkout] failed to checkout"
+    exit 1
+  fi
+}
+
+run() {
+  core $@
+}
+
+run $@

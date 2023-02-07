@@ -5,3 +5,5 @@ log/
 *.swp
 
 config/dockerfiles
+
+tmp/
