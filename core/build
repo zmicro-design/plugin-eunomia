@@ -16,6 +16,11 @@ eunomia::build() {
   if [ ! -f "$PLUGIN_EUNOMIA_BUILD_GIT_DIR/Dockerfile" ]; then
     log::warn "[$(timestamp)] Dockerfile not found."
 
+    if [ ! -d "$PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO" ]; then
+      log::error "[$(timestamp)] dockerfiles $PLUGIN_EUNOMIA_GIT_REPO_NAME not found"
+      return 1
+    fi
+
     # RSYNC DOKCERFILE_DIR/*
     # @TODO with "DIR/" suffix copy file
     if [ -n "$PLUGIN_EUNOMIA_DOCKERFILE_MODULE" ]; then
