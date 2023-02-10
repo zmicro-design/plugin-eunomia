@@ -2,8 +2,8 @@
 
 # eunomia::checkout - Git clone and checkout a branch of a repository
 eunomia::checkout() {
-  if [ -z "$EUNOMIA_GIT_COMMIT_HASH" ]; then
-    log::error "[eunomia::checkout] env EUNOMIA_GIT_COMMIT_HASH is required"
+  if [ -z "$EUNOMIA_GIT_BRANCH" ]; then
+    log::error "[eunomia::checkout] env EUNOMIA_GIT_BRANCH is required"
     exit 1
   fi
 
@@ -17,14 +17,14 @@ eunomia::checkout() {
     exit 1
   fi
 
-  log::info "[eunomia::checkout] checkouting $EUNOMIA_GIT_REPOSITORY at commit $EUNOMIA_GIT_COMMIT_HASH ..."
-  git::checkout commit $EUNOMIA_GIT_COMMIT_HASH $EUNOMIA_GIT_REPOSITORY $EUNOMIA_GIT_CHECKOUT_DIR
+  log::info "[eunomia::checkout] checkouting $EUNOMIA_GIT_REPOSITORY at branch $EUNOMIA_GIT_BRANCH ..."
+  git::checkout branch $EUNOMIA_GIT_BRANCH $EUNOMIA_GIT_REPOSITORY $EUNOMIA_GIT_CHECKOUT_DIR
   if [ "$?" != "0" ]; then
-    log::error "[eunomia::checkout] failed to checkout $EUNOMIA_GIT_REPOSITORY at commit $EUNOMIA_GIT_COMMIT_HASH."
+    log::error "[eunomia::checkout] failed to checkout $EUNOMIA_GIT_REPOSITORY at branch $EUNOMIA_GIT_BRANCH."
     return 1
   fi
 
-  log::success "[eunomia::checkout] successfully checkout $EUNOMIA_GIT_REPOSITORY at commit $EUNOMIA_GIT_COMMIT_HASH."
+  log::success "[eunomia::checkout] successfully checkout $EUNOMIA_GIT_REPOSITORY at branch $EUNOMIA_GIT_BRANCH."
 }
 
 export -f eunomia::checkout
