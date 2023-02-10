@@ -16,11 +16,11 @@ core() {
 
   eunomia::show_version_info
 
-  if [ -n "$EUNOMIA_GIT_REPOSITORY" ] && [ -n "$EUNOMIA_GIT_COMMIT_HASH" ]; then
+  if [ -n "$EUNOMIA_GIT_REPOSITORY" ] && [ -n "$EUNOMIA_GIT_BRANCH" ]; then
     export EUNOMIA_GIT_CHECKOUT_DIR=$(os::tmp_dir)
-    export PLUGIN_EUNOMIA_DOWNLOAD_PKG="${PLUGIN_EUNOMIA_TMP_DIR}/${EUNOMIA_GIT_COMMIT_HASH}.tar.gz"
+    export PLUGIN_EUNOMIA_DOWNLOAD_PKG="${PLUGIN_EUNOMIA_TMP_DIR}/$(os::random_string 8).tar.gz"
 
-    log::info "[$(timestamp)][docker][flow] checkouting with $EUNOMIA_GIT_REPOSITORY at $EUNOMIA_GIT_COMMIT_HASH ..."
+    log::info "[$(timestamp)][docker][flow] checkouting with $EUNOMIA_GIT_REPOSITORY at $EUNOMIA_GIT_BRANCH ..."
     eunomia::checkout
     if [ "$?" != "0" ]; then
       log::error "[$(timestamp)][docker][flow] failed to checkout git repo."
