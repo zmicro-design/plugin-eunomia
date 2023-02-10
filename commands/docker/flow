@@ -31,7 +31,7 @@ core() {
     
     log::info "[$(timestamp)][docker][flow] creating DOWNLOAD_PKG at $PLUGIN_EUNOMIA_DOWNLOAD_PKG ..."
     cd $EUNOMIA_GIT_CHECKOUT_DIR
-    tar -zcvf $PLUGIN_EUNOMIA_DOWNLOAD_PKG *
+    tar -zcvf $PLUGIN_EUNOMIA_DOWNLOAD_PKG * >>/dev/null
     if [ "$?" != "0" ]; then
       log::error "[$(timestamp)][docker][flow] failed to create DOWNLOAD_PKG."
       return 1

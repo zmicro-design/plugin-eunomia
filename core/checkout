@@ -25,6 +25,7 @@ eunomia::checkout() {
   fi
 
   # @TODO add .eunomia to git repository
+  log::info "[eunomia::checkout] generating .eunomia at $EUNOMIA_GIT_CHECKOUT_DIR/.eunomia ..."
   cat <<EOF >$EUNOMIA_GIT_CHECKOUT_DIR/.eunomia
 # GIT
 # BUILD ID
@@ -45,6 +46,8 @@ PLUGIN_EUNOMIA_SUCCEED_HOOK=${EUNOMIA_SUCCEED_HOOK}
 PLUGIN_EUNOMIA_FAILED_HOOK=${EUNOMIA_FAILED_HOOK}
 PLUGIN_EUNOMIA_LOG_HOOK=${EUNOMIA_LOG_HOOK}
 EOF
+
+  cat $EUNOMIA_GIT_CHECKOUT_DIR/.eunomia
 
   log::success "[eunomia::checkout] successfully checkout $EUNOMIA_GIT_REPOSITORY at branch $EUNOMIA_GIT_BRANCH."
 }
