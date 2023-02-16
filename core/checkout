@@ -22,6 +22,31 @@ eunomia::checkout() {
     exit 1
   fi
 
+  # @TODO flow base64 env
+  if [ "$FLOW_CI" = "true" ]; then
+    export EUNOMIA_GIT_BRANCH=$(echo $EUNOMIA_GIT_BRANCH | base64 -d)
+    export EUNOMIA_GIT_COMMIT=$(echo $EUNOMIA_GIT_COMMIT | base64 -d)
+    export EUNOMIA_GIT_REPOSITORY=$(echo $EUNOMIA_GIT_REPOSITORY | base64 -d)
+    #
+    export PLUGIN_EUNOMIA_BUILD_ID=${PIPELINE_ID}_${BUILD_NUMBER}
+    # PIPELINE
+    export PLUGIN_EUNOMIA_BUILD_AUTHOR=$(echo $EUNOMIA_BUILD_AUTHOR | base64 -d)
+    export PLUGIN_EUNOMIA_BUILD_AUTHOR_EMAIL=$(echo $EUNOMIA_BUILD_AUTHOR_EMAIL | base64 -d)
+    export PLUGIN_EUNOMIA_BUILD_AUTHOR_ID=$(echo $EUNOMIA_BUILD_AUTHOR_ID | base64 -d)
+    export PLUGIN_EUNOMIA_BUILD_FROM=$(echo $EUNOMIA_BUILD_FROM | base64 -d)
+    # Project
+    export PLUGIN_EUNOMIA_PROJECT_ID=$(echo $EUNOMIA_PROJECT_ID | base64 -d)
+    export PLUGIN_EUNOMIA_TASK_ID=$(echo $EUNOMIA_TASK_ID | base64 -d)
+    export PLUGIN_EUNOMIA_DEPLOYMENT_ID=$(echo $EUNOMIA_DEPLOYMENT_ID | base64 -d)
+    export PLUGIN_EUNOMIA_JOB_ID=$(echo $EUNOMIA_JOB_ID | base64 -d)
+    # Hook
+    export PLUGIN_EUNOMIA_START_HOOK=$(echo ${EUNOMIA_START_HOOK} | base64 -d)
+    export PLUGIN_EUNOMIA_SUCCEED_HOOK=$(echo ${EUNOMIA_SUCCEED_HOOK} | base64 -d)
+    export PLUGIN_EUNOMIA_FAILED_HOOK=$(echo ${EUNOMIA_FAILED_HOOK} | base64 -d)
+    export PLUGIN_EUNOMIA_LOG_HOOK=$(echo ${EUNOMIA_LOG_HOOK} | base64 -d)
+    # END
+  fi
+
   log::info "[eunomia::checkout] checkouting $EUNOMIA_GIT_REPOSITORY at branch $EUNOMIA_GIT_BRANCH ..."
   git::checkout $EUNOMIA_GIT_BRANCH $EUNOMIA_GIT_COMMIT $EUNOMIA_GIT_CHECKOUT_DIR $EUNOMIA_GIT_REPOSITORY
   if [ "$?" != "0" ]; then
@@ -31,30 +56,7 @@ eunomia::checkout() {
 
   # @TODO add .eunomia to git repository
   log::info "[eunomia::checkout] generating .eunomia at $EUNOMIA_GIT_CHECKOUT_DIR/.eunomia ..."
-  if [ -z "$PLUGIN_EUNOMIA_BUILD_ID" ]; then
-    # @TODO flow base64 env
-    cat <<EOF >$EUNOMIA_GIT_CHECKOUT_DIR/.eunomia
-# GIT
-# BUILD ID
-PLUGIN_EUNOMIA_BUILD_ID=${PIPELINE_ID}_${BUILD_NUMBER}
-# PIPELINE
-PLUGIN_EUNOMIA_BUILD_AUTHOR=$(echo $EUNOMIA_BUILD_AUTHOR | base64 -d)
-PLUGIN_EUNOMIA_BUILD_AUTHOR_EMAIL=$(echo $EUNOMIA_BUILD_AUTHOR_EMAIL | base64 -d)
-PLUGIN_EUNOMIA_BUILD_AUTHOR_ID=$(echo $EUNOMIA_BUILD_AUTHOR_ID | base64 -d)
-PLUGIN_EUNOMIA_BUILD_FROM=$(echo $EUNOMIA_BUILD_FROM | base64 -d)
-# Project
-PLUGIN_EUNOMIA_PROJECT_ID=$(echo $EUNOMIA_PROJECT_ID | base64 -d)
-PLUGIN_EUNOMIA_TASK_ID=$(echo $EUNOMIA_TASK_ID | base64 -d)
-PLUGIN_EUNOMIA_DEPLOYMENT_ID=$(echo $EUNOMIA_DEPLOYMENT_ID | base64 -d)
-PLUGIN_EUNOMIA_JOB_ID=$(echo $EUNOMIA_JOB_ID | base64 -d)
-# Hook
-PLUGIN_EUNOMIA_START_HOOK=$(echo ${EUNOMIA_START_HOOK} | base64 -d)
-PLUGIN_EUNOMIA_SUCCEED_HOOK=$(echo ${EUNOMIA_SUCCEED_HOOK} | base64 -d)
-PLUGIN_EUNOMIA_FAILED_HOOK=$(echo ${EUNOMIA_FAILED_HOOK} | base64 -d)
-PLUGIN_EUNOMIA_LOG_HOOK=$(echo ${EUNOMIA_LOG_HOOK} | base64 -d)
-EOF
-  else
-    cat <<EOF >.eunomia
+  cat <<EOF >.eunomia
 # GIT
 # BUILD ID
 PLUGIN_EUNOMIA_BUILD_ID=${PLUGIN_EUNOMIA_BUILD_ID}
@@ -74,7 +76,6 @@ PLUGIN_EUNOMIA_SUCCEED_HOOK=${EUNOMIA_SUCCEED_HOOK}
 PLUGIN_EUNOMIA_FAILED_HOOK=${EUNOMIA_FAILED_HOOK}
 PLUGIN_EUNOMIA_LOG_HOOK=${EUNOMIA_LOG_HOOK}
 EOF
-  fi
 
   cat $EUNOMIA_GIT_CHECKOUT_DIR/.eunomia
 
