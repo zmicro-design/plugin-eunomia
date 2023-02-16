@@ -16,7 +16,7 @@ core() {
 
   eunomia::show_version_info
 
-  if [ -n "$EUNOMIA_GIT_REPOSITORY" ] && [ -n "$EUNOMIA_GIT_BRANCH" ]; then
+  if [ -n "$EUNOMIA_GIT_REPOSITORY" ] && [ -n "$EUNOMIA_GIT_BRANCH" ] && [ -n "$EUNOMIA_GIT_COMMIT" ]; then
     export EUNOMIA_GIT_CHECKOUT_DIR=$(os::tmp_dir)
     export PLUGIN_EUNOMIA_DOWNLOAD_PKG="${PLUGIN_EUNOMIA_TMP_DIR}/$(os::random_string 8).tar.gz"
 

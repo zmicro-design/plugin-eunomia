@@ -7,8 +7,8 @@ eunomia::checkout() {
     exit 1
   fi
 
-  if [ -z "$EUNOMIA_GIT_REPOSITORY" ]; then
-    log::error "[eunomia::checkout] env EUNOMIA_GIT_REPOSITORY is required"
+  if [ -z "$EUNOMIA_GIT_COMMIT" ]; then
+    log::error "[eunomia::checkout] env EUNOMIA_GIT_COMMIT is required"
     exit 1
   fi
 
@@ -17,8 +17,13 @@ eunomia::checkout() {
     exit 1
   fi
 
+  if [ -z "$EUNOMIA_GIT_REPOSITORY" ]; then
+    log::error "[eunomia::checkout] env EUNOMIA_GIT_REPOSITORY is required"
+    exit 1
+  fi
+
   log::info "[eunomia::checkout] checkouting $EUNOMIA_GIT_REPOSITORY at branch $EUNOMIA_GIT_BRANCH ..."
-  git::checkout branch $EUNOMIA_GIT_BRANCH $EUNOMIA_GIT_REPOSITORY $EUNOMIA_GIT_CHECKOUT_DIR
+  git::checkout $EUNOMIA_GIT_BRANCH $EUNOMIA_GIT_COMMIT $EUNOMIA_GIT_CHECKOUT_DIR $EUNOMIA_GIT_REPOSITORY
   if [ "$?" != "0" ]; then
     log::error "[eunomia::checkout] failed to checkout $EUNOMIA_GIT_REPOSITORY at branch $EUNOMIA_GIT_BRANCH."
     return 1
@@ -26,7 +31,7 @@ eunomia::checkout() {
 
   # @TODO add .eunomia to git repository
   log::info "[eunomia::checkout] generating .eunomia at $EUNOMIA_GIT_CHECKOUT_DIR/.eunomia ..."
-  if [ -n "$PIPELINE_ID" ]; then
+  if [ -z "$PLUGIN_EUNOMIA_BUILD_ID" ]; then
     # @TODO flow base64 env
     cat <<EOF >$EUNOMIA_GIT_CHECKOUT_DIR/.eunomia
 # GIT
@@ -52,7 +57,7 @@ EOF
     cat <<EOF >.eunomia
 # GIT
 # BUILD ID
-PLUGIN_EUNOMIA_BUILD_ID=${PIPELINE_ID}_${BUILD_NUMBER}
+PLUGIN_EUNOMIA_BUILD_ID=${PLUGIN_EUNOMIA_BUILD_ID}
 # PIPELINE
 PLUGIN_EUNOMIA_BUILD_AUTHOR=${eunomia_user_nickname:-$EUNOMIA_BUILD_AUTHOR}
 PLUGIN_EUNOMIA_BUILD_AUTHOR_EMAIL=${eunomia_user_email}
