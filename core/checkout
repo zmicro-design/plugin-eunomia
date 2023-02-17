@@ -56,7 +56,7 @@ eunomia::checkout() {
 
   # @TODO add .eunomia to git repository
   log::info "[eunomia::checkout] generating .eunomia at $EUNOMIA_GIT_CHECKOUT_DIR/.eunomia ..."
-  cat <<EOF >.eunomia
+  cat <<EOF >$EUNOMIA_GIT_CHECKOUT_DIR/.eunomia
 # GIT
 # BUILD ID
 PLUGIN_EUNOMIA_BUILD_ID=${PLUGIN_EUNOMIA_BUILD_ID}
