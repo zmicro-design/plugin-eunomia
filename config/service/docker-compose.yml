@@ -8,7 +8,7 @@ services:
     ports:
       - 0.0.0.0:${PLUGIN_EUNOMIA_SERVICE_PORT}:8080
     environment:
-      PLUGIN_EUNOMIA_DOCKER_REGISTRY: docker-ta.thinkingdata.cn
+      PLUGIN_EUNOMIA_DOCKER_REGISTRY: ${PLUGIN_EUNOMIA_DOCKER_REGISTRY}
       # 3 required
       # PLUGIN_EUNOMIA_BUILD_ID: 666
       # PLUGIN_EUNOMIA_DOWNLOAD_PKG: /data/flow/ta-multiverse.tar.gz
