@@ -2,6 +2,8 @@ FROM whatwewant/serve:v1 as base
 
 # FROM whatwewant/pipeline-builder:v1
 
+FROM whatwewant/zmicro:v1
+
 LABEL MAINTAINER="Zero<tobewhatwewant@outlook.com>"
 
 COPY --from=base /bin/serve /bin/serve
