@@ -76,3 +76,15 @@ fi
 if [ ! -d "$PLUGIN_EUNOMIA_TMP_DIR" ]; then
   mkdir -p $PLUGIN_EUNOMIA_TMP_DIR
 fi
+
+# @TODO
+if [ "$FLOW_CI" = "true" ]; then
+  log::info "[$(timestamp)] Current CI: FLOW_CI"
+
+  export PIPELINE_ID=$(echo $PIPELINE_ID | base64 -d)
+  export BUILD_NUMBER=$(echo $BUILD_NUMBER | base64 -d)
+  export EUNOMIA_TASK_ID=$(echo $EUNOMIA_TASK_ID | base64 -d)
+
+  # @TODO new env
+  export PLUGIN_EUNOMIA_BUILD_ID=${PIPELINE_ID}_${BUILD_NUMBER}
+fi

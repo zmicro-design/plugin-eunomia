@@ -21,13 +21,6 @@ eunomia::deploy() {
     return 1
   fi
 
-  if [ "$FLOW_CI" = "true" ]; then
-    log::info "[$(timestamp)] Current CI: FLOW_CI"
-    export EUNOMIA_TASK_ID=$(echo $EUNOMIA_TASK_ID | base64 -d)
-  else
-    log::info "[$(timestamp)] Current CI: EUNOMIA_CI"
-  fi
-
   #
   export PLUGIN_EUNOMIA_DEPLOYMENT_NAME=eunomia_deployment_${EUNOMIA_TASK_ID}
   export PLUGIN_EUNOMIA_DEPLOYMENT_DIR=${PLUGIN_DATA}/deployments/${EUNOMIA_TASK_ID}
