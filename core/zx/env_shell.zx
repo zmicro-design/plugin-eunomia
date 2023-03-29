@@ -1,5 +1,3 @@
-const fs = require('fs');
-
 const ignoreKeys = [
   'SHELL',
   'PWD',
@@ -57,9 +55,9 @@ function isReadable(str) {
 }
 
 function main() {
-  const writeFileName = process.env.PLUGIN_EUNOMIA_DEPLOYMENT_DOT_ENV
+  const writeFileName = process.env.PLUGIN_EUNOMIA_DEPLOYMENT_ENV_SHELL
   if (!writeFileName) {
-    throw new Error('env PLUGIN_EUNOMIA_DEPLOYMENT_DOT_ENV is not set');
+    throw new Error('env PLUGIN_EUNOMIA_DEPLOYMENT_ENV_SHELL is not set');
   }
 
   const env = process.env;

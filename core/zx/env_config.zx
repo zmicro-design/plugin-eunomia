@@ -1,0 +1,46 @@
+$.verbose = false;
+
+async function main() {
+  if (!process.env.PLUGIN_EUNOMIA_CONFIG_CENTER) {
+    throw new Error('env PLUGIN_EUNOMIA_CONFIG_CENTER is not set');
+  }
+
+  if (!process.env.PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_ID) {
+    throw new Error('env PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_ID is not set');
+  }
+
+  if (!process.env.PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_SECRET) {
+    throw new Error('env PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_SECRET is not set');
+  }
+
+  if (!process.env.EUNOMIA_DEPLOYMENT_CONFIG_ID) {
+    throw new Error('env EUNOMIA_DEPLOYMENT_CONFIG_ID is not set');
+  }
+
+  if (!process.env.PLUGIN_EUNOMIA_DEPLOYMENT_ENV_CONFIG) {
+    throw new Error('env PLUGIN_EUNOMIA_DEPLOYMENT_ENV_CONFIG is not set');
+  }
+
+  const response = await fetch(`${process.env.PLUGIN_EUNOMIA_CONFIG_CENTER}/api/open/v1/client/config/${process.env.EUNOMIA_DEPLOYMENT_CONFIG_ID}`, {
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'X-Client-ID': process.env.PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_ID,
+      'X-Client-Secret': process.env.PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_SECRET,
+    },
+  });
+  if (!response.ok) {
+    throw new Error(`unexpected response ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  if (data.code !== 200) {
+    throw new Error(`unexpected response ${data.message}`);
+  }
+
+  const configFilePath = process.env.PLUGIN_EUNOMIA_DEPLOYMENT_ENV_CONFIG
+  console.log('write config file:', configFilePath);
+  fs.writeFileSync(configFilePath, data.result.config);
+}
+
+main();
