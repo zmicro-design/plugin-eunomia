@@ -83,7 +83,14 @@ if [ "$FLOW_CI" = "true" ]; then
 
   export PIPELINE_ID=$(echo $PIPELINE_ID | base64 -d)
   export BUILD_NUMBER=$(echo $BUILD_NUMBER | base64 -d)
+
   export EUNOMIA_TASK_ID=$(echo $EUNOMIA_TASK_ID | base64 -d)
+
+  export EUNOMIA_GIT_BRANCH=$(echo $EUNOMIA_GIT_BRANCH | base64 -d)
+  export EUNOMIA_GIT_REPOSITORY=$(echo $EUNOMIA_GIT_REPOSITORY | base64 -d)
+  export EUNOMIA_GIT_COMMIT=$(echo $EUNOMIA_GIT_COMMIT | base64 -d)
+
+  export EUNOMIA_DEPLOYMENT_MODE=$(echo $EUNOMIA_DEPLOYMENT_MODE | base64 -d)
 
   # @TODO new env
   export PLUGIN_EUNOMIA_BUILD_ID=${PIPELINE_ID}_${BUILD_NUMBER}

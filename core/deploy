@@ -6,8 +6,8 @@ eunomia::deploy() {
     return 1
   fi
 
-  if [ -z "$EUNOMIA_GIT_REPO" ]; then
-    log::error "[eunomia::deploy] EUNOMIA_GIT_REPO is required"
+  if [ -z "$EUNOMIA_GIT_REPOSITORY" ]; then
+    log::error "[eunomia::deploy] EUNOMIA_GIT_REPOSITORY is required"
     return 1
   fi
 
@@ -23,6 +23,7 @@ eunomia::deploy() {
 
   #
   export PLUGIN_EUNOMIA_DEPLOYMENT_NAME=eunomia_deployment_${EUNOMIA_TASK_ID}
+  export PLUGIN_EUNOMIA_DEPLOYMENT_IMAGE_NAME=$(echo ${EUNOMIA_GIT_REPOSITORY#http://10.27.249.150:8888/})
   export PLUGIN_EUNOMIA_DEPLOYMENT_DIR=${PLUGIN_DATA}/deployments/${EUNOMIA_TASK_ID}
   export PLUGIN_EUNOMIA_DEPLOYMENT_DOT_ENV=${PLUGIN_EUNOMIA_DEPLOYMENT_DIR}/.env
   export PLUGIN_EUNOMIA_DEPLOYMENT_MANIFEST_FILE=${PLUGIN_EUNOMIA_DEPLOYMENT_DIR}/docker-compose.yml
@@ -57,7 +58,12 @@ eunomia::deploy() {
   export COMPOSE_PROJECT_NAME=$PLUGIN_EUNOMIA_DEPLOYMENT_NAME
   
   # generate manifest file from template
-  export COMPOSE_FILE=$PLUGIN_CONFIG_DIR/templates/docker-compose.deployment.yml
+  export COMPOSE_FILE=$PLUGIN_CONFIG_DIR/templates/docker-compose.deployment.${EUNOMIA_DEPLOYMENT_MODE}.yml
+  if [ ! -f "$COMPOSE_FILE" ]; then
+    log::error "[$(timestamp)][eunomia::deploy] unsupport deployment mode: ${EUNOMIA_DEPLOYMENT_MODE}"
+    return 1
+  fi
+
   docker-compose config > $PLUGIN_EUNOMIA_DEPLOYMENT_MANIFEST_FILE
   # service manifest file
   export COMPOSE_FILE=$PLUGIN_EUNOMIA_DEPLOYMENT_MANIFEST_FILE
