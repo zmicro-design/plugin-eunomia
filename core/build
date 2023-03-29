@@ -1,43 +1,15 @@
 #!/bin/bash
 
 eunomia::build() {
-  if [ -z "$PLUGIN_EUNOMIA_BUILD_GIT_DIR" ]; then
-    log::error "[eunomia::build] PLUGIN_EUNOMIA_BUILD_GIT_DIR is required"
+  if [ -z "$EUNOMIA_BUILD_GIT_DIR" ]; then
+    log::error "[eunomia::build] EUNOMIA_BUILD_GIT_DIR is required"
     return 1
   fi
 
-  if [ ! -d "$PLUGIN_EUNOMIA_BUILD_GIT_DIR" ]; then
-    log::error "[eunomia::build] PLUGIN_EUNOMIA_BUILD_GIT_DIR($PLUGIN_EUNOMIA_BUILD_GIT_DIR) not found, you must run prepare first"
+  if [ ! -d "$EUNOMIA_BUILD_GIT_DIR" ]; then
+    log::error "[eunomia::build] EUNOMIA_BUILD_GIT_DIR($EUNOMIA_BUILD_GIT_DIR) not found, you must run prepare first"
     return 1
   fi
-
-  # Dockerfile
-
-  #   Solution 1 => 本地 Dockerfile 优先级大于全局服务 zmicro dockerfiles 中的
-  # log::info "[$(timestamp)] checking Dockerfile exist ..."
-  # if [ ! -f "$PLUGIN_EUNOMIA_BUILD_GIT_DIR/Dockerfile" ]; then
-  #   log::warn "[$(timestamp)] Dockerfile not found."
-
-  #   if [ ! -d "$PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO" ]; then
-  #     log::error "[$(timestamp)] dockerfiles $PLUGIN_EUNOMIA_GIT_REPO_NAME not found"
-  #     return 1
-  #   fi
-
-  #   # RSYNC DOKCERFILE_DIR/*
-  #   # @TODO with "DIR/" suffix copy file
-  #   if [ -n "$PLUGIN_EUNOMIA_DOCKERFILE_MODULE" ]; then
-  #     log::info "[$(timestamp)] using PLUGIN_EUNOMIA_DOCKERFILE_MODULE(${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/$PLUGIN_EUNOMIA_DOCKERFILE_MODULE/) ..."
-  #     # 子模块
-  #     rsync -av ${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/$PLUGIN_EUNOMIA_DOCKERFILE_MODULE/ $PLUGIN_EUNOMIA_BUILD_GIT_DIR
-  #   else
-  #     log::info "[$(timestamp)] using PLUGIN_EUNOMIA_DOCKERFILE_MODULE(${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/) ..."
-  #     # 主模块
-  #     # rsync -av --exclude="$PLUGIN_EUNOMIA_DOCKERFILE_ENV_FOR_GIT_REPO" ${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/ $PLUGIN_EUNOMIA_BUILD_GIT_DIR
-  #     rsync -av ${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/ $PLUGIN_EUNOMIA_BUILD_GIT_DIR
-  #   fi
-  # else
-  #   log::info "[$(timestamp)] Dockerfile found."
-  # fi
 
   #    Solution 2 => 本地 Dockerfile 优先级小于于全局服务 zmicro dockerfiles 中的
   log::info "[$(timestamp)] checking Dockerfile exist ..."
@@ -48,51 +20,50 @@ eunomia::build() {
     if [ -n "$PLUGIN_EUNOMIA_DOCKERFILE_MODULE" ]; then
       log::info "[$(timestamp)] using PLUGIN_EUNOMIA_DOCKERFILE_MODULE(${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/$PLUGIN_EUNOMIA_DOCKERFILE_MODULE/) ..."
       # 子模块
-      rsync -av ${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/$PLUGIN_EUNOMIA_DOCKERFILE_MODULE/ $PLUGIN_EUNOMIA_BUILD_GIT_DIR
+      rsync -av ${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/$PLUGIN_EUNOMIA_DOCKERFILE_MODULE/ $EUNOMIA_BUILD_GIT_DIR
     else
       log::info "[$(timestamp)] using PLUGIN_EUNOMIA_DOCKERFILE_MODULE(${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/) ..."
       # 主模块
-      # rsync -av --exclude="$PLUGIN_EUNOMIA_DOCKERFILE_ENV_FOR_GIT_REPO" ${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/ $PLUGIN_EUNOMIA_BUILD_GIT_DIR
-      rsync -av ${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/ $PLUGIN_EUNOMIA_BUILD_GIT_DIR
+      # rsync -av --exclude="$PLUGIN_EUNOMIA_DOCKERFILE_ENV_FOR_GIT_REPO" ${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/ $EUNOMIA_BUILD_GIT_DIR
+      rsync -av ${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/ $EUNOMIA_BUILD_GIT_DIR
     fi
   else
     log::info "[$(timestamp)] dockerfiles not found repo, so use local Dockerfile ..." 
   fi
 
   # ADD build files for dockerfile
-  echo "EUNOMIA_GIT_REPO_URL: $PLUGIN_EUNOMIA_GIT_REPO_URL" >$PLUGIN_EUNOMIA_BUILD_GIT_DIR/build.eunomia.js
-  echo "EUNOMIA_GIT_REPO_NAME: $PLUGIN_EUNOMIA_GIT_REPO_NAME" >>$PLUGIN_EUNOMIA_BUILD_GIT_DIR/build.eunomia.js
-  echo "EUNOMIA_GIT_BRANCH: $PLUGIN_EUNOMIA_GIT_BRANCH" >>$PLUGIN_EUNOMIA_BUILD_GIT_DIR/build.eunomia.js
-  echo "EUNOMIA_GIT_COMMIT: $PLUGIN_EUNOMIA_GIT_COMMIT" >>$PLUGIN_EUNOMIA_BUILD_GIT_DIR/build.eunomia.js
-  echo "EUNOMIA_GIT_COMMIT_MESSAGE: $PLUGIN_EUNOMIA_GIT_COMMIT_MESSAGE" >>$PLUGIN_EUNOMIA_BUILD_GIT_DIR/build.eunomia.js
-  echo "EUNOMIA_GIT_COMMIT_AUTHOR: $PLUGIN_EUNOMIA_GIT_COMMIT_AUTHOR" >>$PLUGIN_EUNOMIA_BUILD_GIT_DIR/build.eunomia.js
-  echo "EUNOMIA_GIT_COMMIT_TIMESTAMP: $PLUGIN_EUNOMIA_GIT_COMMIT_TIMESTAMP" >>$PLUGIN_EUNOMIA_BUILD_GIT_DIR/build.eunomia.js
-  #
-  echo "EUNOMIA_BUILD_ID: $EUNOMIA_BUILD_ID" >>$PLUGIN_EUNOMIA_BUILD_GIT_DIR/build.eunomia.js
-  echo "EUNOMIA_BUILD_AUTHOR: ${EUNOMIA_BUILD_AUTHOR}" >>$PLUGIN_EUNOMIA_BUILD_GIT_DIR/build.eunomia.js
-  echo "EUNOMIA_BUILD_AUTHOR_EMAIL: ${EUNOMIA_BUILD_AUTHOR_EMAIL}" >>$PLUGIN_EUNOMIA_BUILD_GIT_DIR/build.eunomia.js
-  echo "EUNOMIA_BUILD_TIMESTAMP: $EUNOMIA_BUILD_TIMESTAMP" >>$PLUGIN_EUNOMIA_BUILD_GIT_DIR/build.eunomia.js
-  echo "EUNOMIA_BUILD_FROM: $EUNOMIA_BUILD_FROM" >>$PLUGIN_EUNOMIA_BUILD_GIT_DIR/build.eunomia.js
-  #
-  echo "EUNOMIA_PROJECT_ID: $EUNOMIA_PROJECT_ID" >>$PLUGIN_EUNOMIA_BUILD_GIT_DIR/build.eunomia.js
-  echo "EUNOMIA_TASK_ID: $EUNOMIA_TASK_ID" >>$PLUGIN_EUNOMIA_BUILD_GIT_DIR/build.eunomia.js
-  echo "EUNOMIA_DEPLOYMENT_ID: $EUNOMIA_DEPLOYMENT_ID" >>$PLUGIN_EUNOMIA_BUILD_GIT_DIR/build.eunomia.js
-  echo "EUNOMIA_JOB_ID: $EUNOMIA_JOB_ID" >>$PLUGIN_EUNOMIA_BUILD_GIT_DIR/build.eunomia.js
-  #
-  echo "EUNOMIA_DOCKERFILE_MODULE: $PLUGIN_EUNOMIA_DOCKERFILE_MODULE" >>$PLUGIN_EUNOMIA_BUILD_GIT_DIR/build.eunomia.js
+  cat <<EOF >$EUNOMIA_BUILD_GIT_DIR/build.history.eunomia
+# GIT
+EUNOMIA_GIT_REPO_URL: $PLUGIN_EUNOMIA_GIT_REPO_URL
+EUNOMIA_GIT_REPO_NAME: $PLUGIN_EUNOMIA_GIT_REPO_NAME
+EUNOMIA_GIT_BRANCH: $PLUGIN_EUNOMIA_GIT_BRANCH
+EUNOMIA_GIT_COMMIT: $PLUGIN_EUNOMIA_GIT_COMMIT
+EUNOMIA_GIT_COMMIT_MESSAGE: $PLUGIN_EUNOMIA_GIT_COMMIT_MESSAGE
+EUNOMIA_GIT_COMMIT_AUTHOR: $PLUGIN_EUNOMIA_GIT_COMMIT_AUTHOR
+EUNOMIA_GIT_COMMIT_TIMESTAMP: $PLUGIN_EUNOMIA_GIT_COMMIT_TIMESTAMP
+# Builder
+EUNOMIA_BUILD_ID: $EUNOMIA_BUILD_ID
+EUNOMIA_BUILD_AUTHOR: $EUNOMIA_BUILD_AUTHOR
+EUNOMIA_BUILD_AUTHOR_EMAIL: $EUNOMIA_BUILD_AUTHOR_EMAIL
+EUNOMIA_BUILD_TIMESTAMP: $EUNOMIA_BUILD_TIMESTAMP
+EUNOMIA_BUILD_FROM: $EUNOMIA_BUILD_FROM
+# Project
+EUNOMIA_PROJECT_ID: $EUNOMIA_PROJECT_ID
+EUNOMIA_TASK_ID: $EUNOMIA_TASK_ID
+EUNOMIA_DEPLOYMENT_ID: $EUNOMIA_DEPLOYMENT_ID
+EUNOMIA_JOB_ID: $EUNOMIA_JOB_ID
+# Module
+EUNOMIA_DOCKERFILE_MODULE: $PLUGIN_EUNOMIA_DOCKERFILE_MODULE
+EOF
 
-  # @DEPRECIATED @TO_REMOVE
-  echo "$EUNOMIA_BUILD_ID" >$PLUGIN_EUNOMIA_BUILD_GIT_DIR/buildid.eunomia.js
-  echo "$EUNOMIA_BUILD_TIMESTAMP" >$PLUGIN_EUNOMIA_BUILD_GIT_DIR/buildtime.eunomia.js
+  # @DEPRECIATED @TO_REMOVE @TODO Compatible with old version
+  cat $EUNOMIA_BUILD_GIT_DIR/build.history.eunomia >$EUNOMIA_BUILD_GIT_DIR/build.eunomia.js
 
   zmicro pipeline bp
   if [ "$?" != "0" ]; then
     log::error "[eunomia::build] failed to build"
     return 1
   fi
-
-  # clean
-  rm -rf $PLUGIN_EUNOMIA_BUILD_GIT_DIR
 
   log::info "[eunomia::build] done"
 }

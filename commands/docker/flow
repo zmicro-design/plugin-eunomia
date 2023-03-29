@@ -19,28 +19,19 @@ core() {
   # @TODO avoid to re base64 decode
   export FLOW_CI=false
 
-  if [ -n "$EUNOMIA_GIT_REPOSITORY" ] && [ -n "$EUNOMIA_GIT_BRANCH" ] && [ -n "$EUNOMIA_GIT_COMMIT" ]; then
-    export EUNOMIA_GIT_CHECKOUT_DIR=$(os::tmp_dir)
-    export PLUGIN_EUNOMIA_DOWNLOAD_PKG="${PLUGIN_EUNOMIA_TMP_DIR}/$(os::random_string 8).tar.gz"
-    
-    zmicro eunomia checkout
-    if [ "$?" != "0" ]; then
-      log::error "[$(timestamp)][docker][flow] failed to eunomia checkout."
-      return 1
-    fi
-
-    log::info "[$(timestamp)][checkout] creating DOWNLOAD_PKG at $PLUGIN_EUNOMIA_DOWNLOAD_PKG ..."
-    cd $EUNOMIA_GIT_CHECKOUT_DIR
-    tar -zcvf $PLUGIN_EUNOMIA_DOWNLOAD_PKG ./ >>/dev/null
-    if [ "$?" != "0" ]; then
-      log::error "[$(timestamp)][checkout] failed to create DOWNLOAD_PKG."
-      return 1
-    fi
-    cd -
+  if [ -z "$EUNOMIA_GIT_BRANCH" ]; then
+    log::error "[$(timestamp)][docker][flow] 无效发布分支，请重新配置发布分支."
+    # log::error "[$(timestamp)][docker][flow] env EUNOMIA_GIT_BRANCH is required."
+    return 1
   fi
 
-  log::info "[$(timestamp)] EUNOMIA_BUILD_ID_DIR: $EUNOMIA_BUILD_ID_DIR"
-  log::info "[$(timestamp)] PLUGIN_EUNOMIA_DOWNLOAD_PKG: $PLUGIN_EUNOMIA_DOWNLOAD_PKG"
+  export EUNOMIA_GIT_CHECKOUT_DIR=$EUNOMIA_BUILD_GIT_DIR
+    
+  zmicro eunomia checkout
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)][docker][flow] failed to eunomia checkout."
+    return 1
+  fi
 
   zmicro eunomia build
   if [ "$?" != "0" ]; then
@@ -50,7 +41,33 @@ core() {
 }
 
 run() {
-  core "$@"
+  # core "$@"
+
+  if [ -z "$EUNOMIA_BUILD_ID" ]; then
+    log::error "[$(timestamp)][docker][flow] EUNOMIA_BUILD_ID is required"
+    exit 1
+  fi
+
+  # must mkdir or tee log file not found in docker flow
+  if [ ! -d "$EUNOMIA_BUILD_DIR" ]; then
+    mkdir -p $EUNOMIA_BUILD_DIR
+  fi
+
+  # start
+  eunomia::hook_start
+
+  set -o pipefail
+  core "$@" | tee -a $EUNOMIA_BUILD_LOG
+  # end
+  if [ "$?" != "0" ]; then
+    eunomia::hook_failed
+    log::info "[$(timestamp)][docker_flow] flow failed."
+    exit 1
+  else
+    eunomia::hook_succeed
+    log::info "[$(timestamp)][docker_flow] flow succeed."
+    exit 0
+  fi
 }
 
 run "$@"

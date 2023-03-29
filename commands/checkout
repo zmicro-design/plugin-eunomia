@@ -15,7 +15,7 @@ core() {
   eunomia::checkout
   if [ "$?" != "0" ]; then
     log::error "[$(timestamp)][checkout] failed to checkout git repo."
-    return 1
+    exit 1
   fi
 
   log::success "[$(timestamp)][checkout] succeed to checkout git repo."

@@ -4,7 +4,7 @@ eunomia::show_version_info() {
   # @TODO load mod
   config::load_file $ZMICRO_PLUGINS_PATH/eunomia/mod
 
-  log::info "[$(timestamp)] Eunomia Version: ${PLUGIN_VERSION}"
+  log::info "[$(timestamp)] Eunomia Runner Version: ${PLUGIN_VERSION}"
 }
 
 export -f eunomia::show_version_info
