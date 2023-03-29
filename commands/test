@@ -1,0 +1,16 @@
+#!/bin/bash
+
+help() {
+  echo "Usage:"
+  echo "  zmicro eunomia test <fn>"
+}
+
+core() {
+  plugin::run_nodejs "$@"
+}
+
+run() {
+  core $@
+}
+
+run $@

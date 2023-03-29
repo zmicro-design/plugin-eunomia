@@ -1,0 +1,79 @@
+#!/bin/bash
+
+eunomia::deploy() {
+  if [ -z "$PLUGIN_EUNOMIA_DOCKER_REGISTRY" ]; then
+    log::error "[eunomia::deploy] PLUGIN_EUNOMIA_DOCKER_REGISTRY is required"
+    return 1
+  fi
+
+  if [ -z "$EUNOMIA_GIT_REPOSITORY" ]; then
+    log::error "[eunomia::deploy] EUNOMIA_GIT_REPOSITORY is required"
+    return 1
+  fi
+
+  if [ -z "$EUNOMIA_GIT_COMMIT" ]; then
+    log::error "[eunomia::deploy] EUNOMIA_GIT_COMMIT is required"
+    return 1
+  fi
+
+  if [ -z "$EUNOMIA_TASK_ID" ]; then
+    log::error "[eunomia::deploy] EUNOMIA_TASK_ID is required"
+    return 1
+  fi
+
+  if [ "$FLOW_CI" = "true" ]; then
+    log::info "[$(timestamp)] Current CI: FLOW_CI"
+    export EUNOMIA_TASK_ID=$(echo $EUNOMIA_TASK_ID | base64 -d)
+  else
+    log::info "[$(timestamp)] Current CI: EUNOMIA_CI"
+  fi
+
+  #
+  export PLUGIN_EUNOMIA_DEPLOYMENT_NAME=eunomia_deployment_${EUNOMIA_TASK_ID}
+  export PLUGIN_EUNOMIA_DEPLOYMENT_DIR=${PLUGIN_DATA}/deployments/${EUNOMIA_TASK_ID}
+  export PLUGIN_EUNOMIA_DEPLOYMENT_DOT_ENV=${PLUGIN_EUNOMIA_DEPLOYMENT_DIR}/.env
+  mkdir -p $PLUGIN_EUNOMIA_DEPLOYMENT_DIR
+
+  log::info "[$(timestamp)] start to generate deployment dot env at ${PLUGIN_EUNOMIA_DEPLOYMENT_DOT_ENV} ..."
+  plugin::run_nodejs env
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)] failed to generate deployment dot env at ${PLUGIN_EUNOMIA_DEPLOYMENT_DOT_ENV}."
+    return 1
+  fi
+  log::success "[$(timestamp)] succeed to generate deployment dot env at ${PLUGIN_EUNOMIA_DEPLOYMENT_DOT_ENV} ..."
+
+  #
+  export PLUGIN_EUNOMIA_DEPLOYMENT_DATA_DIR=${PLUGIN_EUNOMIA_DEPLOYMENT_DIR}/data
+  export PLUGIN_EUNOMIA_DEPLOYMENT_CONFIG_DIR=${PLUGIN_EUNOMIA_DEPLOYMENT_DIR}/configs
+  export PLUGIN_EUNOMIA_DEPLOYMENT_LOG_DIR=${PLUGIN_EUNOMIA_DEPLOYMENT_DIR}/logs
+  if [ ! -d "$PLUGIN_EUNOMIA_DEPLOYMENT_DATA_DIR" ]; then
+    mkdir -p $PLUGIN_EUNOMIA_DEPLOYMENT_DATA_DIR
+  fi
+  if [ ! -d "$PLUGIN_EUNOMIA_DEPLOYMENT_CONFIG_DIR" ]; then
+    mkdir -p $PLUGIN_EUNOMIA_DEPLOYMENT_CONFIG_DIR
+  fi
+  if [ ! -d "$PLUGIN_EUNOMIA_DEPLOYMENT_LOG_DIR" ]; then
+    mkdir -p $PLUGIN_EUNOMIA_DEPLOYMENT_LOG_DIR
+  fi
+  # ERROR_LOG
+  export PLUGIN_EUNOMIA_DEPLOYMENT_DEPLOY_LOG=${PLUGIN_EUNOMIA_DEPLOYMENT_LOG_DIR}/deploy.log
+  export PLUGIN_EUNOMIA_DEPLOYMENT_ERROR_LOG=${PLUGIN_EUNOMIA_DEPLOYMENT_LOG_DIR}/error.log
+
+  # COMPOSE
+  export COMPOSE_PROJECT_NAME=$PLUGIN_EUNOMIA_DEPLOYMENT_NAME
+  export COMPOSE_FILE=$PLUGIN_CONFIG_DIR/service/docker-compose.deployment.yml
+
+  local tmp_error=$(os::tmp_file)
+  log::info "[$(timestamp)][eunomia::deploy] start to deploy ..."
+  docker-compose up -d 2>$tmp_error
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)][eunomia::deploy] failed to deploy."
+    cat $tmp_error
+    cat $tmp_error >>$PLUGIN_EUNOMIA_DEPLOYMENT_ERROR_LOG
+    return 1
+  fi
+
+  log::success "[$(timestamp)][eunomia::deploy] succeed to deploy."
+}
+
+export -f eunomia::deploy
