@@ -30,7 +30,7 @@ eunomia::deploy() {
   mkdir -p $PLUGIN_EUNOMIA_DEPLOYMENT_DIR
 
   log::info "[$(timestamp)] start to generate deployment dot env at ${PLUGIN_EUNOMIA_DEPLOYMENT_DOT_ENV} ..."
-  plugin::run_nodejs env
+  plugin::run_zx env
   if [ "$?" != "0" ]; then
     log::error "[$(timestamp)] failed to generate deployment dot env at ${PLUGIN_EUNOMIA_DEPLOYMENT_DOT_ENV}."
     return 1
