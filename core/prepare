@@ -2,8 +2,8 @@
 
 # gvm::current gets the current version of Go
 eunomia::prepare() {
-  if [ -z "$PLUGIN_EUNOMIA_BUILD_ID" ]; then
-    log::error "[$(timestamp)][prepare] PLUGIN_EUNOMIA_BUILD_ID is required"
+  if [ -z "$EUNOMIA_BUILD_ID" ]; then
+    log::error "[$(timestamp)][prepare] EUNOMIA_BUILD_ID is required"
     return 1
   fi
 
@@ -17,8 +17,8 @@ eunomia::prepare() {
     return 1
   fi
 
-  if [ ! -d "$PLUGIN_EUNOMIA_BUILD_ID_DIR" ]; then
-    mkdir -p $PLUGIN_EUNOMIA_BUILD_ID_DIR
+  if [ ! -d "$EUNOMIA_BUILD_ID_DIR" ]; then
+    mkdir -p $EUNOMIA_BUILD_ID_DIR
   fi
 
   if [ ! -d "$PLUGIN_EUNOMIA_DOCKERFILES_DIR" ]; then
@@ -63,20 +63,20 @@ eunomia::prepare() {
   fi
 
   # USER
-  export PLUGIN_EUNOMIA_BUILD_AUTHOR=${PLUGIN_EUNOMIA_BUILD_AUTHOR:-$EUNOMIA_BUILD_AUTHOR}
-  export PLUGIN_EUNOMIA_BUILD_AUTHOR_EMAIL=${PLUGIN_EUNOMIA_BUILD_AUTHOR_EMAIL:-$EUNOMIA_BUILD_AUTHOR_EMAIL}
-  if [ -z "$PLUGIN_EUNOMIA_BUILD_AUTHOR" ]; then
-    PLUGIN_EUNOMIA_BUILD_AUTHOR=${EUNOMIA_AUTHOR}
+  export EUNOMIA_BUILD_AUTHOR=${EUNOMIA_BUILD_AUTHOR:-$EUNOMIA_BUILD_AUTHOR}
+  export EUNOMIA_BUILD_AUTHOR_EMAIL=${EUNOMIA_BUILD_AUTHOR_EMAIL:-$EUNOMIA_BUILD_AUTHOR_EMAIL}
+  if [ -z "$EUNOMIA_BUILD_AUTHOR" ]; then
+    EUNOMIA_BUILD_AUTHOR=${EUNOMIA_AUTHOR}
   fi
-  if [ -z "$PLUGIN_EUNOMIA_BUILD_AUTHOR_EMAIL" ]; then
-    PLUGIN_EUNOMIA_BUILD_AUTHOR_EMAIL=${EUNOMIA_AUTHOR_EMAIL}
+  if [ -z "$EUNOMIA_BUILD_AUTHOR_EMAIL" ]; then
+    EUNOMIA_BUILD_AUTHOR_EMAIL=${EUNOMIA_AUTHOR_EMAIL}
   fi
 
   # @TODO Eunomia Manager
-  export PLUGIN_EUNOMIA_PROJECT_ID=${PLUGIN_EUNOMIA_PROJECT_ID:-$EUNOMIA_PROJECT_ID}
-  export PLUGIN_EUNOMIA_TASK_ID=${PLUGIN_EUNOMIA_TASK_ID:-$EUNOMIA_TASK_ID}
-  export PLUGIN_EUNOMIA_DEPLOYMENT_ID=${PLUGIN_EUNOMIA_DEPLOYMENT_ID:-$EUNOMIA_DEPLOYMENT_ID}
-  export PLUGIN_EUNOMIA_JOB_ID=${PLUGIN_EUNOMIA_JOB_ID:-$EUNOMIA_JOB_ID}
+  export EUNOMIA_PROJECT_ID=${EUNOMIA_PROJECT_ID:-$EUNOMIA_PROJECT_ID}
+  export EUNOMIA_TASK_ID=${EUNOMIA_TASK_ID:-$EUNOMIA_TASK_ID}
+  export EUNOMIA_DEPLOYMENT_ID=${EUNOMIA_DEPLOYMENT_ID:-$EUNOMIA_DEPLOYMENT_ID}
+  export EUNOMIA_JOB_ID=${EUNOMIA_JOB_ID:-$EUNOMIA_JOB_ID}
   # 用于获取 定义 dockerfiles 目录项目 Dockerfile 子模块
   # 一般的，一个 Git Repo 对应一个 Dockerfile Dir，
   # 但是这个项目有不同的功能，需要不同的 Dockerfile，比如 UI 组件库不止要发布组件，还有可能要发布文档
@@ -84,7 +84,7 @@ eunomia::prepare() {
   #     这时候可以自定义 PLUGIN_EUNOMIA_DOCKERFILE_MODULE 为 doc，那么就会在 DockerfileDir/doc 下去找寻使用的 Dockerfile
   export PLUGIN_EUNOMIA_DOCKERFILE_MODULE=${PLUGIN_EUNOMIA_DOCKERFILE_MODULE:-$EUNOMIA_DOCKERFILE_MODULE}
   # 用于区分来源
-  export PLUGIN_EUNOMIA_BUILD_FROM=${PLUGIN_EUNOMIA_BUILD_FROM:-$EUNOMIA_BUILD_FROM}
+  export EUNOMIA_BUILD_FROM=${EUNOMIA_BUILD_FROM:-$EUNOMIA_BUILD_FROM}
   # 用于自定义构建类型，默认为空
   #   可选值：
   #     - 空：默认值，表示需要从 Dockerfile Dir 对应的 Git Repo 中找到 Dockerfile
@@ -131,15 +131,15 @@ eunomia::prepare() {
   fi
 
   # Log Eunomia Manager Info
-  if [ -n "$PLUGIN_EUNOMIA_PROJECT_ID" ]; then
-    log::info "[$(timestamp)][prepare] PLUGIN_EUNOMIA_PROJECT_ID: $PLUGIN_EUNOMIA_PROJECT_ID"
-    log::info "[$(timestamp)][prepare] PLUGIN_EUNOMIA_TASK_ID: $PLUGIN_EUNOMIA_TASK_ID"
-    log::info "[$(timestamp)][prepare] PLUGIN_EUNOMIA_DEPLOYMENT_ID: $PLUGIN_EUNOMIA_DEPLOYMENT_ID"
-    log::info "[$(timestamp)][prepare] PLUGIN_EUNOMIA_JOB_ID: $PLUGIN_EUNOMIA_JOB_ID"
+  if [ -n "$EUNOMIA_PROJECT_ID" ]; then
+    log::info "[$(timestamp)][prepare] EUNOMIA_PROJECT_ID: $EUNOMIA_PROJECT_ID"
+    log::info "[$(timestamp)][prepare] EUNOMIA_TASK_ID: $EUNOMIA_TASK_ID"
+    log::info "[$(timestamp)][prepare] EUNOMIA_DEPLOYMENT_ID: $EUNOMIA_DEPLOYMENT_ID"
+    log::info "[$(timestamp)][prepare] EUNOMIA_JOB_ID: $EUNOMIA_JOB_ID"
   fi
 
   # Log Eunomia FROM Info
-  if [ "$PLUGIN_EUNOMIA_BUILD_FROM" != "eunomia" ]; then
+  if [ "$EUNOMIA_BUILD_FROM" != "eunomia" ]; then
     log::info "[$(timestamp)][prepare] params missing maybe cause error, still running current stage ..."
     local wait_time=$(os::random_int 180 60)
     os::wait $wait_time
@@ -159,10 +159,10 @@ eunomia::prepare() {
   fi
 
   # Hook with Eunomia
-  export PLUGIN_EUNOMIA_LOG_HOOK=${PLUGIN_EUNOMIA_LOG_HOOK:-$EUNOMIA_LOG_HOOK}
-  export PLUGIN_EUNOMIA_START_HOOK=${PLUGIN_EUNOMIA_START_HOOK:-$EUNOMIA_START_HOOK}
-  export PLUGIN_EUNOMIA_SUCCEED_HOOK=${PLUGIN_EUNOMIA_SUCCEED_HOOK:-$EUNOMIA_SUCCEED_HOOK}
-  export PLUGIN_EUNOMIA_FAILED_HOOK=${PLUGIN_EUNOMIA_FAILED_HOOK:-$EUNOMIA_FAILED_HOOK}
+  export EUNOMIA_LOG_HOOK=${EUNOMIA_LOG_HOOK:-$EUNOMIA_LOG_HOOK}
+  export EUNOMIA_START_HOOK=${EUNOMIA_START_HOOK:-$EUNOMIA_START_HOOK}
+  export EUNOMIA_SUCCEED_HOOK=${EUNOMIA_SUCCEED_HOOK:-$EUNOMIA_SUCCEED_HOOK}
+  export EUNOMIA_FAILED_HOOK=${EUNOMIA_FAILED_HOOK:-$EUNOMIA_FAILED_HOOK}
 
   # @ Repo
   if [ -d ".git" ]; then
@@ -206,19 +206,19 @@ eunomia::prepare() {
   ##############
   ##############
   # plugin-pipeline
-  export PIPELINE_BUILD_ID=${PLUGIN_EUNOMIA_BUILD_ID}
-  export PIPELINE_BUILD_CONTEXT=$PLUGIN_EUNOMIA_BUILD_ID_DIR
+  export PIPELINE_BUILD_ID=${EUNOMIA_BUILD_ID}
+  export PIPELINE_BUILD_CONTEXT=$EUNOMIA_BUILD_ID_DIR
   export PIPELINE_GIT_REPOSITORY_DIR=$PLUGIN_EUNOMIA_BUILD_GIT_DIR
   export PIPELINE_DOCKER_REGISTRY=$PLUGIN_EUNOMIA_DOCKER_REGISTRY
   export PIPELINE_IMAGE_NAME=$PLUGIN_EUNOMIA_GIT_REPO_NAME
   export PIPELINE_IMAGE_TAGS=commit_${PLUGIN_EUNOMIA_GIT_COMMIT},build_${PIPELINE_BUILD_ID}
 
-  echo "PIPELINE_BUILD_ID: $PIPELINE_BUILD_ID"
-  echo "PIPELINE_BUILD_CONTEXT: $PIPELINE_BUILD_CONTEXT"
-  echo "PIPELINE_GIT_REPOSITORY_DIR: $PIPELINE_GIT_REPOSITORY_DIR"
-  echo "PIPELINE_DOCKER_REGISTRY: $PIPELINE_DOCKER_REGISTRY"
-  echo "PIPELINE_IMAGE_NAME: $PIPELINE_IMAGE_NAME"
-  echo "PIPELINE_IMAGE_TAGS: $PIPELINE_IMAGE_TAGS"
+  log::info "[$(timestamp)] PIPELINE_BUILD_ID: $PIPELINE_BUILD_ID"
+  log::info "[$(timestamp)] PIPELINE_BUILD_CONTEXT: $PIPELINE_BUILD_CONTEXT"
+  log::info "[$(timestamp)] PIPELINE_GIT_REPOSITORY_DIR: $PIPELINE_GIT_REPOSITORY_DIR"
+  log::info "[$(timestamp)] PIPELINE_DOCKER_REGISTRY: $PIPELINE_DOCKER_REGISTRY"
+  log::info "[$(timestamp)] PIPELINE_IMAGE_NAME: $PIPELINE_IMAGE_NAME"
+  log::info "[$(timestamp)] PIPELINE_IMAGE_TAGS: $PIPELINE_IMAGE_TAGS"
   ##############
   ##############
 

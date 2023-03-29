@@ -1,8 +1,8 @@
 #!/bin/bash
 
 eunomia::docker_flow() {
-  if [ -z "$PLUGIN_EUNOMIA_BUILD_ID" ]; then
-    log::error "[$(timestamp)][docker_flow] PLUGIN_EUNOMIA_BUILD_ID is required"
+  if [ -z "$EUNOMIA_BUILD_ID" ]; then
+    log::error "[$(timestamp)][docker_flow] EUNOMIA_BUILD_ID is required"
     return 1
   fi
 
@@ -23,10 +23,10 @@ eunomia::docker_flow() {
   fi
 
   #
-  export PLUGIN_EUNOMIA_LOG_HOOK=${PLUGIN_EUNOMIA_LOG_HOOK:-$EUNOMIA_LOG_HOOK}
-  export PLUGIN_EUNOMIA_START_HOOK=${PLUGIN_EUNOMIA_START_HOOK:-$EUNOMIA_START_HOOK}
-  export PLUGIN_EUNOMIA_SUCCEED_HOOK=${PLUGIN_EUNOMIA_SUCCEED_HOOK:-$EUNOMIA_SUCCEED_HOOK}
-  export PLUGIN_EUNOMIA_FAILED_HOOK=${PLUGIN_EUNOMIA_FAILED_HOOK:-$EUNOMIA_FAILED_HOOK}
+  export EUNOMIA_LOG_HOOK=${EUNOMIA_LOG_HOOK:-$EUNOMIA_LOG_HOOK}
+  export EUNOMIA_START_HOOK=${EUNOMIA_START_HOOK:-$EUNOMIA_START_HOOK}
+  export EUNOMIA_SUCCEED_HOOK=${EUNOMIA_SUCCEED_HOOK:-$EUNOMIA_SUCCEED_HOOK}
+  export EUNOMIA_FAILED_HOOK=${EUNOMIA_FAILED_HOOK:-$EUNOMIA_FAILED_HOOK}
 
   log::info "[$(timestamp)][docker_flow] flow start ..."
 
@@ -36,7 +36,7 @@ eunomia::docker_flow() {
   cd ${PLUGIN_DIR}/config/service
   docker-compose exec \
     -T \
-    -e PLUGIN_EUNOMIA_BUILD_ID="${PLUGIN_EUNOMIA_BUILD_ID}" \
+    -e EUNOMIA_BUILD_ID="${EUNOMIA_BUILD_ID}" \
     -e PLUGIN_EUNOMIA_DOWNLOAD_PKG="${PLUGIN_EUNOMIA_DOWNLOAD_PKG}" \
     -e FORCE_BUILD="${FORCE_BUILD}" \
     -e PLUGIN_EUNOMIA_EXPORT_DISABLE="${PLUGIN_EUNOMIA_EXPORT_DISABLE}" \

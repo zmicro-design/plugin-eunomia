@@ -10,7 +10,7 @@ services:
     environment:
       PLUGIN_EUNOMIA_DOCKER_REGISTRY: ${PLUGIN_EUNOMIA_DOCKER_REGISTRY}
       # 3 required
-      # PLUGIN_EUNOMIA_BUILD_ID: 666
+      # EUNOMIA_BUILD_ID: 666
       # PLUGIN_EUNOMIA_DOWNLOAD_PKG: /data/flow/ta-multiverse.tar.gz
       #
       # Question: failed to solve with frontend dockerfile.v0: failed to create LLB definition: unexpected status code [manifests v1]: 401 Unauthorized
