@@ -6,7 +6,7 @@ help() {
 }
 
 core() {
-  plugin::run_nodejs "$@"
+  plugin::run_zx "$@"
 }
 
 run() {
