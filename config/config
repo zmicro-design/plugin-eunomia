@@ -70,7 +70,11 @@ if [ "$FLOW_CI" = "true" ]; then
   # END
 
   # @TODO new env
-  export EUNOMIA_BUILD_ID=${PIPELINE_ID}_${BUILD_NUMBER}
+  # export EUNOMIA_BUILD_ID=${PIPELINE_ID}_${BUILD_NUMBER}
+  export EUNOMIA_BUILD_ID=${EUNOMIA_BUILD_ID:-$PLUGIN_EUNOMIA_BUILD_ID}
+  if [ -z "$EUNOMIA_BUILD_ID" ]; then
+    export EUNOMIA_BUILD_ID=${PIPELINE_ID}_${BUILD_NUMBER}
+  fi
 fi
 
 ####### Build #######
