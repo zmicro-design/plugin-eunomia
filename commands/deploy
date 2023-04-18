@@ -21,6 +21,11 @@ core() {
   #   exit 1
   # fi
 
+  if [ "$EUNOMIA_DEPLOYMENT_IGNORE" = "true" ]; then
+    log::info "[$(timestamp)][deploy] ignore deploy because EUNOMIA_DEPLOYMENT_IGNORE is true"
+    return 0
+  fi
+
   eunomia::deploy
   if [ "$?" != "0" ]; then
     log::error "[deploy] failed to deploy"

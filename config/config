@@ -103,6 +103,7 @@ export PLUGIN_EUNOMIA_NOTIFICATION_FEISHU_URL=https://open.feishu.cn/open-apis/b
 
 # DEPLOYMENT
 export EUNOMIA_DEPLOYMENT_MODE=${EUNOMIA_DEPLOYMENT_MODE:-"service"}
+export EUNOMIA_DEPLOYMENT_IGNORE=${EUNOMIA_DEPLOYMENT_IGNORE:-"false"}
 
 if [ -z "$PLUGIN_EUNOMIA_DOCKER_REGISTRY" ]; then
   log::error "[eunomia::build] PLUGIN_EUNOMIA_DOCKER_REGISTRY is required"
