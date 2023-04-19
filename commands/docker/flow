@@ -16,6 +16,12 @@ core() {
 
   eunomia::show_version_info
 
+  # connect ignore build
+  if [ "$EUNOMIA_DEPLOYMENT_MODE" = "connect" ]; then
+    log::info "[$(timestamp)][docker][flow] ignore build because EUNOMIA_DEPLOYMENT_MODE is connect"
+    return 0
+  fi
+
   # @TODO avoid to re base64 decode
   export FLOW_CI=false
 
