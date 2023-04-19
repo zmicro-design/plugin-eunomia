@@ -9,7 +9,7 @@ services:
       UPSTREAM: ${PLUGIN_EUNOMIA_DEPLOYMENT_NAME}_upstream:8080
     env_file:
       - ${PLUGIN_EUNOMIA_DEPLOYMENT_ENV_CONFIG}
-      - ${PLUGIN_EUNOMIA_DEPLOYMENT_ENV_SHELL}
+      - ${PLUGIN_EUNOMIA_ENV_SHELL}
 
   zmicro_plugin_eunomia_deployment_upstream:
     container_name: ${PLUGIN_EUNOMIA_DEPLOYMENT_NAME}_upstream
@@ -20,7 +20,7 @@ services:
       TZ: Asia/Shanghai
     env_file:
       - ${PLUGIN_EUNOMIA_DEPLOYMENT_ENV_CONFIG}
-      - ${PLUGIN_EUNOMIA_DEPLOYMENT_ENV_SHELL}
+      - ${PLUGIN_EUNOMIA_ENV_SHELL}
 
 networks:
   default:

@@ -49,13 +49,14 @@ eunomia::deploy() {
   mkdir -p $PLUGIN_EUNOMIA_DEPLOYMENT_DIR
 
   # env shell
-  log::info "[$(timestamp)] start to generate deployment env shell at ${PLUGIN_EUNOMIA_DEPLOYMENT_ENV_SHELL} ..."
+  export PLUGIN_EUNOMIA_ENV_SHELL=$PLUGIN_EUNOMIA_DEPLOYMENT_ENV_SHELL
+  log::info "[$(timestamp)] start to generate deployment env shell at ${PLUGIN_EUNOMIA_ENV_SHELL} ..."
   plugin::run_zx env_shell
   if [ "$?" != "0" ]; then
-    log::error "[$(timestamp)] failed to generate deployment env shell at ${PLUGIN_EUNOMIA_DEPLOYMENT_ENV_SHELL}."
+    log::error "[$(timestamp)] failed to generate deployment env shell at ${PLUGIN_EUNOMIA_ENV_SHELL}."
     return 1
   fi
-  log::success "[$(timestamp)] succeed to generate deployment env shell at ${PLUGIN_EUNOMIA_DEPLOYMENT_ENV_SHELL} ..."
+  log::success "[$(timestamp)] succeed to generate deployment env shell at ${PLUGIN_EUNOMIA_ENV_SHELL} ..."
 
   # env config
   # @TODO avoid docker-compose env file error when file not found

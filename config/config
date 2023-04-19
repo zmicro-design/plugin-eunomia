@@ -68,6 +68,12 @@ if [ "$FLOW_CI" = "true" ]; then
   export EUNOMIA_RUNNER_ARCH=$(echo $EUNOMIA_RUNNER_ARCH | base64 -d)
   export EUNOMIA_RUNNER_USER=$(echo $EUNOMIA_RUNNER_USER | base64 -d)
   # END
+  if [ -n "$EUNOMIA_DOCKER_BUILDX_OPTIONS" ]; then
+    export EUNOMIA_DOCKER_BUILDX_OPTIONS=$(echo $EUNOMIA_DOCKER_BUILDX_OPTIONS | base64 -d)
+  fi
+  if [ -n "$EUNOMIA_DOCKER_BUILDX_PLATFORMS" ]; then
+    export EUNOMIA_DOCKER_BUILDX_PLATFORMS=$(echo $EUNOMIA_DOCKER_BUILDX_PLATFORMS | base64 -d)
+  fi
 
   # @TODO new env
   # export EUNOMIA_BUILD_ID=${PIPELINE_ID}_${BUILD_NUMBER}
@@ -117,3 +123,8 @@ fi
 if [ ! -d "$PLUGIN_EUNOMIA_EXPORT_DIR" ]; then
   mkdir -p $PLUGIN_EUNOMIA_EXPORT_DIR
 fi
+
+# # GIT
+# export GIT_SERVER=${GIT_SERVER}
+# export GIT_USERNAME=${GIT_USERNAME}
+# export GIT_PASSWORD=${GIT_PASSWORD}

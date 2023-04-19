@@ -8,14 +8,70 @@ const ignoreKeys = [
   'LANG',
   'TERM',
   'SHLVL',
+  'HISTSIZE',
+  'BLACK',
+  'GREEN',
+  'GRAY',
+  'RED',
+  'YELLOW',
+  'PURPLE',
+  'BLUE',
+  'CYAN',
+  'ENDCOLOR',
+  'HOSTNAME',
+  'MAIL',
   'EUNOMIA_ENV_FILE',
   // flow
   'execute_cmd',
+  //
+  '_',
+  //
+  'GOPATH',
+  'GOHOME',
+  'NPM_CONFIG_REGISTRY',
+  'LESSOPEN',
+  'triggerId',
+  'triggerMode',
+  'webhook',
+  'machine_group_id',
+  'mixFlowInstId',
+  'parentMixFlowInstId',
+  'pause_strategy',
+  'OLDPWD',
+  'branch',
+  'caches',
+  'HISTCONTROL',
+  'pipelineId',
+  'TODAY',
+  'TIMESTAMP',
+  'DATETIME',
+  'appId',
+];
+
+const whiteKeysNeedBase64 = [
+  'ta_version',
+  'withHermes',
+  'withMobile',
+  //
+  'lang',
+  //
+  'API',
+  //
+  'TARGET', //
+  //
+  'GIT_SERVER',
+  'GIT_USERNAME',
+  'GIT_PASSWORD',
 ];
 
 const ignoreKeysMap = {};
 ignoreKeys.forEach((key) => {
   ignoreKeysMap[key] = true;
+});
+
+const whiteKeysNeedBase64Map = {};
+whiteKeysNeedBase64.forEach((key) => {
+  whiteKeysNeedBase64Map[key] = true;
 });
 
 function decode(text) {
@@ -55,17 +111,72 @@ function isReadable(str) {
 }
 
 function main() {
-  const writeFileName = process.env.PLUGIN_EUNOMIA_DEPLOYMENT_ENV_SHELL
+  const writeFileName = process.env.PLUGIN_EUNOMIA_ENV_SHELL
   if (!writeFileName) {
-    throw new Error('env PLUGIN_EUNOMIA_DEPLOYMENT_ENV_SHELL is not set');
+    throw new Error('env PLUGIN_EUNOMIA_ENV_SHELL is not set');
   }
 
   const env = process.env;
   let new_envs = [];
   for (const key in env) {
     if (ignoreKeysMap[key]) continue;
+
+    // @TODO remove BASH_FUNC_*
+    if (key.startsWith('BASH_FUNC_')) continue;
+
+    // @TODO remove ZMICRO_*
+    if (key.startsWith('ZMICRO_')) continue;
+
+    // @TODO remove PLUGIN_*
+    if (key.startsWith('PLUGIN_')) continue;
+
+    // @TODO remove PIPELINE_*
+    if (key.startsWith('PIPELINE_')) continue;
+
+    // @TODO remove zoox_*
+    if (key.startsWith('zoox_')) continue;
+
+    // @TODO remove ENGINE_*
+    if (key.startsWith('ENGINE_')) continue;
+
+    // @TODO remove EXECUTOR_*
+    if (key.startsWith('EXECUTOR_')) continue;
+
+    // @TODO remove execute_*
+    if (key.startsWith('execute_')) continue;
+
+    // @TODO remove BUILD_*
+    if (key.startsWith('BUILD_')) continue;
+
+    // @TODO remove eunomia_*
+    if (key.startsWith('eunomia_')) continue;
+
+    // @TODO remove XDG_*
+    if (key.startsWith('XDG_')) continue;
+
+    // @TODO remove LD_*
+    if (key.startsWith('LD_')) continue;
+
+    // @TODO remove DEFAULT_*
+    if (key.startsWith('DEFAULT_')) continue;
+
+    // @TODO remove NODE_*
+    if (key.startsWith('NODE_')) continue;
+
+    // @TODO remove root*
+    if (key.startsWith('root')) continue;
     
     let value = env[key];
+
+    // white keys need base64 decode
+    if (!!whiteKeysNeedBase64Map[key]) {
+      value = decode(env[key]);
+    }
+
+    // user var need base64 decode
+    if (key.startsWith('EUNOMIA_USER_VAR_')) {
+      value = decode(env[key]);
+    }
 
     if (process.env.FLOW_CI === 'true') {
       if (!isBase64(env[key])) continue;
