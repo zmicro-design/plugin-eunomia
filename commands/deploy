@@ -1,0 +1,40 @@
+#!/bin/bash
+
+set -e
+
+help() {
+  echo "Usage:"
+  echo "  zmicro eunomia deploy"
+}
+
+core() {
+  if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    help
+    exit 0
+  fi
+
+  eunomia::show_version_info
+
+  # eunomia::prepare
+  # if [ "$?" != "0" ]; then
+  #   log::error "[deploy] failed to prepare"
+  #   exit 1
+  # fi
+
+  if [ "$EUNOMIA_DEPLOYMENT_IGNORE" = "true" ]; then
+    log::info "[$(timestamp)][deploy] ignore deploy because EUNOMIA_DEPLOYMENT_IGNORE is true"
+    return 0
+  fi
+
+  eunomia::deploy
+  if [ "$?" != "0" ]; then
+    log::error "[deploy] failed to deploy"
+    exit 1
+  fi
+}
+
+run() {
+  core $@
+}
+
+run $@

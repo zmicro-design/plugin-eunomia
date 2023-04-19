@@ -11,15 +11,18 @@ core() {
     exit 0
   fi
 
+  log::info "[$(timestamp)][checkout] checkouting with $EUNOMIA_GIT_REPOSITORY at $EUNOMIA_GIT_BRANCH ..."
   eunomia::checkout
   if [ "$?" != "0" ]; then
-    log::error "[checkout] failed to checkout"
+    log::error "[$(timestamp)][checkout] failed to checkout git repo."
     exit 1
   fi
+
+  log::success "[$(timestamp)][checkout] succeed to checkout git repo."
 }
 
 run() {
-  core $@
+  core "$@"
 }
 
-run $@
+run "$@"

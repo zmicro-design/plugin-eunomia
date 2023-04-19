@@ -10,8 +10,7 @@ services:
     environment:
       PLUGIN_EUNOMIA_DOCKER_REGISTRY: ${PLUGIN_EUNOMIA_DOCKER_REGISTRY}
       # 3 required
-      # PLUGIN_EUNOMIA_BUILD_ID: 666
-      # PLUGIN_EUNOMIA_DOWNLOAD_PKG: /data/flow/ta-multiverse.tar.gz
+      # EUNOMIA_BUILD_ID: 666
       #
       # Question: failed to solve with frontend dockerfile.v0: failed to create LLB definition: unexpected status code [manifests v1]: 401 Unauthorized
       # Reason: Old Docker Desktop version on Mac M1
@@ -34,7 +33,6 @@ services:
       - ${PLUGIN_DATA}:/data/plugins/eunomia
       #
       - ${PLUGIN_EUNOMIA_DOCKERFILES_DIR}:${PLUGIN_EUNOMIA_DOCKERFILES_DIR}
-      - ${PLUGIN_EUNOMIA_TMP_DIR}:${PLUGIN_EUNOMIA_TMP_DIR}
 
 networks:
   default:

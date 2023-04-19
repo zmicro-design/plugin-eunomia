@@ -1,0 +1,16 @@
+services:
+  zmicro_plugin_eunomia_deployment:
+    container_name: ${PLUGIN_EUNOMIA_DEPLOYMENT_NAME}
+    restart: always
+    image: whatwewant/connect-doreamon:v1
+    environment:
+      TZ: Asia/Shanghai
+      MODE: production
+    env_file:
+      - ${PLUGIN_EUNOMIA_DEPLOYMENT_ENV_CONFIG}
+      - ${PLUGIN_EUNOMIA_ENV_SHELL}
+
+networks:
+  default:
+    external: true
+    name: compose-ingress

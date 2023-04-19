@@ -2,23 +2,9 @@
 
 # gvm::current gets the current version of Go
 eunomia::prepare() {
-  if [ -z "$PLUGIN_EUNOMIA_BUILD_ID" ]; then
-    log::error "[$(timestamp)][prepare] PLUGIN_EUNOMIA_BUILD_ID is required"
+  if [ -z "$EUNOMIA_BUILD_ID" ]; then
+    log::error "[$(timestamp)][prepare] EUNOMIA_BUILD_ID is required"
     return 1
-  fi
-
-  if [ -z "$PLUGIN_EUNOMIA_DOWNLOAD_PKG" ]; then
-    log::error "[$(timestamp)][prepare] PLUGIN_EUNOMIA_DOWNLOAD_PKG is required"
-    return 1
-  fi
-
-  if [ ! -f "$PLUGIN_EUNOMIA_DOWNLOAD_PKG" ]; then
-    log::error "[$(timestamp)][prepare] file($PLUGIN_EUNOMIA_DOWNLOAD_PKG) is not found"
-    return 1
-  fi
-
-  if [ ! -d "$PLUGIN_EUNOMIA_BUILD_ID_DIR" ]; then
-    mkdir -p $PLUGIN_EUNOMIA_BUILD_ID_DIR
   fi
 
   if [ ! -d "$PLUGIN_EUNOMIA_DOCKERFILES_DIR" ]; then
@@ -34,49 +20,38 @@ eunomia::prepare() {
   # Show Docker Info
   eunomia::prepare_show_docker_info
 
-  # @TODO PLUGIN_EUNOMIA_DOWNLOAD_PKG 很可能是固定路径，这里用于快速备份，避免被后续部署覆盖
-  cp $PLUGIN_EUNOMIA_DOWNLOAD_PKG $PLUGIN_EUNOMIA_BUILD_GIT_PKG
-  # PLUGIN_EUNOMIA_DOWNLOAD_PKG 使命完成，后续使用 PLUGIN_EUNOMIA_BUILD_GIT_PKG
-
-  # Extract Git Repo
-  if [ ! -d "$PLUGIN_EUNOMIA_BUILD_GIT_DIR" ]; then
-    mkdir -p $PLUGIN_EUNOMIA_BUILD_GIT_DIR
-    tar -zxvf $PLUGIN_EUNOMIA_BUILD_GIT_PKG -C $PLUGIN_EUNOMIA_BUILD_GIT_DIR >>/dev/null
-  fi
-  # PLUGIN_EUNOMIA_BUILD_GIT_PKG 使命完成
-
   # Go to Git Repo Dir
-  cd $PLUGIN_EUNOMIA_BUILD_GIT_DIR
+  cd $EUNOMIA_BUILD_GIT_DIR
 
   # @LOAD Git Repo Env
-  # echo "check env .eunomia: $PLUGIN_EUNOMIA_BUILD_GIT_DOT_ENV"
-  if [ -f "$PLUGIN_EUNOMIA_BUILD_GIT_DOT_ENV" ]; then
-    log::info "[$(timestamp)][prepare] load user env .eunomia: $PLUGIN_EUNOMIA_BUILD_GIT_DOT_ENV"
+  # echo "check env .eunomia: $EUNOMIA_BUILD_ENV"
+  if [ -f "$EUNOMIA_BUILD_ENV" ]; then
+    log::info "[$(timestamp)][prepare] load user env .eunomia: $EUNOMIA_BUILD_ENV"
 
-    cat $PLUGIN_EUNOMIA_BUILD_GIT_DOT_ENV
+    cat $EUNOMIA_BUILD_ENV
 
-    dotenv::load $PLUGIN_EUNOMIA_BUILD_GIT_DOT_ENV
+    dotenv::load $EUNOMIA_BUILD_ENV
     if [ "$?" != "0" ]; then
-      log::error "[$(timestamp)][prepare] failed to load repo env($PLUGIN_EUNOMIA_BUILD_GIT_DOT_ENV)"
+      log::error "[$(timestamp)][prepare] failed to load repo env($EUNOMIA_BUILD_ENV)"
       return 1
     fi
   fi
 
   # USER
-  export PLUGIN_EUNOMIA_BUILD_AUTHOR=${PLUGIN_EUNOMIA_BUILD_AUTHOR:-$EUNOMIA_BUILD_AUTHOR}
-  export PLUGIN_EUNOMIA_BUILD_AUTHOR_EMAIL=${PLUGIN_EUNOMIA_BUILD_AUTHOR_EMAIL:-$EUNOMIA_BUILD_AUTHOR_EMAIL}
-  if [ -z "$PLUGIN_EUNOMIA_BUILD_AUTHOR" ]; then
-    PLUGIN_EUNOMIA_BUILD_AUTHOR=${EUNOMIA_AUTHOR}
+  export EUNOMIA_BUILD_AUTHOR=${EUNOMIA_BUILD_AUTHOR:-$EUNOMIA_BUILD_AUTHOR}
+  export EUNOMIA_BUILD_AUTHOR_EMAIL=${EUNOMIA_BUILD_AUTHOR_EMAIL:-$EUNOMIA_BUILD_AUTHOR_EMAIL}
+  if [ -z "$EUNOMIA_BUILD_AUTHOR" ]; then
+    EUNOMIA_BUILD_AUTHOR=${EUNOMIA_AUTHOR}
   fi
-  if [ -z "$PLUGIN_EUNOMIA_BUILD_AUTHOR_EMAIL" ]; then
-    PLUGIN_EUNOMIA_BUILD_AUTHOR_EMAIL=${EUNOMIA_AUTHOR_EMAIL}
+  if [ -z "$EUNOMIA_BUILD_AUTHOR_EMAIL" ]; then
+    EUNOMIA_BUILD_AUTHOR_EMAIL=${EUNOMIA_AUTHOR_EMAIL}
   fi
 
   # @TODO Eunomia Manager
-  export PLUGIN_EUNOMIA_PROJECT_ID=${PLUGIN_EUNOMIA_PROJECT_ID:-$EUNOMIA_PROJECT_ID}
-  export PLUGIN_EUNOMIA_TASK_ID=${PLUGIN_EUNOMIA_TASK_ID:-$EUNOMIA_TASK_ID}
-  export PLUGIN_EUNOMIA_DEPLOYMENT_ID=${PLUGIN_EUNOMIA_DEPLOYMENT_ID:-$EUNOMIA_DEPLOYMENT_ID}
-  export PLUGIN_EUNOMIA_JOB_ID=${PLUGIN_EUNOMIA_JOB_ID:-$EUNOMIA_JOB_ID}
+  export EUNOMIA_PROJECT_ID=${EUNOMIA_PROJECT_ID:-$EUNOMIA_PROJECT_ID}
+  export EUNOMIA_TASK_ID=${EUNOMIA_TASK_ID:-$EUNOMIA_TASK_ID}
+  export EUNOMIA_DEPLOYMENT_ID=${EUNOMIA_DEPLOYMENT_ID:-$EUNOMIA_DEPLOYMENT_ID}
+  export EUNOMIA_JOB_ID=${EUNOMIA_JOB_ID:-$EUNOMIA_JOB_ID}
   # 用于获取 定义 dockerfiles 目录项目 Dockerfile 子模块
   # 一般的，一个 Git Repo 对应一个 Dockerfile Dir，
   # 但是这个项目有不同的功能，需要不同的 Dockerfile，比如 UI 组件库不止要发布组件，还有可能要发布文档
@@ -84,7 +59,7 @@ eunomia::prepare() {
   #     这时候可以自定义 PLUGIN_EUNOMIA_DOCKERFILE_MODULE 为 doc，那么就会在 DockerfileDir/doc 下去找寻使用的 Dockerfile
   export PLUGIN_EUNOMIA_DOCKERFILE_MODULE=${PLUGIN_EUNOMIA_DOCKERFILE_MODULE:-$EUNOMIA_DOCKERFILE_MODULE}
   # 用于区分来源
-  export PLUGIN_EUNOMIA_BUILD_FROM=${PLUGIN_EUNOMIA_BUILD_FROM:-$EUNOMIA_BUILD_FROM}
+  export EUNOMIA_BUILD_FROM=${EUNOMIA_BUILD_FROM:-$EUNOMIA_BUILD_FROM}
   # 用于自定义构建类型，默认为空
   #   可选值：
   #     - 空：默认值，表示需要从 Dockerfile Dir 对应的 Git Repo 中找到 Dockerfile
@@ -131,15 +106,15 @@ eunomia::prepare() {
   fi
 
   # Log Eunomia Manager Info
-  if [ -n "$PLUGIN_EUNOMIA_PROJECT_ID" ]; then
-    log::info "[$(timestamp)][prepare] PLUGIN_EUNOMIA_PROJECT_ID: $PLUGIN_EUNOMIA_PROJECT_ID"
-    log::info "[$(timestamp)][prepare] PLUGIN_EUNOMIA_TASK_ID: $PLUGIN_EUNOMIA_TASK_ID"
-    log::info "[$(timestamp)][prepare] PLUGIN_EUNOMIA_DEPLOYMENT_ID: $PLUGIN_EUNOMIA_DEPLOYMENT_ID"
-    log::info "[$(timestamp)][prepare] PLUGIN_EUNOMIA_JOB_ID: $PLUGIN_EUNOMIA_JOB_ID"
+  if [ -n "$EUNOMIA_PROJECT_ID" ]; then
+    log::info "[$(timestamp)][prepare] EUNOMIA_PROJECT_ID: $EUNOMIA_PROJECT_ID"
+    log::info "[$(timestamp)][prepare] EUNOMIA_TASK_ID: $EUNOMIA_TASK_ID"
+    log::info "[$(timestamp)][prepare] EUNOMIA_DEPLOYMENT_ID: $EUNOMIA_DEPLOYMENT_ID"
+    log::info "[$(timestamp)][prepare] EUNOMIA_JOB_ID: $EUNOMIA_JOB_ID"
   fi
 
   # Log Eunomia FROM Info
-  if [ "$PLUGIN_EUNOMIA_BUILD_FROM" != "eunomia" ]; then
+  if [ "$EUNOMIA_BUILD_FROM" != "eunomia" ]; then
     log::info "[$(timestamp)][prepare] params missing maybe cause error, still running current stage ..."
     local wait_time=$(os::random_int 180 60)
     os::wait $wait_time
@@ -159,33 +134,33 @@ eunomia::prepare() {
   fi
 
   # Hook with Eunomia
-  export PLUGIN_EUNOMIA_LOG_HOOK=${PLUGIN_EUNOMIA_LOG_HOOK:-$EUNOMIA_LOG_HOOK}
-  export PLUGIN_EUNOMIA_START_HOOK=${PLUGIN_EUNOMIA_START_HOOK:-$EUNOMIA_START_HOOK}
-  export PLUGIN_EUNOMIA_SUCCEED_HOOK=${PLUGIN_EUNOMIA_SUCCEED_HOOK:-$EUNOMIA_SUCCEED_HOOK}
-  export PLUGIN_EUNOMIA_FAILED_HOOK=${PLUGIN_EUNOMIA_FAILED_HOOK:-$EUNOMIA_FAILED_HOOK}
+  export EUNOMIA_LOG_HOOK=${EUNOMIA_LOG_HOOK:-$EUNOMIA_LOG_HOOK}
+  export EUNOMIA_START_HOOK=${EUNOMIA_START_HOOK:-$EUNOMIA_START_HOOK}
+  export EUNOMIA_SUCCEED_HOOK=${EUNOMIA_SUCCEED_HOOK:-$EUNOMIA_SUCCEED_HOOK}
+  export EUNOMIA_FAILED_HOOK=${EUNOMIA_FAILED_HOOK:-$EUNOMIA_FAILED_HOOK}
 
   # @ Repo
   if [ -d ".git" ]; then
-    export PLUGIN_EUNOMIA_GIT_REPO_URL=$(git::origin_url)
-    export PLUGIN_EUNOMIA_GIT_REPO_NAME=$(git::repo_name)
-    export PLUGIN_EUNOMIA_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-    export PLUGIN_EUNOMIA_GIT_COMMIT=$(git::commit_hash_full)
-    export PLUGIN_EUNOMIA_GIT_COMMIT_MESSAGE=$(git::commit_message)
-    export PLUGIN_EUNOMIA_GIT_COMMIT_AUTHOR=$(git::commit_author)
-    export PLUGIN_EUNOMIA_GIT_COMMIT_TIMESTAMP="$(git show -s --format=%cd --date='format:%Y-%m-%d_%H:%M:%S')"
+    export EUNOMIA_GIT_REPO_URL=$(git::origin_url)
+    export EUNOMIA_GIT_REPO_NAME=$(git::repo_name)
+    export EUNOMIA_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+    export EUNOMIA_GIT_COMMIT=$(git::commit_hash_full)
+    export EUNOMIA_GIT_COMMIT_MESSAGE=$(git::commit_message)
+    export EUNOMIA_GIT_COMMIT_AUTHOR=$(git::commit_author)
+    export EUNOMIA_GIT_COMMIT_TIMESTAMP="$(git show -s --format=%cd --date='format:%Y-%m-%d_%H:%M:%S')"
   else
     # if not git repo, use default value
     # used for PLUGIN_EUNOMIA_BUILD_TYPE_TEMPLATE == command project
-    export PLUGIN_EUNOMIA_GIT_REPO_NAME="zmicro/eunomia_build_tmp"
+    export EUNOMIA_GIT_REPO_NAME="zmicro/eunomia_build_tmp"
   fi
 
-  if [ -z "$PLUGIN_EUNOMIA_GIT_REPO_NAME" ]; then
-    log::error "[$(timestamp)][prepare] PLUGIN_EUNOMIA_GIT_REPO_NAME is required"
+  if [ -z "$EUNOMIA_GIT_REPO_NAME" ]; then
+    log::error "[$(timestamp)][prepare] EUNOMIA_GIT_REPO_NAME is required"
     return 1
   fi
 
   # @COPY Dockerfile
-  export PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO=${PLUGIN_EUNOMIA_DOCKERFILES_DIR}/${PLUGIN_EUNOMIA_GIT_REPO_NAME}
+  export PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO=${PLUGIN_EUNOMIA_DOCKERFILES_DIR}/${EUNOMIA_GIT_REPO_NAME}
   if [ -n "$PLUGIN_EUNOMIA_BUILD_TYPE" ]; then
     log::info "[$(timestamp)][prepare] found custom build type: $PLUGIN_EUNOMIA_BUILD_TYPE"
     PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO=${PLUGIN_EUNOMIA_DOCKERFILES_DIR}/${PLUGIN_EUNOMIA_BUILD_TYPE}
@@ -194,36 +169,39 @@ eunomia::prepare() {
   export PLUGIN_EUNOMIA_DOCKERFILE_FOR_GIT_REPO=${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/Dockerfile
   export PLUGIN_EUNOMIA_DOCKERFILE_ENV_FOR_GIT_REPO=${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/.eunomia
   # if [ ! -f "$PLUGIN_EUNOMIA_DOCKERFILE_FOR_GIT_REPO" ]; then
-  #   log::error "[eunomia::build] Dockerfile not found at for $PLUGIN_EUNOMIA_GIT_REPO_NAME"
+  #   log::error "[eunomia::build] Dockerfile not found at for $EUNOMIA_GIT_REPO_NAME"
   #   return 1
   # fi
 
   if [ -f "$PLUGIN_EUNOMIA_DOCKERFILE_ENV_FOR_GIT_REPO" ]; then
-    log::error "[eunomia::build] .eunomia found at for $PLUGIN_EUNOMIA_GIT_REPO_NAME, please remove it"
+    log::error "[eunomia::build] .eunomia found at for $EUNOMIA_GIT_REPO_NAME, please remove it"
     return 1
   fi
 
   ##############
   ##############
   # plugin-pipeline
-  export PIPELINE_BUILD_ID=${PLUGIN_EUNOMIA_BUILD_ID}
-  export PIPELINE_BUILD_CONTEXT=$PLUGIN_EUNOMIA_BUILD_ID_DIR
-  export PIPELINE_GIT_REPOSITORY_DIR=$PLUGIN_EUNOMIA_BUILD_GIT_DIR
+  export PIPELINE_BUILD_ID=${EUNOMIA_BUILD_ID}
+  export PIPELINE_BUILD_CONTEXT=$EUNOMIA_BUILD_DIR
+  export PIPELINE_GIT_REPOSITORY_DIR=$EUNOMIA_BUILD_GIT_DIR
   export PIPELINE_DOCKER_REGISTRY=$PLUGIN_EUNOMIA_DOCKER_REGISTRY
-  export PIPELINE_IMAGE_NAME=$PLUGIN_EUNOMIA_GIT_REPO_NAME
-  export PIPELINE_IMAGE_TAGS=commit_${PLUGIN_EUNOMIA_GIT_COMMIT},build_${PIPELINE_BUILD_ID}
+  export PIPELINE_IMAGE_NAME=$EUNOMIA_GIT_REPO_NAME
+  export PIPELINE_IMAGE_TAGS=commit_${EUNOMIA_GIT_COMMIT},build_${PIPELINE_BUILD_ID}
+  #
+  export PIPELINE_DOCKER_BUILD_OPTIONS=$EUNOMIA_DOCKER_BUILDX_OPTIONS
+  export PIPELINE_DOCKER_BUILD_PLATFORMS=$EUNOMIA_DOCKER_BUILDX_PLATFORMS
 
-  echo "PIPELINE_BUILD_ID: $PIPELINE_BUILD_ID"
-  echo "PIPELINE_BUILD_CONTEXT: $PIPELINE_BUILD_CONTEXT"
-  echo "PIPELINE_GIT_REPOSITORY_DIR: $PIPELINE_GIT_REPOSITORY_DIR"
-  echo "PIPELINE_DOCKER_REGISTRY: $PIPELINE_DOCKER_REGISTRY"
-  echo "PIPELINE_IMAGE_NAME: $PIPELINE_IMAGE_NAME"
-  echo "PIPELINE_IMAGE_TAGS: $PIPELINE_IMAGE_TAGS"
+  log::info "[$(timestamp)] PIPELINE_BUILD_ID: $PIPELINE_BUILD_ID"
+  log::info "[$(timestamp)] PIPELINE_BUILD_CONTEXT: $PIPELINE_BUILD_CONTEXT"
+  log::info "[$(timestamp)] PIPELINE_GIT_REPOSITORY_DIR: $PIPELINE_GIT_REPOSITORY_DIR"
+  log::info "[$(timestamp)] PIPELINE_DOCKER_REGISTRY: $PIPELINE_DOCKER_REGISTRY"
+  log::info "[$(timestamp)] PIPELINE_IMAGE_NAME: $PIPELINE_IMAGE_NAME"
+  log::info "[$(timestamp)] PIPELINE_IMAGE_TAGS: $PIPELINE_IMAGE_TAGS"
   ##############
   ##############
 
   # Docker Image
-  export PLUGIN_EUNOMIA_EXPORT_RUNNER_IMAGE=$PLUGIN_EUNOMIA_DOCKER_REGISTRY/$PIPELINE_IMAGE_NAME:commit_${PLUGIN_EUNOMIA_GIT_COMMIT}
+  export PLUGIN_EUNOMIA_EXPORT_RUNNER_IMAGE=$PLUGIN_EUNOMIA_DOCKER_REGISTRY/$PIPELINE_IMAGE_NAME:commit_${EUNOMIA_GIT_COMMIT}
 }
 
 eunomia::prepare_show_docker_info() {

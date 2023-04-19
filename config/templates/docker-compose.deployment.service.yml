@@ -1,0 +1,16 @@
+services:
+  zmicro_plugin_eunomia_deployment:
+    container_name: ${PLUGIN_EUNOMIA_DEPLOYMENT_NAME}
+    restart: always
+    image: ${PLUGIN_EUNOMIA_DOCKER_REGISTRY}/${PLUGIN_EUNOMIA_DEPLOYMENT_IMAGE_NAME}:commit_${EUNOMIA_GIT_COMMIT}
+    environment:
+      PORT: 8080
+      TZ: Asia/Shanghai
+    env_file:
+      - ${PLUGIN_EUNOMIA_DEPLOYMENT_ENV_CONFIG}
+      - ${PLUGIN_EUNOMIA_ENV_SHELL}
+
+networks:
+  default:
+    external: true
+    name: compose-ingress

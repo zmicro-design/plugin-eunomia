@@ -11,11 +11,6 @@ eunomia::export() {
     return 1
   fi
 
-  if [ ! -d "$PLUGIN_EUNOMIA_BUILD_ID_DIR" ]; then
-    log::error "[$(timestamp)][eunomia::export] PLUGIN_EUNOMIA_BUILD_GIT_DIR($PLUGIN_EUNOMIA_BUILD_GIT_DIR) not found, you must run prepare first"
-    return 1
-  fi
-
   # ensure container removed
   docker rm -f $PLUGIN_EUNOMIA_EXPORT_RUNNER_NAME >> /dev/null 2>&1
 
