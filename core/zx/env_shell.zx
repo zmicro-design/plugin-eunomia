@@ -46,6 +46,13 @@ const ignoreKeys = [
   'TIMESTAMP',
   'DATETIME',
   'appId',
+  'package_download_path',
+  'pipelineConfigId',
+  'LOG_LEVEL',
+  'TZ',
+  //
+  'EUNOMIA_BUILD_TIMESTAMP',
+  'EUNOMIA_RUNNER_NAME',
 ];
 
 const whiteKeysNeedBase64 = [
@@ -185,7 +192,8 @@ function main() {
       if (!isReadable(value)) continue;
     }
 
-    new_envs.push(`${key}=${JSON.stringify(value)}`);
+    // new_envs.push(`${key}=${JSON.stringify(value)}`);
+    new_envs.push(`${key}=${value}`);
   }
 
   console.log('write deployment dot env file:', writeFileName);
