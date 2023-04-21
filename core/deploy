@@ -39,12 +39,39 @@ eunomia::deploy() {
   fi
 
   #
-  export PLUGIN_EUNOMIA_DEPLOYMENT_NAME=eunomia_deployment_${EUNOMIA_TASK_ID}
   export PLUGIN_EUNOMIA_DEPLOYMENT_IMAGE_NAME=$(echo ${EUNOMIA_GIT_REPOSITORY#http://10.27.249.150:8888/})
   export PLUGIN_EUNOMIA_DEPLOYMENT_DIR=${PLUGIN_DATA}/deployments/${EUNOMIA_TASK_ID}
   export PLUGIN_EUNOMIA_DEPLOYMENT_ENV_SHELL=${PLUGIN_EUNOMIA_DEPLOYMENT_DIR}/.env.shell
   export PLUGIN_EUNOMIA_DEPLOYMENT_ENV_CONFIG=${PLUGIN_EUNOMIA_DEPLOYMENT_DIR}/.env.config
   export PLUGIN_EUNOMIA_DEPLOYMENT_MANIFEST_FILE=${PLUGIN_EUNOMIA_DEPLOYMENT_DIR}/docker-compose.yml
+
+  # DOCKER_HOST
+  case $EUNOMIA_DEPLOYMENT_ENV in
+  "dev")
+    export DOCKER_HOST=$EUNOMIA_DEPLOYMENT_DEV_DOCKER_HOST
+    export PLUGIN_EUNOMIA_DEPLOYMENT_NAME=eunomia_deployment_dev_${EUNOMIA_TASK_ID}
+
+    # custom domain name
+    #   pattern: {CUSTOM_DOMAIN_NAME}-dev.example.com
+    if [ -n "$EUNOMIA_DEPLOYMENT_CUSTOM_DOMAIN_NAME" ]; then
+      export PLUGIN_EUNOMIA_DEPLOYMENT_NAME=eunomia_deployment_dev_${EUNOMIA_DEPLOYMENT_CUSTOM_DOMAIN_NAME}
+    fi
+    ;;
+  "prod")
+    export DOCKER_HOST=$EUNOMIA_DEPLOYMENT_PROD_DOCKER_HOST
+    export PLUGIN_EUNOMIA_DEPLOYMENT_NAME=eunomia_deployment_prod_${EUNOMIA_TASK_ID}
+
+    # custom domain name
+    #   pattern: {CUSTOM_DOMAIN_NAME}.example.com
+    if [ -n "$EUNOMIA_DEPLOYMENT_CUSTOM_DOMAIN_NAME" ]; then
+      export PLUGIN_EUNOMIA_DEPLOYMENT_NAME=eunomia_deployment_prod_${EUNOMIA_DEPLOYMENT_CUSTOM_DOMAIN_NAME}
+    fi
+    ;;
+  *)
+    log::error "[eunomia::deploy] unknown EUNOMIA_DEPLOYMENT_ENV: $EUNOMIA_DEPLOYMENT_ENV"
+    return 1
+    ;;
+  esac
 
   mkdir -p $PLUGIN_EUNOMIA_DEPLOYMENT_DIR
 
@@ -103,9 +130,12 @@ eunomia::deploy() {
   # service manifest file
   export COMPOSE_FILE=$PLUGIN_EUNOMIA_DEPLOYMENT_MANIFEST_FILE
 
+  log::info "[$(timestamp)][eunomia::deploy] Environment: ${EUNOMIA_DEPLOYMENT_ENV}"
+  log::info "[$(timestamp)][eunomia::deploy] Docker Service at: ${DOCKER_HOST:-Current_Host}"
+
   local tmp_error=$(os::tmp_file)
   log::info "[$(timestamp)][eunomia::deploy] start to deploy ..."
-  docker-compose up -d # 2>$tmp_error
+  docker-compose up -d --remove-orphans # 2>$tmp_error
   if [ "$?" != "0" ]; then
     log::error "[$(timestamp)][eunomia::deploy] failed to deploy."
     cat $tmp_error
