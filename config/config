@@ -39,6 +39,10 @@ if [ "$FLOW_CI" = "true" ]; then
     export EUNOMIA_BUILD_DOCKER_BUILD_CONTEXT=$(echo $EUNOMIA_BUILD_DOCKER_BUILD_CONTEXT | base64 -d)
   fi
 
+  if [ -n "$EUNOMIA_BUILD_DOCKER_IMAGE_VERSION" ]; then
+    export EUNOMIA_BUILD_DOCKER_IMAGE_VERSION=$(echo $EUNOMIA_BUILD_DOCKER_IMAGE_VERSION | base64 -d)
+  fi
+
   if [ -n "$EUNOMIA_DEPLOYMENT_MODE" ] && [ "$EUNOMIA_DEPLOYMENT_MODE" != "service" ]; then
     export EUNOMIA_DEPLOYMENT_MODE=$(echo $EUNOMIA_DEPLOYMENT_MODE | base64 -d)
   fi
