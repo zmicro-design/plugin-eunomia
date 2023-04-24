@@ -10,6 +10,8 @@ services:
     env_file:
       - ${PLUGIN_EUNOMIA_DEPLOYMENT_ENV_CONFIG}
       - ${PLUGIN_EUNOMIA_ENV_SHELL}
+    mem_limit: ${EUNOMIA_DEPLOYMENT_MEM_LIMIT}
+    cpus: ${EUNOMIA_DEPLOYMENT_CPU_LIMIT}
 
   zmicro_plugin_eunomia_deployment_upstream:
     container_name: ${PLUGIN_EUNOMIA_DEPLOYMENT_NAME}_upstream
@@ -21,6 +23,8 @@ services:
     env_file:
       - ${PLUGIN_EUNOMIA_DEPLOYMENT_ENV_CONFIG}
       - ${PLUGIN_EUNOMIA_ENV_SHELL}
+    mem_limit: "${EUNOMIA_DEPLOYMENT_MEM_LIMIT}m"
+    cpus: ${EUNOMIA_DEPLOYMENT_CPU_LIMIT}
 
 networks:
   default:
