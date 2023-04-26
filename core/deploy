@@ -135,7 +135,7 @@ eunomia::deploy() {
 
   local tmp_error=$(os::tmp_file)
   log::info "[$(timestamp)][eunomia::deploy] start to deploy ..."
-  docker-compose up -d --remove-orphans # 2>$tmp_error
+  docker-compose up --detach --remove-orphans # 2>$tmp_error
   if [ "$?" != "0" ]; then
     log::error "[$(timestamp)][eunomia::deploy] failed to deploy."
     cat $tmp_error
