@@ -126,17 +126,17 @@ run() {
   # fi
 
   # # start
-  # eunomia::hook_start
+  # eunomia::hook_build_start
 
   # set -o pipefail
   # core "$@" | tee -a $EUNOMIA_BUILD_LOG
   # # end
   # if [ "$?" != "0" ]; then
-  #   eunomia::hook_failed
+  #   eunomia::hook_build_failed
   #   log::info "[$(timestamp)][docker_flow] flow failed."
   #   exit 1
   # else
-  #   eunomia::hook_succeed
+  #   eunomia::hook_build_succeed
   #   log::info "[$(timestamp)][docker_flow] flow succeed."
   #   exit 0
   # fi

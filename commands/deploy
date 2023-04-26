@@ -34,7 +34,21 @@ core() {
 }
 
 run() {
-  core $@
+  # start
+  # eunomia::hook_deploy_start
+
+  set -o pipefail
+  core "$@" 2>&1 | tee -a $EUNOMIA_DEPLOY_LOG
+  # end
+  if [ "$?" != "0" ]; then
+    eunomia::hook_deploy_failed
+    log::info "[$(timestamp)][deploy] failed to deploy."
+    exit 1
+  else
+    eunomia::hook_deploy_succeed
+    log::info "[$(timestamp)][deploy] succeed to deploy."
+    exit 0
+  fi
 }
 
-run $@
+run "$@"

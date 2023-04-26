@@ -131,7 +131,7 @@ eunomia::deploy() {
   export COMPOSE_FILE=$PLUGIN_EUNOMIA_DEPLOYMENT_MANIFEST_FILE
 
   log::info "[$(timestamp)][eunomia::deploy] Environment: ${EUNOMIA_DEPLOYMENT_ENV}"
-  log::info "[$(timestamp)][eunomia::deploy] Docker Service at: ${DOCKER_HOST:-Current_Host}"
+  # log::info "[$(timestamp)][eunomia::deploy] Docker Service at: ${DOCKER_HOST:-Current_Host}"
 
   local tmp_error=$(os::tmp_file)
   log::info "[$(timestamp)][eunomia::deploy] start to deploy ..."
