@@ -18,7 +18,7 @@ eunomia::prepare() {
   fi
 
   # Show Docker Info
-  eunomia::prepare_show_docker_info
+  # eunomia::prepare_show_docker_info
 
   # Go to Git Repo Dir
   cd $EUNOMIA_BUILD_GIT_DIR
