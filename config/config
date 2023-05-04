@@ -43,6 +43,10 @@ if [ "$FLOW_CI" = "true" ]; then
     export EUNOMIA_BUILD_DOCKERFILE_PATH=$(echo $EUNOMIA_BUILD_DOCKERFILE_PATH | base64 -d)
   fi
 
+  if [ -n "$EUNOMIA_BUILD_DOCKER_IMAGE_NAME" ]; then
+    export EUNOMIA_BUILD_DOCKER_IMAGE_NAME=$(echo $EUNOMIA_BUILD_DOCKER_IMAGE_NAME | base64 -d)
+  fi
+
   if [ -n "$EUNOMIA_BUILD_DOCKER_IMAGE_VERSION" ]; then
     export EUNOMIA_BUILD_DOCKER_IMAGE_VERSION=$(echo $EUNOMIA_BUILD_DOCKER_IMAGE_VERSION | base64 -d)
   fi
@@ -146,6 +150,9 @@ export PLUGIN_EUNOMIA_NOTIFICATION_FEISHU_URL=https://open.feishu.cn/open-apis/b
 
 # DEPLOY
 export EUNOMIA_DEPLOY_LOG=$EUNOMIA_BUILD_DIR/eunomia.deploy.log
+
+# CUSTOM SCRIPT
+# EUNOMIA_BUILD_GIT_DIR/.eunomia/deploy/deploy.sh
 
 # ============= SERVICE ==============
 # DEPLOYMENT
