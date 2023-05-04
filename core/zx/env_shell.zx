@@ -69,6 +69,10 @@ const whiteKeysNeedBase64 = [
   'GIT_SERVER',
   'GIT_USERNAME',
   'GIT_PASSWORD',
+  //
+  'CONFIG_CENTER_CLIENT_ID',
+  'CONFIG_CENTER_CLIENT_SECRET',
+  'CONFIG_CENTER_CONFIG_ID',
 ];
 
 const ignoreKeysMap = {};
