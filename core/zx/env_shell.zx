@@ -60,6 +60,9 @@ const whiteKeysNeedBase64 = [
   'withHermes',
   'withMobile',
   //
+  'env',
+  'docker_url',
+  //
   'lang',
   //
   'API',

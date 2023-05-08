@@ -23,8 +23,13 @@ eunomia::export() {
   log::info "[$(timestamp)][eunomia::export] copy from docker:$PLUGIN_EUNOMIA_EXPORT_RUNNER_DIST_DIR to host:$PLUGIN_EUNOMIA_EXPORT_ID_DIR"
   docker cp $PLUGIN_EUNOMIA_EXPORT_RUNNER_NAME:${PLUGIN_EUNOMIA_EXPORT_RUNNER_DIST_DIR} $PLUGIN_EUNOMIA_EXPORT_ID_DIR >> /dev/null
   if [ "$?" != "0" ]; then
-    log::error "[$(timestamp)][eunomia::export] failed to export when copying from runner"
-    return 1
+    # log::error "[$(timestamp)][eunomia::export] failed to export when copying from runner"
+    # return 1
+
+    log::info "[$(timestamp)][eunomia::export] not a standard exporter, ignore export"
+    docker rm -f $PLUGIN_EUNOMIA_EXPORT_RUNNER_NAME >> /dev/null 2>&1
+    rm -rf $PLUGIN_EUNOMIA_EXPORT_ID_DIR
+    return 0
   fi
 
   log::info "[$(timestamp)][eunomia::export] exporting to $PLUGIN_EUNOMIA_EXPORT_ID_PKG"

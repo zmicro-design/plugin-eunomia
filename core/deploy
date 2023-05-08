@@ -1,6 +1,56 @@
 #!/bin/bash
 
 eunomia::deploy() {
+  log::info "[$(timestamp)] start to deploy ..."
+
+  # 检测脚本
+  if [ -f "${EUNOMIA_DEPLOY_SCRIPT}" ]; then
+    eunomia::deploy_script
+    if [ "$?" != "0" ]; then
+      log::error "[$(timestamp)] 部署脚本执行失败"
+      return 1
+    fi
+
+    log::success "[$(timestamp)] 部署脚本执行成功 ..."
+    return 0
+  fi
+
+  eunomia::deploy_service
+}
+
+eunomia::deploy_script() {
+  export PLUGIN_EUNOMIA_DEPLOYMENT_DIR=${PLUGIN_DATA}/deployments/${EUNOMIA_TASK_ID}
+  export PLUGIN_EUNOMIA_DEPLOYMENT_ENV_SHELL=${PLUGIN_EUNOMIA_DEPLOYMENT_DIR}/.env.shell
+
+  mkdir -p $PLUGIN_EUNOMIA_DEPLOYMENT_DIR
+
+  # env shell
+  export PLUGIN_EUNOMIA_ENV_SHELL=$PLUGIN_EUNOMIA_DEPLOYMENT_ENV_SHELL
+  log::info "[$(timestamp)] start to generate deployment env shell at ${PLUGIN_EUNOMIA_ENV_SHELL} ..."
+  plugin::run_zx env_shell
+
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)] failed to generate deployment env shell at ${PLUGIN_EUNOMIA_ENV_SHELL}."
+    return 1
+  fi
+  log::success "[$(timestamp)] succeed to generate deployment env shell at ${PLUGIN_EUNOMIA_ENV_SHELL} ..."
+
+  log::info "[$(timestamp)][eunomia::deploy_script] start to execute deploy.sh on ${EUNOMIA_DEPLOY_HOST} ..."
+
+  gzcaas client \
+    -s ${EUNOMIA_DEPLOY_HOST} \
+    --scriptfile ${EUNOMIA_DEPLOY_SCRIPT} \
+    --envfile ${PLUGIN_EUNOMIA_DEPLOYMENT_ENV_SHELL}
+
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)][eunomia::deploy_script] failed to execute deploy.sh"
+    return 1
+  fi
+
+  log::success "[$(timestamp)][eunomia::deploy_script] succeed to execute deploy.sh"
+}
+
+eunomia::deploy_service() {
   # config
   if [ -z "$PLUGIN_EUNOMIA_DOCKER_REGISTRY" ]; then
     log::error "[eunomia::deploy] PLUGIN_EUNOMIA_DOCKER_REGISTRY is required"
@@ -118,7 +168,7 @@ eunomia::deploy() {
 
   # COMPOSE
   export COMPOSE_PROJECT_NAME=$PLUGIN_EUNOMIA_DEPLOYMENT_NAME
-  
+
   # generate manifest file from template
   export COMPOSE_FILE=$PLUGIN_CONFIG_DIR/templates/docker-compose.deployment.${EUNOMIA_DEPLOYMENT_MODE}.yml
   if [ ! -f "$COMPOSE_FILE" ]; then
@@ -147,3 +197,6 @@ eunomia::deploy() {
 }
 
 export -f eunomia::deploy
+
+export -f eunomia::deploy_script
+export -f eunomia::deploy_service

@@ -13,6 +13,9 @@ core() {
     exit 0
   fi
 
+  # @TODO avoid to re base64 decode
+  export FLOW_CI=false
+
   eunomia::show_version_info
 
   # eunomia::prepare
