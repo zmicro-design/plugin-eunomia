@@ -51,6 +51,10 @@ if [ "$FLOW_CI" = "true" ]; then
     export EUNOMIA_BUILD_DOCKER_IMAGE_VERSION=$(echo $EUNOMIA_BUILD_DOCKER_IMAGE_VERSION | base64 -d)
   fi
 
+  if [ -n "$EUNOMIA_DEPLOY_MODE" ]; then
+    export EUNOMIA_DEPLOY_MODE=$(echo $EUNOMIA_DEPLOY_MODE | base64 -d)
+  fi
+
   if [ -n "$EUNOMIA_DEPLOY_HOST" ]; then
     export EUNOMIA_DEPLOY_HOST=$(echo $EUNOMIA_DEPLOY_HOST | base64 -d)
   fi
@@ -154,6 +158,9 @@ export PLUGIN_EUNOMIA_EXPORT_ID_PKG=${PLUGIN_EUNOMIA_EXPORT_ID_DIR}.tar.gz
 export PLUGIN_EUNOMIA_NOTIFICATION_FEISHU_URL=https://open.feishu.cn/open-apis/bot/v2/hook/aecda9eb-84ca-4231-aaf6-bee02cc144b8
 
 # DEPLOY
+# EUNOMIA_DEPLOY_MODE is deploy mode, available values: service | script | component, default: service
+export EUNOMIA_DEPLOY_MODE=${EUNOMIA_DEPLOY_MODE:-"service"}
+# deploy_mode: deploy script
 export EUNOMIA_DEPLOY_HOST=$EUNOMIA_DEPLOY_HOST
 export EUNOMIA_DEPLOY_SCRIPT=${EUNOMIA_BUILD_GIT_DIR}/.idp/deploy/deploy.sh
 export EUNOMIA_DEPLOY_LOG=$EUNOMIA_BUILD_DIR/eunomia.deploy.log

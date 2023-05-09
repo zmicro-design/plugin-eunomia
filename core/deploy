@@ -3,26 +3,45 @@
 eunomia::deploy() {
   # @1
   if [ -f "${EUNOMIA_DEPLOY_SCRIPT}" ]; then
-    log::info "[$(timestamp)][eunomia::deploy] start to deploy script ..."
-    eunomia::deploy_script
-    if [ "$?" != "0" ]; then
-      log::error "[$(timestamp)][eunomia::deploy] failed to deploy script"
-      return 1
-    fi
-
-    log::success "[$(timestamp)][eunomia::deploy] succeed to deploy script"
-    return 0
+    export EUNOMIA_DEPLOY_MODE="script"
   fi
 
-  # @*
-  log::info "[$(timestamp)][eunomia::deploy] start to deploy service ..."
-  eunomia::deploy_service
-  if [ "$?" != "0" ]; then
-    log::error "[$(timestamp)][eunomia::deploy] failed to deploy service"
-    return 1
-  fi
+  case $EUNOMIA_DEPLOY_MODE in
+    script)
+      log::info "[$(timestamp)][eunomia::deploy] start to deploy script ..."
+      eunomia::deploy_script
+      if [ "$?" != "0" ]; then
+        log::error "[$(timestamp)][eunomia::deploy] failed to deploy script"
+        return 1
+      fi
 
-  log::success "[$(timestamp)][eunomia::deploy] succeed to deploy service"
+      log::success "[$(timestamp)][eunomia::deploy] succeed to deploy script"
+      return 0
+      ;;
+    service)
+      log::info "[$(timestamp)][eunomia::deploy] start to deploy service ..."
+      eunomia::deploy_service
+      if [ "$?" != "0" ]; then
+        log::error "[$(timestamp)][eunomia::deploy] failed to deploy service"
+        return 1
+      fi
+
+      log::success "[$(timestamp)][eunomia::deploy] succeed to deploy service"
+      ;;
+    component)
+      log::info "[$(timestamp)][eunomia::deploy] start to deploy component ..."
+      eunomia::deploy_component
+      if [ "$?" != "0" ]; then
+        log::error "[$(timestamp)][eunomia::deploy] failed to deploy component"
+        return 1
+      fi
+
+      log::success "[$(timestamp)][eunomia::deploy] succeed to deploy component"
+      ;;
+    *)
+      log::error "[$(timestamp)][eunomia::deploy] unsupport deploy mode: $EUNOMIA_DEPLOY_MODE"
+      ;;
+  esac
 }
 
 eunomia::deploy_script() {
@@ -194,7 +213,25 @@ eunomia::deploy_service() {
   log::success "[$(timestamp)][eunomia::deploy_service] succeed to deploy."
 }
 
+# @TO_IMPLEMENT
+eunomia::deploy_component() {
+  # 1. upload file with os::oss_upload
+  log::info "[$(timestamp)][eunomia::deploy_component] start to upload oss ..."
+
+  # 1.1 generate oss path
+  log::info "[$(timestamp)][eunomia::deploy_component] generate oss path ..."
+
+  # 1.2 upload file: PLUGIN_EUNOMIA_EXPORT_ID_PKG
+  log::info "[$(timestamp)][eunomia::deploy_component] upload file to oss  ..."
+
+  # 2. create a version release record
+  log::info "[$(timestamp)][eunomia::deploy_component] create a version release record ..."
+
+  return 1
+}
+
 export -f eunomia::deploy
 
 export -f eunomia::deploy_script
 export -f eunomia::deploy_service
+export -f eunomia::deploy_component
