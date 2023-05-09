@@ -28,7 +28,6 @@ eunomia::deploy_script() {
   export PLUGIN_EUNOMIA_ENV_SHELL=$PLUGIN_EUNOMIA_DEPLOYMENT_ENV_SHELL
   log::info "[$(timestamp)] start to generate deployment env shell at ${PLUGIN_EUNOMIA_ENV_SHELL} ..."
   plugin::run_zx env_shell
-
   if [ "$?" != "0" ]; then
     log::error "[$(timestamp)] failed to generate deployment env shell at ${PLUGIN_EUNOMIA_ENV_SHELL}."
     return 1
@@ -37,11 +36,12 @@ eunomia::deploy_script() {
 
   log::info "[$(timestamp)][eunomia::deploy_script] start to execute deploy.sh on ${EUNOMIA_DEPLOY_HOST} ..."
 
+  # @TODO fix gzcaas exit with scriptfile cause process exit
+  set +e
   gzcaas client \
     -s ${EUNOMIA_DEPLOY_HOST} \
     --scriptfile ${EUNOMIA_DEPLOY_SCRIPT} \
     --envfile ${PLUGIN_EUNOMIA_DEPLOYMENT_ENV_SHELL}
-
   if [ "$?" != "0" ]; then
     log::error "[$(timestamp)][eunomia::deploy_script] failed to execute deploy.sh"
     return 1
