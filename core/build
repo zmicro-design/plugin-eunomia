@@ -31,17 +31,6 @@ eunomia::build() {
     log::info "[$(timestamp)] dockerfiles not found repo, so use local Dockerfile ..." 
   fi
 
-  export PLUGIN_EUNOMIA_ENV_SHELL=${EUNOMIA_BUILD_DIR}/.env.shell
-  # env shell
-  log::info "[$(timestamp)] start to generate env shell at ${PLUGIN_EUNOMIA_ENV_SHELL} ..."
-  plugin::run_zx env_shell
-  if [ "$?" != "0" ]; then
-    log::error "[$(timestamp)] failed to generate env shell at ${PLUGIN_EUNOMIA_ENV_SHELL}."
-    return 1
-  fi
-  log::success "[$(timestamp)] succeed to generate env shell at ${PLUGIN_EUNOMIA_ENV_SHELL} ..."
-
-
   # ADD build files for dockerfile
   cat <<EOF >$EUNOMIA_BUILD_GIT_DIR/build.history.eunomia
 # GIT
@@ -70,7 +59,7 @@ EOF
   # @DEPRECIATED @TO_REMOVE @TODO Compatible with old version
   cat $EUNOMIA_BUILD_GIT_DIR/build.history.eunomia >$EUNOMIA_BUILD_GIT_DIR/build.eunomia.js
 
-  export PIPELINE_DOCKER_BUILD_ARGS_ENVFILE=$PLUGIN_EUNOMIA_ENV_SHELL
+  export PIPELINE_DOCKER_BUILD_ARGS_ENVFILE=$EUNOMIA_BUILD_ENV_SHELL
   zmicro pipeline bp
   if [ "$?" != "0" ]; then
     log::error "[eunomia::build] failed to build"

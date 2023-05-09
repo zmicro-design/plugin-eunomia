@@ -8,8 +8,8 @@ services:
       MODE: production
       UPSTREAM: ${PLUGIN_EUNOMIA_DEPLOYMENT_NAME}_upstream:8080
     env_file:
-      - ${PLUGIN_EUNOMIA_DEPLOYMENT_ENV_CONFIG}
-      - ${PLUGIN_EUNOMIA_ENV_SHELL}
+      - ${EUNOMIA_DEPLOYMENT_ENV_CONFIG}
+      - ${EUNOMIA_BUILD_ENV_SHELL}
     mem_limit: "${EUNOMIA_DEPLOYMENT_MEM_LIMIT}m"
     cpus: ${EUNOMIA_DEPLOYMENT_CPU_LIMIT}
 
@@ -21,8 +21,8 @@ services:
       PORT: 8080
       TZ: Asia/Shanghai
     env_file:
-      - ${PLUGIN_EUNOMIA_DEPLOYMENT_ENV_CONFIG}
-      - ${PLUGIN_EUNOMIA_ENV_SHELL}
+      - ${EUNOMIA_DEPLOYMENT_ENV_CONFIG}
+      - ${EUNOMIA_BUILD_ENV_SHELL}
     mem_limit: "${EUNOMIA_DEPLOYMENT_MEM_LIMIT}m"
     cpus: ${EUNOMIA_DEPLOYMENT_CPU_LIMIT}
 

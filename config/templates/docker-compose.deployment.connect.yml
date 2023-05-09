@@ -7,8 +7,8 @@ services:
       TZ: Asia/Shanghai
       MODE: production
     env_file:
-      - ${PLUGIN_EUNOMIA_DEPLOYMENT_ENV_CONFIG}
-      - ${PLUGIN_EUNOMIA_ENV_SHELL}
+      - ${EUNOMIA_DEPLOYMENT_ENV_CONFIG}
+      - ${EUNOMIA_BUILD_ENV_SHELL}
     mem_limit: "${EUNOMIA_DEPLOYMENT_MEM_LIMIT}m"
     cpus: ${EUNOMIA_DEPLOYMENT_CPU_LIMIT}
 

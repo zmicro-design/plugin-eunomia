@@ -1,6 +1,7 @@
 #!/bin/bash
 
-set -e
+# fix tee modify the exit code: https://stackoverflow.com/questions/6871859/piping-command-output-to-tee-but-also-save-exit-code-of-command
+set -o pipefail
 
 help() {
   echo "Usage:"
@@ -10,8 +11,11 @@ help() {
 core() {
   if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
     help
-    exit 0
+    return 0
   fi
+
+  # @TODO avoid to re base64 decode
+  export FLOW_CI=false
 
   eunomia::show_version_info
 
@@ -29,7 +33,7 @@ core() {
   eunomia::deploy
   if [ "$?" != "0" ]; then
     log::error "[deploy] failed to deploy"
-    exit 1
+    return 1
   fi
 }
 
@@ -38,11 +42,13 @@ run() {
   # eunomia::hook_deploy_start
 
   set -o pipefail
+  
+  log::info "[$(timestamp)][deploy] start to deploy ..."
   core "$@" 2>&1 | tee -a $EUNOMIA_DEPLOY_LOG
   # end
   if [ "$?" != "0" ]; then
     eunomia::hook_deploy_failed
-    log::info "[$(timestamp)][deploy] failed to deploy."
+    log::error "[$(timestamp)][deploy] failed to deploy."
     exit 1
   else
     eunomia::hook_deploy_succeed

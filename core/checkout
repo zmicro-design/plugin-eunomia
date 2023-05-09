@@ -22,15 +22,15 @@ eunomia::checkout() {
     exit 1
   fi
 
-  log::info "[eunomia::checkout] checkouting $EUNOMIA_GIT_REPOSITORY at branch $EUNOMIA_GIT_BRANCH ..."
+  log::info "[$(timestamp)][eunomia::checkout] checkouting $EUNOMIA_GIT_REPOSITORY at branch $EUNOMIA_GIT_BRANCH ..."
   git::checkout $EUNOMIA_GIT_BRANCH $EUNOMIA_GIT_COMMIT $EUNOMIA_GIT_CHECKOUT_DIR $EUNOMIA_GIT_REPOSITORY
   if [ "$?" != "0" ]; then
-    log::error "[eunomia::checkout] failed to checkout $EUNOMIA_GIT_REPOSITORY at branch $EUNOMIA_GIT_BRANCH."
+    log::error "[$(timestamp)][eunomia::checkout] failed to checkout $EUNOMIA_GIT_REPOSITORY at branch $EUNOMIA_GIT_BRANCH."
     return 1
   fi
 
   # @TODO add .eunomia to git repository
-  log::info "[eunomia::checkout] generating .eunomia at $EUNOMIA_GIT_CHECKOUT_DIR/.eunomia ..."
+  log::info "[$(timestamp)][eunomia::checkout] generating .eunomia at $EUNOMIA_GIT_CHECKOUT_DIR/.eunomia ..."
   cat <<EOF >$EUNOMIA_GIT_CHECKOUT_DIR/.eunomia
 # GIT
 # BUILD ID
@@ -67,10 +67,10 @@ EUNOMIA_RUNNER_ARCH=${EUNOMIA_RUNNER_ARCH}
 EUNOMIA_RUNNER_USER=${EUNOMIA_RUNNER_USER}
 EOF
 
-  log::info "[eunomia::checkout] show $EUNOMIA_GIT_CHECKOUT_DIR/.eunomia ..."
-  cat $EUNOMIA_GIT_CHECKOUT_DIR/.eunomia
+  # log::info "[eunomia::checkout] show $EUNOMIA_GIT_CHECKOUT_DIR/.eunomia ..."
+  # cat $EUNOMIA_GIT_CHECKOUT_DIR/.eunomia
 
-  log::success "[eunomia::checkout] successfully checkout $EUNOMIA_GIT_REPOSITORY at branch $EUNOMIA_GIT_BRANCH."
+  log::success "[$(timestamp)][eunomia::checkout] successfully checkout $EUNOMIA_GIT_REPOSITORY at branch $EUNOMIA_GIT_BRANCH."
 }
 
 export -f eunomia::checkout

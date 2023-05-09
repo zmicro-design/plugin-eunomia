@@ -51,6 +51,10 @@ if [ "$FLOW_CI" = "true" ]; then
     export EUNOMIA_BUILD_DOCKER_IMAGE_VERSION=$(echo $EUNOMIA_BUILD_DOCKER_IMAGE_VERSION | base64 -d)
   fi
 
+  if [ -n "$EUNOMIA_DEPLOY_HOST" ]; then
+    export EUNOMIA_DEPLOY_HOST=$(echo $EUNOMIA_DEPLOY_HOST | base64 -d)
+  fi
+
   if [ -n "$EUNOMIA_DEPLOYMENT_MODE" ] && [ "$EUNOMIA_DEPLOYMENT_MODE" != "service" ]; then
     export EUNOMIA_DEPLOYMENT_MODE=$(echo $EUNOMIA_DEPLOYMENT_MODE | base64 -d)
   fi
@@ -127,6 +131,7 @@ export EUNOMIA_BUILD_DIR=${PLUGIN_DATA}/builds/$EUNOMIA_BUILD_ID
 export EUNOMIA_BUILD_ENV=$EUNOMIA_BUILD_DIR/.eunomia
 export EUNOMIA_BUILD_LOG=$EUNOMIA_BUILD_DIR/eunomia.build.log
 export EUNOMIA_BUILD_GIT_DIR=$EUNOMIA_BUILD_DIR/repository
+export EUNOMIA_BUILD_ENV_SHELL=${EUNOMIA_BUILD_DIR}/.env.shell
 #
 export EUNOMIA_BUILD_TIMESTAMP=${EUNOMIA_BUILD_TIMESTAMP:-$(date)}
 # Build Docker Image
@@ -149,6 +154,8 @@ export PLUGIN_EUNOMIA_EXPORT_ID_PKG=${PLUGIN_EUNOMIA_EXPORT_ID_DIR}.tar.gz
 export PLUGIN_EUNOMIA_NOTIFICATION_FEISHU_URL=https://open.feishu.cn/open-apis/bot/v2/hook/aecda9eb-84ca-4231-aaf6-bee02cc144b8
 
 # DEPLOY
+export EUNOMIA_DEPLOY_HOST=$EUNOMIA_DEPLOY_HOST
+export EUNOMIA_DEPLOY_SCRIPT=${EUNOMIA_BUILD_GIT_DIR}/.idp/deploy/deploy.sh
 export EUNOMIA_DEPLOY_LOG=$EUNOMIA_BUILD_DIR/eunomia.deploy.log
 
 # CUSTOM SCRIPT
@@ -156,6 +163,12 @@ export EUNOMIA_DEPLOY_LOG=$EUNOMIA_BUILD_DIR/eunomia.deploy.log
 
 # ============= SERVICE ==============
 # DEPLOYMENT
+# env
+export EUNOMIA_DEPLOYMENT_DIR=${PLUGIN_DATA}/deployments/${EUNOMIA_TASK_ID}
+export EUNOMIA_DEPLOYMENT_ENV_SHELL=${EUNOMIA_DEPLOYMENT_DIR}/.env.shell
+export EUNOMIA_DEPLOYMENT_ENV_CONFIG=${EUNOMIA_DEPLOYMENT_DIR}/.env.config
+export EUNOMIA_DEPLOYMENT_MANIFEST_FILE=${EUNOMIA_DEPLOYMENT_DIR}/docker-compose.yml
+#
 export EUNOMIA_DEPLOYMENT_MODE=${EUNOMIA_DEPLOYMENT_MODE:-"service"}
 export EUNOMIA_DEPLOYMENT_IGNORE=${EUNOMIA_DEPLOYMENT_IGNORE:-"false"}
 # Resource Limit
@@ -182,6 +195,10 @@ fi
 
 if [ ! -d "$PLUGIN_EUNOMIA_EXPORT_DIR" ]; then
   mkdir -p $PLUGIN_EUNOMIA_EXPORT_DIR
+fi
+
+if [ ! -d "$EUNOMIA_DEPLOYMENT_DIR" ]; then
+  mkdir -p $EUNOMIA_DEPLOYMENT_DIR
 fi
 
 # # GIT
