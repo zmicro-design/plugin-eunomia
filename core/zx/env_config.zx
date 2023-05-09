@@ -17,8 +17,8 @@ async function main() {
     throw new Error('env EUNOMIA_DEPLOYMENT_CONFIG_ID is not set');
   }
 
-  if (!process.env.PLUGIN_EUNOMIA_DEPLOYMENT_ENV_CONFIG) {
-    throw new Error('env PLUGIN_EUNOMIA_DEPLOYMENT_ENV_CONFIG is not set');
+  if (!process.env.EUNOMIA_DEPLOYMENT_ENV_CONFIG) {
+    throw new Error('env EUNOMIA_DEPLOYMENT_ENV_CONFIG is not set');
   }
 
   const response = await fetch(`${process.env.PLUGIN_EUNOMIA_CONFIG_CENTER}/api/open/v1/client/config/${process.env.EUNOMIA_DEPLOYMENT_CONFIG_ID}`, {
@@ -38,7 +38,7 @@ async function main() {
     throw new Error(`unexpected response ${data.message}`);
   }
 
-  const configFilePath = process.env.PLUGIN_EUNOMIA_DEPLOYMENT_ENV_CONFIG
+  const configFilePath = process.env.EUNOMIA_DEPLOYMENT_ENV_CONFIG
   console.log('write config file:', configFilePath);
   fs.writeFileSync(configFilePath, data.result.config);
 }

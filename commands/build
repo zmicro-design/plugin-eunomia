@@ -72,6 +72,15 @@ core() {
     done
   fi
 
+  # env shell
+  log::info "[$(timestamp)] start to generate env shell at ${EUNOMIA_BUILD_ENV_SHELL} ..."
+  plugin::run_zx env_shell
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)] failed to generate env shell at ${EUNOMIA_BUILD_ENV_SHELL}."
+    return 1
+  fi
+  log::success "[$(timestamp)] succeed to generate env shell at ${EUNOMIA_BUILD_ENV_SHELL} ..."
+
   if [ -n "$FORCE_BUILD" ]; then
     # build
     log::info "[$(timestamp)][build] force building ..."

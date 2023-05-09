@@ -125,9 +125,9 @@ function isReadable(str) {
 }
 
 function main() {
-  const writeFileName = process.env.PLUGIN_EUNOMIA_ENV_SHELL
+  const writeFileName = process.env.EUNOMIA_BUILD_ENV_SHELL
   if (!writeFileName) {
-    throw new Error('env PLUGIN_EUNOMIA_ENV_SHELL is not set');
+    throw new Error('env EUNOMIA_BUILD_ENV_SHELL is not set');
   }
 
   const env = process.env;
@@ -203,7 +203,7 @@ function main() {
     new_envs.push(`${key}=${value}`);
   }
 
-  console.log('write deployment dot env file:', writeFileName);
+  console.log('clean build/deploy shell env:', writeFileName);
   fs.writeFileSync(writeFileName, new_envs.join('\n'));
 }
 

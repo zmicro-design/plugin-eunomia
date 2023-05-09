@@ -1,99 +1,98 @@
 #!/bin/bash
 
 eunomia::deploy() {
-  log::info "[$(timestamp)] start to deploy ..."
-
-  # 检测脚本
+  # @1
   if [ -f "${EUNOMIA_DEPLOY_SCRIPT}" ]; then
+    log::info "[$(timestamp)] start to deploy script ..."
     eunomia::deploy_script
     if [ "$?" != "0" ]; then
-      log::error "[$(timestamp)] 部署脚本执行失败"
+      log::error "[$(timestamp)] failed to deploy script"
       return 1
     fi
 
-    log::success "[$(timestamp)] 部署脚本执行成功 ..."
+    log::success "[$(timestamp)] succeed to deploy script"
     return 0
   fi
 
+  # @*
+  log::info "[$(timestamp)] start to deploy service ..."
   eunomia::deploy_service
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)] failed to deploy service"
+    return 1
+  fi
+
+  log::success "[$(timestamp)] succeed to deploy service"
 }
 
 eunomia::deploy_script() {
-  export PLUGIN_EUNOMIA_DEPLOYMENT_DIR=${PLUGIN_DATA}/deployments/${EUNOMIA_TASK_ID}
-  export PLUGIN_EUNOMIA_DEPLOYMENT_ENV_SHELL=${PLUGIN_EUNOMIA_DEPLOYMENT_DIR}/.env.shell
-
-  mkdir -p $PLUGIN_EUNOMIA_DEPLOYMENT_DIR
-
-  # env shell
-  export PLUGIN_EUNOMIA_ENV_SHELL=$PLUGIN_EUNOMIA_DEPLOYMENT_ENV_SHELL
-  log::info "[$(timestamp)] start to generate deployment env shell at ${PLUGIN_EUNOMIA_ENV_SHELL} ..."
-  plugin::run_zx env_shell
-  if [ "$?" != "0" ]; then
-    log::error "[$(timestamp)] failed to generate deployment env shell at ${PLUGIN_EUNOMIA_ENV_SHELL}."
+  if [ -z "$EUNOMIA_DEPLOY_HOST" ]; then
+    log::error "[eunomia::deploy_script] EUNOMIA_DEPLOY_HOST is required"
     return 1
   fi
-  log::success "[$(timestamp)] succeed to generate deployment env shell at ${PLUGIN_EUNOMIA_ENV_SHELL} ..."
 
-  log::info "[$(timestamp)][eunomia::deploy_script] start to execute deploy.sh on ${EUNOMIA_DEPLOY_HOST} ..."
+  if [ ! -f "$EUNOMIA_DEPLOY_SCRIPT" ]; then
+    log::error "[eunomia::deploy_script] EUNOMIA_DEPLOY_SCRIPT is required"
+    return 1
+  fi
 
-  # @TODO fix gzcaas exit with scriptfile cause process exit
-  set +e
+  if [ ! -f "$EUNOMIA_BUILD_ENV_SHELL" ]; then
+    log::error "[eunomia::deploy_script] EUNOMIA_BUILD_ENV_SHELL is required"
+    return 1
+  fi
+
   gzcaas client \
     -s ${EUNOMIA_DEPLOY_HOST} \
     --scriptfile ${EUNOMIA_DEPLOY_SCRIPT} \
-    --envfile ${PLUGIN_EUNOMIA_DEPLOYMENT_ENV_SHELL}
+    --envfile ${EUNOMIA_BUILD_ENV_SHELL}
   if [ "$?" != "0" ]; then
-    log::error "[$(timestamp)][eunomia::deploy_script] failed to execute deploy.sh"
+    log::error "[$(timestamp)][eunomia::deploy_script] failed to execute with gzcaas"
     return 1
   fi
 
-  log::success "[$(timestamp)][eunomia::deploy_script] succeed to execute deploy.sh"
+  log::success "[$(timestamp)][eunomia::deploy_script] succeed to execute with gzcaas"
 }
 
 eunomia::deploy_service() {
   # config
   if [ -z "$PLUGIN_EUNOMIA_DOCKER_REGISTRY" ]; then
-    log::error "[eunomia::deploy] PLUGIN_EUNOMIA_DOCKER_REGISTRY is required"
+    log::error "[eunomia::deploy_service] PLUGIN_EUNOMIA_DOCKER_REGISTRY is required"
     return 1
   fi
 
   if [ -z "$PLUGIN_EUNOMIA_CONFIG_CENTER" ]; then
-    log::error "[eunomia::deploy] PLUGIN_EUNOMIA_CONFIG_CENTER is required"
+    log::error "[eunomia::deploy_service] PLUGIN_EUNOMIA_CONFIG_CENTER is required"
     return 1
   fi
 
   if [ -z "$PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_ID" ]; then
-    log::error "[eunomia::deploy] PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_ID is required"
+    log::error "[eunomia::deploy_service] PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_ID is required"
     return 1
   fi
 
   if [ -z "$PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_SECRET" ]; then
-    log::error "[eunomia::deploy] PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_SECRET is required"
+    log::error "[eunomia::deploy_service] PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_SECRET is required"
     return 1
   fi
 
   # dynamic runner
   if [ -z "$EUNOMIA_GIT_REPOSITORY" ]; then
-    log::error "[eunomia::deploy] EUNOMIA_GIT_REPOSITORY is required"
+    log::error "[eunomia::deploy_service] EUNOMIA_GIT_REPOSITORY is required"
     return 1
   fi
 
   if [ -z "$EUNOMIA_GIT_COMMIT" ]; then
-    log::error "[eunomia::deploy] EUNOMIA_GIT_COMMIT is required"
+    log::error "[eunomia::deploy_service] EUNOMIA_GIT_COMMIT is required"
     return 1
   fi
 
   if [ -z "$EUNOMIA_TASK_ID" ]; then
-    log::error "[eunomia::deploy] EUNOMIA_TASK_ID is required"
+    log::error "[eunomia::deploy_service] EUNOMIA_TASK_ID is required"
     return 1
   fi
 
   #
   export PLUGIN_EUNOMIA_DEPLOYMENT_IMAGE_NAME=$(echo ${EUNOMIA_GIT_REPOSITORY#http://10.27.249.150:8888/})
-  export PLUGIN_EUNOMIA_DEPLOYMENT_DIR=${PLUGIN_DATA}/deployments/${EUNOMIA_TASK_ID}
-  export PLUGIN_EUNOMIA_DEPLOYMENT_ENV_SHELL=${PLUGIN_EUNOMIA_DEPLOYMENT_DIR}/.env.shell
-  export PLUGIN_EUNOMIA_DEPLOYMENT_ENV_CONFIG=${PLUGIN_EUNOMIA_DEPLOYMENT_DIR}/.env.config
-  export PLUGIN_EUNOMIA_DEPLOYMENT_MANIFEST_FILE=${PLUGIN_EUNOMIA_DEPLOYMENT_DIR}/docker-compose.yml
 
   # DOCKER_HOST
   case $EUNOMIA_DEPLOYMENT_ENV in
@@ -123,36 +122,34 @@ eunomia::deploy_service() {
     ;;
   esac
 
-  mkdir -p $PLUGIN_EUNOMIA_DEPLOYMENT_DIR
-
   # env shell
-  export PLUGIN_EUNOMIA_ENV_SHELL=$PLUGIN_EUNOMIA_DEPLOYMENT_ENV_SHELL
-  log::info "[$(timestamp)] start to generate deployment env shell at ${PLUGIN_EUNOMIA_ENV_SHELL} ..."
+  export EUNOMIA_BUILD_ENV_SHELL=$EUNOMIA_DEPLOYMENT_ENV_SHELL
+  log::info "[$(timestamp)] start to generate deployment env shell at ${EUNOMIA_BUILD_ENV_SHELL} ..."
   plugin::run_zx env_shell
   if [ "$?" != "0" ]; then
-    log::error "[$(timestamp)] failed to generate deployment env shell at ${PLUGIN_EUNOMIA_ENV_SHELL}."
+    log::error "[$(timestamp)] failed to generate deployment env shell at ${EUNOMIA_BUILD_ENV_SHELL}."
     return 1
   fi
-  log::success "[$(timestamp)] succeed to generate deployment env shell at ${PLUGIN_EUNOMIA_ENV_SHELL} ..."
+  log::success "[$(timestamp)] succeed to generate deployment env shell at ${EUNOMIA_BUILD_ENV_SHELL} ..."
 
   # env config
   # @TODO avoid docker-compose env file error when file not found
-  echo > $PLUGIN_EUNOMIA_DEPLOYMENT_ENV_CONFIG
+  echo > $EUNOMIA_DEPLOYMENT_ENV_CONFIG
   #
   if [ -n "$EUNOMIA_DEPLOYMENT_CONFIG_ID" ]; then
-    log::info "[$(timestamp)] start to generate deployment env config at ${PLUGIN_EUNOMIA_DEPLOYMENT_ENV_CONFIG} ..."
+    log::info "[$(timestamp)] start to generate deployment env config at ${EUNOMIA_DEPLOYMENT_ENV_CONFIG} ..."
     plugin::run_zx env_config
     if [ "$?" != "0" ]; then
-      log::error "[$(timestamp)] failed to generate deployment env config at ${PLUGIN_EUNOMIA_DEPLOYMENT_ENV_CONFIG}."
+      log::error "[$(timestamp)] failed to generate deployment env config at ${EUNOMIA_DEPLOYMENT_ENV_CONFIG}."
       return 1
     fi
-    log::success "[$(timestamp)] succeed to generate deployment env config at ${PLUGIN_EUNOMIA_DEPLOYMENT_ENV_CONFIG} ..."
+    log::success "[$(timestamp)] succeed to generate deployment env config at ${EUNOMIA_DEPLOYMENT_ENV_CONFIG} ..."
   fi
 
   #
-  export PLUGIN_EUNOMIA_DEPLOYMENT_DATA_DIR=${PLUGIN_EUNOMIA_DEPLOYMENT_DIR}/data
-  export PLUGIN_EUNOMIA_DEPLOYMENT_CONFIG_DIR=${PLUGIN_EUNOMIA_DEPLOYMENT_DIR}/configs
-  export PLUGIN_EUNOMIA_DEPLOYMENT_LOG_DIR=${PLUGIN_EUNOMIA_DEPLOYMENT_DIR}/logs
+  export PLUGIN_EUNOMIA_DEPLOYMENT_DATA_DIR=${EUNOMIA_DEPLOYMENT_DIR}/data
+  export PLUGIN_EUNOMIA_DEPLOYMENT_CONFIG_DIR=${EUNOMIA_DEPLOYMENT_DIR}/configs
+  export PLUGIN_EUNOMIA_DEPLOYMENT_LOG_DIR=${EUNOMIA_DEPLOYMENT_DIR}/logs
   if [ ! -d "$PLUGIN_EUNOMIA_DEPLOYMENT_DATA_DIR" ]; then
     mkdir -p $PLUGIN_EUNOMIA_DEPLOYMENT_DATA_DIR
   fi
@@ -176,9 +173,9 @@ eunomia::deploy_service() {
     return 1
   fi
 
-  docker-compose config > $PLUGIN_EUNOMIA_DEPLOYMENT_MANIFEST_FILE
+  docker-compose config > $EUNOMIA_DEPLOYMENT_MANIFEST_FILE
   # service manifest file
-  export COMPOSE_FILE=$PLUGIN_EUNOMIA_DEPLOYMENT_MANIFEST_FILE
+  export COMPOSE_FILE=$EUNOMIA_DEPLOYMENT_MANIFEST_FILE
 
   log::info "[$(timestamp)][eunomia::deploy] Environment: ${EUNOMIA_DEPLOYMENT_ENV}"
   # log::info "[$(timestamp)][eunomia::deploy] Docker Service at: ${DOCKER_HOST:-Current_Host}"
