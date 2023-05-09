@@ -3,26 +3,26 @@
 eunomia::deploy() {
   # @1
   if [ -f "${EUNOMIA_DEPLOY_SCRIPT}" ]; then
-    log::info "[$(timestamp)] start to deploy script ..."
+    log::info "[$(timestamp)][eunomia::deploy] start to deploy script ..."
     eunomia::deploy_script
     if [ "$?" != "0" ]; then
-      log::error "[$(timestamp)] failed to deploy script"
+      log::error "[$(timestamp)][eunomia::deploy] failed to deploy script"
       return 1
     fi
 
-    log::success "[$(timestamp)] succeed to deploy script"
+    log::success "[$(timestamp)][eunomia::deploy] succeed to deploy script"
     return 0
   fi
 
   # @*
-  log::info "[$(timestamp)] start to deploy service ..."
+  log::info "[$(timestamp)][eunomia::deploy] start to deploy service ..."
   eunomia::deploy_service
   if [ "$?" != "0" ]; then
-    log::error "[$(timestamp)] failed to deploy service"
+    log::error "[$(timestamp)][eunomia::deploy] failed to deploy service"
     return 1
   fi
 
-  log::success "[$(timestamp)] succeed to deploy service"
+  log::success "[$(timestamp)][eunomia::deploy] succeed to deploy service"
 }
 
 eunomia::deploy_script() {
@@ -41,16 +41,17 @@ eunomia::deploy_script() {
     return 1
   fi
 
+  log::info "[$(timestamp)][eunomia::deploy_script] start to execute ..."
   gzcaas client \
     -s ${EUNOMIA_DEPLOY_HOST} \
     --scriptfile ${EUNOMIA_DEPLOY_SCRIPT} \
     --envfile ${EUNOMIA_BUILD_ENV_SHELL}
   if [ "$?" != "0" ]; then
-    log::error "[$(timestamp)][eunomia::deploy_script] failed to execute with gzcaas"
+    log::error "[$(timestamp)][eunomia::deploy_script] failed to execute"
     return 1
   fi
 
-  log::success "[$(timestamp)][eunomia::deploy_script] succeed to execute with gzcaas"
+  log::success "[$(timestamp)][eunomia::deploy_script] succeed to execute"
 }
 
 eunomia::deploy_service() {
@@ -117,33 +118,33 @@ eunomia::deploy_service() {
     fi
     ;;
   *)
-    log::error "[eunomia::deploy] unknown EUNOMIA_DEPLOYMENT_ENV: $EUNOMIA_DEPLOYMENT_ENV"
+    log::error "[$(timestamp)][eunomia::deploy_service] unknown EUNOMIA_DEPLOYMENT_ENV: $EUNOMIA_DEPLOYMENT_ENV"
     return 1
     ;;
   esac
 
   # env shell
   export EUNOMIA_BUILD_ENV_SHELL=$EUNOMIA_DEPLOYMENT_ENV_SHELL
-  log::info "[$(timestamp)] start to generate deployment env shell at ${EUNOMIA_BUILD_ENV_SHELL} ..."
+  log::info "[$(timestamp)][eunomia::deploy_service] start to generate deployment env shell at ${EUNOMIA_BUILD_ENV_SHELL} ..."
   plugin::run_zx env_shell
   if [ "$?" != "0" ]; then
-    log::error "[$(timestamp)] failed to generate deployment env shell at ${EUNOMIA_BUILD_ENV_SHELL}."
+    log::error "[$(timestamp)][eunomia::deploy_service] failed to generate deployment env shell at ${EUNOMIA_BUILD_ENV_SHELL}."
     return 1
   fi
-  log::success "[$(timestamp)] succeed to generate deployment env shell at ${EUNOMIA_BUILD_ENV_SHELL} ..."
+  log::success "[$(timestamp)][eunomia::deploy_service] succeed to generate deployment env shell at ${EUNOMIA_BUILD_ENV_SHELL} ..."
 
   # env config
   # @TODO avoid docker-compose env file error when file not found
   echo > $EUNOMIA_DEPLOYMENT_ENV_CONFIG
   #
   if [ -n "$EUNOMIA_DEPLOYMENT_CONFIG_ID" ]; then
-    log::info "[$(timestamp)] start to generate deployment env config at ${EUNOMIA_DEPLOYMENT_ENV_CONFIG} ..."
+    log::info "[$(timestamp)][eunomia::deploy_service] start to generate deployment env config at ${EUNOMIA_DEPLOYMENT_ENV_CONFIG} ..."
     plugin::run_zx env_config
     if [ "$?" != "0" ]; then
-      log::error "[$(timestamp)] failed to generate deployment env config at ${EUNOMIA_DEPLOYMENT_ENV_CONFIG}."
+      log::error "[$(timestamp)][eunomia::deploy_service] failed to generate deployment env config at ${EUNOMIA_DEPLOYMENT_ENV_CONFIG}."
       return 1
     fi
-    log::success "[$(timestamp)] succeed to generate deployment env config at ${EUNOMIA_DEPLOYMENT_ENV_CONFIG} ..."
+    log::success "[$(timestamp)][eunomia::deploy_service] succeed to generate deployment env config at ${EUNOMIA_DEPLOYMENT_ENV_CONFIG} ..."
   fi
 
   #
@@ -169,7 +170,7 @@ eunomia::deploy_service() {
   # generate manifest file from template
   export COMPOSE_FILE=$PLUGIN_CONFIG_DIR/templates/docker-compose.deployment.${EUNOMIA_DEPLOYMENT_MODE}.yml
   if [ ! -f "$COMPOSE_FILE" ]; then
-    log::error "[$(timestamp)][eunomia::deploy] unsupport deployment mode: ${EUNOMIA_DEPLOYMENT_MODE}"
+    log::error "[$(timestamp)][eunomia::deploy_service] unsupport deployment mode: ${EUNOMIA_DEPLOYMENT_MODE}"
     return 1
   fi
 
@@ -177,20 +178,20 @@ eunomia::deploy_service() {
   # service manifest file
   export COMPOSE_FILE=$EUNOMIA_DEPLOYMENT_MANIFEST_FILE
 
-  log::info "[$(timestamp)][eunomia::deploy] Environment: ${EUNOMIA_DEPLOYMENT_ENV}"
-  # log::info "[$(timestamp)][eunomia::deploy] Docker Service at: ${DOCKER_HOST:-Current_Host}"
+  log::info "[$(timestamp)][eunomia::deploy_service] Environment: ${EUNOMIA_DEPLOYMENT_ENV}"
+  # log::info "[$(timestamp)][eunomia::deploy_service] Docker Service at: ${DOCKER_HOST:-Current_Host}"
 
   local tmp_error=$(os::tmp_file)
-  log::info "[$(timestamp)][eunomia::deploy] start to deploy ..."
+  log::info "[$(timestamp)][eunomia::deploy_service] start to deploy ..."
   docker-compose up --detach --remove-orphans # 2>$tmp_error
   if [ "$?" != "0" ]; then
-    log::error "[$(timestamp)][eunomia::deploy] failed to deploy."
+    log::error "[$(timestamp)][eunomia::deploy_service] failed to deploy."
     cat $tmp_error
     cat $tmp_error >>$PLUGIN_EUNOMIA_DEPLOYMENT_ERROR_LOG
     return 1
   fi
 
-  log::success "[$(timestamp)][eunomia::deploy] succeed to deploy."
+  log::success "[$(timestamp)][eunomia::deploy_service] succeed to deploy."
 }
 
 export -f eunomia::deploy

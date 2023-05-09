@@ -16,6 +16,10 @@ core() {
 
   eunomia::show_version_info
 
+  log::info "[$(timestamp)][docker][flow] executor: $EUNOMIA_BUILD_AUTHOR($EUNOMIA_BUILD_AUTHOR_EMAI)"
+  log::info "[$(timestamp)][docker][flow] build id: $EUNOMIA_BUILD_ID"
+  log::info "[$(timestamp)][docker][flow] git branch:  $EUNOMIA_GIT_BRANCH (commit: $EUNOMIA_GIT_COMMIT)"
+
   # connect ignore build
   if [ "$EUNOMIA_DEPLOYMENT_MODE" = "connect" ]; then
     log::info "[$(timestamp)][docker][flow] ignore build because EUNOMIA_DEPLOYMENT_MODE is connect"

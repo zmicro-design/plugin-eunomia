@@ -203,7 +203,7 @@ function main() {
     new_envs.push(`${key}=${value}`);
   }
 
-  console.log('clean build/deploy shell env:', writeFileName);
+  // console.log('clean build/deploy shell env:', writeFileName);
   fs.writeFileSync(writeFileName, new_envs.join('\n'));
 }
 
