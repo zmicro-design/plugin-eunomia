@@ -215,6 +215,13 @@ eunomia::deploy_service() {
 
 # @TO_IMPLEMENT
 eunomia::deploy_component() {
+  # module_name: EUNOMIA_DEPLOY_COMPONENT_MODULE_NAME
+  #
+  # version_type: EUNOMIA_DEPLOY_COMPONENT_VERSION_TYPE
+  # cluster_version: EUNOMIA_DEPLOY_COMPONENT_CLUSTER_VERSION
+  # os: EUNOMIA_DEPLOY_COMPONENT_OS
+  # cpu_arch: EUNOMIA_DEPLOY_COMPONENT_CPU_ARCH
+
   # 1. upload file with os::oss_upload
   log::info "[$(timestamp)][eunomia::deploy_component] start to upload oss ..."
 

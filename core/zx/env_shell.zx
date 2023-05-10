@@ -192,6 +192,11 @@ function main() {
       value = decode(env[key]);
     }
 
+    // deploy component need base64 decode
+    if (key.startsWith('EUNOMIA_DEPLOY_COMPONENT_')) {
+      value = decode(env[key]);
+    }
+
     if (process.env.FLOW_CI === 'true') {
       if (!isBase64(env[key])) continue;
 
