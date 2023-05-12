@@ -150,7 +150,11 @@ run() {
   #   exit 0
   # fi
 
-  core "$@"
+  local log=$EUNOMIA_BUILD_DIR/build.log
+  core "$@" 2>&1 | tee -a $log
+  if [ -f "$log" ]; then
+    eunomia::hook_log $log
+  fi
 }
 
 run "$@"

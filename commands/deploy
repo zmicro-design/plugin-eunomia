@@ -14,6 +14,8 @@ core() {
     return 0
   fi
 
+  log::info "[$(timestamp)][deploy] start to deploy ..."
+
   # @TODO avoid to re base64 decode
   export FLOW_CI=false
 
@@ -32,28 +34,16 @@ core() {
 
   eunomia::deploy
   if [ "$?" != "0" ]; then
-    log::error "[deploy] failed to deploy"
+    log::error "[$(timestamp)][deploy] failed to deploy"
     return 1
   fi
 }
 
 run() {
-  # start
-  # eunomia::hook_deploy_start
-
-  set -o pipefail
-  
-  log::info "[$(timestamp)][deploy] start to deploy ..."
-  core "$@" 2>&1 | tee -a $EUNOMIA_DEPLOY_LOG
-  # end
-  if [ "$?" != "0" ]; then
-    eunomia::hook_deploy_failed
-    log::error "[$(timestamp)][deploy] failed to deploy."
-    exit 1
-  else
-    eunomia::hook_deploy_succeed
-    log::info "[$(timestamp)][deploy] succeed to deploy."
-    exit 0
+  local log=$EUNOMIA_BUILD_DIR/deploy.log
+  core "$@" 2>&1 | tee -a $log
+  if [ -f "$log" ]; then
+    eunomia::hook_log $log
   fi
 }
 

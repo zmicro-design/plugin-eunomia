@@ -14,11 +14,14 @@ core() {
     exit 0
   fi
 
-  eunomia::show_version_info
+  # @TODO avoid to re base64 decode
+  export FLOW_CI=false
 
-  log::info "[$(timestamp)][docker][flow] executor: $EUNOMIA_BUILD_AUTHOR($EUNOMIA_BUILD_AUTHOR_EMAI)"
-  log::info "[$(timestamp)][docker][flow] build id: $EUNOMIA_BUILD_ID"
-  log::info "[$(timestamp)][docker][flow] git branch:  $EUNOMIA_GIT_BRANCH (commit: $EUNOMIA_GIT_COMMIT)"
+  zmicro eunomia pre
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)][docker][flow] failed to eunomia pre."
+    return 1
+  fi
 
   # connect ignore build
   if [ "$EUNOMIA_DEPLOYMENT_MODE" = "connect" ]; then
@@ -26,8 +29,7 @@ core() {
     return 0
   fi
 
-  # @TODO avoid to re base64 decode
-  export FLOW_CI=false
+
 
   if [ -z "$EUNOMIA_GIT_BRANCH" ]; then
     log::error "[$(timestamp)][docker][flow] 无效发布分支，请重新配置发布分支."
@@ -46,6 +48,20 @@ core() {
   zmicro eunomia build
   if [ "$?" != "0" ]; then
     log::error "[$(timestamp)][docker][flow] failed to eunomia build."
+    return 1
+  fi
+
+  if [ "$EUNOMIA_FLOW_STAGE_DEPLOY_ENABLED" = "true" ]; then
+    zmicro eunomia deploy
+    if [ "$?" != "0" ]; then
+      log::error "[$(timestamp)][docker][flow] failed to eunomia deploy."
+      return 1
+    fi
+  fi
+
+  zmicro eunomia post
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)][docker][flow] failed to eunomia post."
     return 1
   fi
 }

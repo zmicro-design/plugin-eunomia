@@ -22,7 +22,11 @@ core() {
 }
 
 run() {
-  core "$@"
+  local log=$EUNOMIA_BUILD_DIR/checkout.log
+  core "$@" 2>&1 | tee -a $log
+  if [ -f "$log" ]; then
+    eunomia::hook_log $log
+  fi
 }
 
 run "$@"

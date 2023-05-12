@@ -63,8 +63,6 @@ eunomia::hook_build_succeed() {
   if [ -n "$EUNOMIA_SUCCEED_HOOK" ]; then
     log::info "[$(timestamp)][eunomia::hook_build_succeed] call $EUNOMIA_SUCCEED_HOOK ..."
     curl -s -X POST $EUNOMIA_SUCCEED_HOOK >>/dev/null
-
-    eunomia::hook_log $EUNOMIA_BUILD_LOG
   fi
 }
 
@@ -72,8 +70,6 @@ eunomia::hook_build_failed() {
   if [ -n "$EUNOMIA_FAILED_HOOK" ]; then
     log::info "[$(timestamp)][eunomia::hook_build_failed] call $EUNOMIA_FAILED_HOOK ..."
     curl -s -X POST $EUNOMIA_FAILED_HOOK >>/dev/null
-
-    eunomia::hook_log $EUNOMIA_BUILD_LOG
   fi
 }
 

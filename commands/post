@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# set -e
+
+help() {
+  echo "Usage:"
+  echo "  zmicro eunomia post"
+}
+
+core() {
+  if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    help
+    exit 0
+  fi
+
+  log::info "[$(timestamp)][post] branch: $EUNOMIA_GIT_BRANCH (commit: $EUNOMIA_GIT_COMMIT)"
+}
+
+run() {
+  local log=$EUNOMIA_BUILD_DIR/post.log
+  core "$@" 2>&1 | tee -a $log
+  if [ -f "$log" ]; then
+    eunomia::hook_log $log
+  fi
+}
+
+run "$@"
