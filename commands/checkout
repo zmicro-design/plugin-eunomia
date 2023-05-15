@@ -24,8 +24,12 @@ core() {
 run() {
   local log=$EUNOMIA_BUILD_DIR/checkout.log
   core "$@" 2>&1 | tee -a $log
-  if [ -f "$log" ]; then
+  if [ "$?" != "0" ]; then
     eunomia::hook_log $log
+    exit 1
+  else
+    eunomia::hook_log $log
+    exit 0
   fi
 }
 
