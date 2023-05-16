@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# set -e
+# fix tee modify the exit code: https://stackoverflow.com/questions/6871859/piping-command-output-to-tee-but-also-save-exit-code-of-command
+set -o pipefail
 
 help() {
   echo "Usage:"
@@ -19,8 +20,12 @@ core() {
 run() {
   local log=$EUNOMIA_BUILD_DIR/post.log
   core "$@" 2>&1 | tee -a $log
-  if [ -f "$log" ]; then
+  if [ "$?" != "0" ]; then
     eunomia::hook_log $log
+    exit 1
+  else
+    eunomia::hook_log $log
+    exit 0
   fi
 }
 

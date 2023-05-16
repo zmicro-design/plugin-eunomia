@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# set -e
+# fix tee modify the exit code: https://stackoverflow.com/questions/6871859/piping-command-output-to-tee-but-also-save-exit-code-of-command
+set -o pipefail
 
 help() {
   echo "Usage:"
@@ -18,7 +19,7 @@ core() {
   log::info "[$(timestamp)][pre] build id: $EUNOMIA_BUILD_ID"
   log::info "[$(timestamp)][pre] executor: $EUNOMIA_BUILD_AUTHOR($EUNOMIA_BUILD_AUTHOR_EMAIL)"
   log::info "[$(timestamp)][pre] git info:"
-  log::info "[$(timestamp)][pre]  url: $EUNOMIA_GIT_REPO_URL"
+  log::info "[$(timestamp)][pre]  url: $EUNOMIA_GIT_REPOSITORY"
   log::info "[$(timestamp)][pre]  branch: $EUNOMIA_GIT_BRANCH"
   log::info "[$(timestamp)][pre]  commit hash: $EUNOMIA_GIT_COMMIT"
   log::info "[$(timestamp)][pre]  commit message: $EUNOMIA_GIT_COMMIT_MESSAGE"
@@ -29,8 +30,12 @@ core() {
 run() {
   local log=$EUNOMIA_BUILD_DIR/pre.log
   core "$@" 2>&1 | tee -a $log
-  if [ -f "$log" ]; then
+  if [ "$?" != "0" ]; then
     eunomia::hook_log $log
+    exit 1
+  else
+    eunomia::hook_log $log
+    exit 0
   fi
 }
 

@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# set -e
+# fix tee modify the exit code: https://stackoverflow.com/questions/6871859/piping-command-output-to-tee-but-also-save-exit-code-of-command
+set -o pipefail
 
 help() {
   echo "Usage:"
@@ -81,29 +82,13 @@ core() {
   fi
   log::success "[$(timestamp)] succeed to generate env shell at ${EUNOMIA_BUILD_ENV_SHELL} ..."
 
-  if [ -n "$FORCE_BUILD" ]; then
-    # build
-    log::info "[$(timestamp)][build] force building ..."
-    eunomia::build
-    if [ "$?" != "0" ]; then
-      log::error "[$(timestamp)][build] failed to build"
-      eunomia::task_queue_done >>/dev/null
-      exit 1
-    fi
-  else
-    log::info "[$(timestamp)][build] checking ${PLUGIN_EUNOMIA_EXPORT_RUNNER_IMAGE} ..."
-    if [ "$(eunomia::is_built)" != "true" ]; then
-      # build
-      log::info "[$(timestamp)][build] no cache, building ..."
-      eunomia::build
-      if [ "$?" != "0" ]; then
-        log::error "[$(timestamp)][build] failed to build (2)"
-        eunomia::task_queue_done >>/dev/null
-        exit 1
-      fi
-    else
-      log::info "[$(timestamp)][build] loading cache ..."
-    fi
+  # build
+  log::info "[$(timestamp)][build] start to build ..."
+  eunomia::build
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)][build] failed to build"
+    eunomia::task_queue_done >>/dev/null
+    exit 1
   fi
 
   log::info "[$(timestamp)][build] env PLUGIN_EUNOMIA_EXPORT_DISABLE: $PLUGIN_EUNOMIA_EXPORT_DISABLE"

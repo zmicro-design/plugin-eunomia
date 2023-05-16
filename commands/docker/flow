@@ -29,8 +29,6 @@ core() {
     return 0
   fi
 
-
-
   if [ -z "$EUNOMIA_GIT_BRANCH" ]; then
     log::error "[$(timestamp)][docker][flow] 无效发布分支，请重新配置发布分支."
     # log::error "[$(timestamp)][docker][flow] env EUNOMIA_GIT_BRANCH is required."
@@ -51,7 +49,7 @@ core() {
     return 1
   fi
 
-  if [ "$EUNOMIA_FLOW_STAGE_DEPLOY_ENABLED" = "true" ]; then
+  if [ "$EUNOMIA_FLOW_STAGE_DEPLOY" = "true" ]; then
     zmicro eunomia deploy
     if [ "$?" != "0" ]; then
       log::error "[$(timestamp)][docker][flow] failed to eunomia deploy."
@@ -82,7 +80,6 @@ run() {
   # start
   eunomia::hook_build_start
 
-  set -o pipefail
   core "$@" | tee -a $EUNOMIA_BUILD_LOG
   # end
   if [ "$?" != "0" ]; then

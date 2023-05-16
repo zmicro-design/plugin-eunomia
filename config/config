@@ -87,6 +87,11 @@ if [ "$FLOW_CI" = "true" ]; then
     export EUNOMIA_DEPLOYMENT_CPU_LIMIT=$(echo $EUNOMIA_DEPLOYMENT_CPU_LIMIT | base64 -d)
   fi
 
+  # FLOW STAGE
+  if [ -n "$EUNOMIA_FLOW_STAGE_DEPLOY" ]; then
+    export EUNOMIA_FLOW_STAGE_DEPLOY=$(echo $EUNOMIA_FLOW_STAGE_DEPLOY | base64 -d)
+  fi
+
   # PIPELINE
   export EUNOMIA_BUILD_AUTHOR=$(echo $EUNOMIA_BUILD_AUTHOR | base64 -d)
   export EUNOMIA_BUILD_AUTHOR_EMAIL=$(echo $EUNOMIA_BUILD_AUTHOR_EMAIL | base64 -d)

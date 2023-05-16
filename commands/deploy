@@ -41,6 +41,11 @@ core() {
 
 run() {
   local log=$EUNOMIA_BUILD_DIR/deploy.log
+  if [ -f "$log" ]; then
+    log::info "[$(timestamp)] found deploy log, ignore redeploy."
+    exit 0
+  fi
+
   core "$@" 2>&1 | tee -a $log
   if [ "$?" != "0" ]; then
     eunomia::hook_log $log
