@@ -228,7 +228,9 @@ eunomia::deploy_component() {
   # 1.1 generate oss path
   log::info "[$(timestamp)][eunomia::deploy_component] generate oss path ..."
 
-  # 1.2 upload file: PLUGIN_EUNOMIA_EXPORT_ID_PKG
+  # 1.2 upload file
+  # file: component.tar => Dockerfile
+  # use os::ossutil
   log::info "[$(timestamp)][eunomia::deploy_component] upload file to oss  ..."
 
   # 2. create a version release record
