@@ -35,6 +35,18 @@ if [ "$FLOW_CI" = "true" ]; then
   export EUNOMIA_GIT_REPOSITORY=$(echo $EUNOMIA_GIT_REPOSITORY | base64 -d)
   export EUNOMIA_GIT_COMMIT=$(echo $EUNOMIA_GIT_COMMIT | base64 -d)
 
+  if [ -n "$EUNOMIA_GIT_COMMIT_MESSAGE" ]; then
+    export EUNOMIA_GIT_COMMIT_MESSAGE=$(echo $EUNOMIA_GIT_COMMIT_MESSAGE | base64 -d)
+  fi
+
+  if [ -n "$EUNOMIA_GIT_COMMIT_AUTHOR" ]; then
+    export EUNOMIA_GIT_COMMIT_AUTHOR=$(echo $EUNOMIA_GIT_COMMIT_AUTHOR | base64 -d)
+  fi
+
+  if [ -n "$EUNOMIA_GIT_COMMIT_TIMESTAMP" ]; then
+    export EUNOMIA_GIT_COMMIT_TIMESTAMP=$(echo $EUNOMIA_GIT_COMMIT_TIMESTAMP | base64 -d)
+  fi
+
   if [ -n "$EUNOMIA_BUILD_DOCKER_BUILD_CONTEXT" ]; then
     export EUNOMIA_BUILD_DOCKER_BUILD_CONTEXT=$(echo $EUNOMIA_BUILD_DOCKER_BUILD_CONTEXT | base64 -d)
   fi
