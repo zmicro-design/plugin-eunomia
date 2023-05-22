@@ -71,6 +71,10 @@ if [ "$FLOW_CI" = "true" ]; then
     export EUNOMIA_DEPLOY_HOST=$(echo $EUNOMIA_DEPLOY_HOST | base64 -d)
   fi
 
+  if [ -n "$EUNOMIA_DEPLOY_SKIP_DEPLOY_SCRIPT" ]; then
+    export EUNOMIA_DEPLOY_SKIP_DEPLOY_SCRIPT=$(echo $EUNOMIA_DEPLOY_SKIP_DEPLOY_SCRIPT | base64 -d)
+  fi
+
   if [ -n "$EUNOMIA_DEPLOYMENT_MODE" ] && [ "$EUNOMIA_DEPLOYMENT_MODE" != "service" ]; then
     export EUNOMIA_DEPLOYMENT_MODE=$(echo $EUNOMIA_DEPLOYMENT_MODE | base64 -d)
   fi
