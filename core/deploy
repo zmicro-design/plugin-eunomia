@@ -2,8 +2,10 @@
 
 eunomia::deploy() {
   # @1
-  if [ -f "${EUNOMIA_DEPLOY_SCRIPT}" ]; then
-    export EUNOMIA_DEPLOY_MODE="script"
+  if [ "$EUNOMIA_DEPLOY_SKIP_DEPLOY_SCRIPT" != "true" ]; then
+    if [ -f "${EUNOMIA_DEPLOY_SCRIPT}" ]; then
+      export EUNOMIA_DEPLOY_MODE="script"
+    fi
   fi
 
   case $EUNOMIA_DEPLOY_MODE in
