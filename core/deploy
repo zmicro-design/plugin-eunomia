@@ -282,9 +282,9 @@ eunomia::generate_oss_path() {
   export EUNOMIA_DEPLOY_COMPONENT_VERSION_NUM=$(TZ=Asia/Shanghai date +"%Y%m%d%H%M%S")
   export EUNOMIA_DEPLOY_COMPONENT_CPU_ARCH=$(echo $EUNOMIA_DEPLOY_COMPONENT_CPU_ARCH| base64 -d)
   export EUNOMIA_DEPLOY_COMPONENT_OS=$(echo $EUNOMIA_DEPLOY_COMPONENT_OS| base64 -d)
-  response_file=$(mktemp)
-  curl -X POST -H \
-    "Content-Type: application/json" \
+  path_response_file=$(mktemp)
+  curl -X POST \
+    -H "Content-Type: application/json" \
     -d '{
     "module_name":"'"${EUNOMIA_DEPLOY_COMPONENT_MODULE_NAME}"'",
     "cluster_version":"'"${EUNOMIA_DEPLOY_COMPONENT_CLUSTER_VERSION}"'",
@@ -293,21 +293,19 @@ eunomia::generate_oss_path() {
     "version_num":"'"${EUNOMIA_DEPLOY_COMPONENT_VERSION_NUM}"'",
     "cpu_arch":"'"${EUNOMIA_DEPLOY_COMPONENT_CPU_ARCH}"'",
     "os":"'"${EUNOMIA_DEPLOY_COMPONENT_OS}"'"
-    }' \
-    https://eunomia-dev.idp.thinkingdata.cn/api/open/ms/ta-version-managements/versions/paths/generate \
-    -o "$response_file"
+    }' https://eunomia-dev.idp.thinkingdata.cn/api/open/ms/ta-version-managements/versions/paths/generate -o "$path_response_file"
+  log::info "[$(timestamp)][eunomia::generate_oss_path] generate oss path response:"$(cat "$path_response_file")
   if [ "$?" != "0" ]; then
     log::error "[$(timestamp)][eunomia::generate_oss_path] failed to generate oss path."
     return 1
   fi
-  response_code=$(cat "$response_file" | jq -r '.code')
+  response_code=$(cat "$path_response_file" | jq -r '.code')
   if [ "$response_code" != "0" ]; then
       log::error "[$(timestamp)][eunomia::create_version]failed to create version"
       rm -f "$response_file"
       return 1
   fi
-  log::info "[$(timestamp)][eunomia::generate_oss_path] generate oss path return:"${VERSION_SERVER_RESPONSE}
-  export EUNOMIA_OSS_PATH=$(echo $VERSION_SERVER_RESPONSE | jq -r '.result.oss_path')
+  export EUNOMIA_OSS_PATH=$(cat "$path_response_file" | jq -r '.result.oss_path')
   log::info "[$(timestamp)][eunomia::generate_oss_path] oss path: ${EUNOMIA_OSS_PATH}"
   return 0
 }
