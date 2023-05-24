@@ -295,12 +295,12 @@ eunomia::generate_oss_path() {
     "os":"'"${EUNOMIA_DEPLOY_COMPONENT_OS}"'"
     }' https://eunomia-dev.idp.thinkingdata.cn/api/open/ms/ta-version-managements/versions/paths/generate -o "$path_response_file"
   log::info "[$(timestamp)][eunomia::generate_oss_path] generate oss path response:"$(cat "$path_response_file")
-  if [ "$?" != "0" ]; then
+  if [ $? != 0 ]; then
     log::error "[$(timestamp)][eunomia::generate_oss_path] failed to generate oss path."
     return 1
   fi
   response_code=$(cat "$path_response_file" | jq -r '.code')
-  if [ "$response_code" != "0" ]; then
+  if [ "$response_code" != "200" ]; then
       log::error "[$(timestamp)][eunomia::create_version]failed to create version"
       rm -f "$response_file"
       return 1
@@ -359,7 +359,7 @@ eunomia::create_version() {
       return 1
   fi
   response_code=$(cat "$response_file" | jq -r '.code')
-  if [ "$response_code" != "0" ]; then
+  if [ "$response_code" != "200" ]; then
       log::error "[$(timestamp)][eunomia::create_version]failed to create version"
       cat $tmp_error
       cat $tmp_error >>$PLUGIN_EUNOMIA_DEPLOYMENT_ERROR_LOG
