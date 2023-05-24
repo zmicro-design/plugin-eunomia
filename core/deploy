@@ -335,21 +335,23 @@ eunomia::create_version() {
   eunomia::get_artifact_md5 $EUNOMIA_DEPLOY_FILE_NAME
   log::info "[$(timestamp)][eunomia::create_version] artifact_md5: ${EUNOMIA_ARTIFACT_MD5}"
   response_file=$(mktemp)
-  curl -X POST -d '{
-                     "module_name": "'"${EUNOMIA_DEPLOY_COMPONENT_MODULE_NAME}"'",
-                     "cluster_version": "'"${EUNOMIA_DEPLOY_COMPONENT_CLUSTER_VERSION}"'",
-                     "version": "'"${EUNOMIA_DEPLOY_COMPONENT_VERSION}"'",
-                     "git_commit_id": "'"${EUNOMIA_GIT_COMMIT}"'",
-                     "version_type": "'"${EUNOMIA_DEPLOY_COMPONENT_VERSION_TYPE}"'",
-                     "artifacts": [
-                       {
-                         "cpu_arch": "'"${EUNOMIA_DEPLOY_COMPONENT_CPU_ARCH}"'",
-                         "artifact_path": "'"${EUNOMIA_OSS_PATH}"'",
-                         "artifact_md5": "'"${EUNOMIA_ARTIFACT_MD5}"'",
-                         "os": "'"${EUNOMIA_DEPLOY_COMPONENT_OS}"'"
-                       }
-                     ]
-                   }' https://eunomia-dev.idp.thinkingdata.cn/api/open/ms/ta-version-managements/versions/ -o "$response_file"
+  curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{
+        "module_name": "'"${EUNOMIA_DEPLOY_COMPONENT_MODULE_NAME}"'",
+        "cluster_version": "'"${EUNOMIA_DEPLOY_COMPONENT_CLUSTER_VERSION}"'",
+        "version": "'"${EUNOMIA_DEPLOY_COMPONENT_VERSION}"'",
+        "git_commit_id": "'"${EUNOMIA_GIT_COMMIT}"'",
+        "version_type": "'"${EUNOMIA_DEPLOY_COMPONENT_VERSION_TYPE}"'",
+        "artifacts": [
+          {
+            "cpu_arch": "'"${EUNOMIA_DEPLOY_COMPONENT_CPU_ARCH}"'",
+            "artifact_path": "'"${EUNOMIA_OSS_PATH}"'",
+            "artifact_md5": "'"${EUNOMIA_ARTIFACT_MD5}"'",
+            "os": "'"${EUNOMIA_DEPLOY_COMPONENT_OS}"'"
+          }
+        ]
+      }' https://eunomia-dev.idp.thinkingdata.cn/api/open/ms/ta-version-managements/versions/ -o "$response_file"
   log::info "[$(timestamp)][eunomia::create_version] create version response: $(cat "$response_file")"
   if [ "$?" != "0" ]; then
       log::error "[$(timestamp)][eunomia::create_version]failed to create version"
