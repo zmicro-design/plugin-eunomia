@@ -270,6 +270,22 @@ eunomia::deploy_component() {
 
 eunomia::deploy_component_generate_oss_path() {
   local response_file=$(os::tmp_file)
+
+  # debug info
+  cat <<EOF
+POST ${EUNOMIA_DEPLOY_COMPONENT_SERVER}/api/open/ms/ta-version-managements/versions/paths/generate
+
+{
+  "module_name": "${EUNOMIA_DEPLOY_COMPONENT_MODULE_NAME}",
+  "cluster_version": "${EUNOMIA_DEPLOY_COMPONENT_CLUSTER_VERSION}",
+  "version": "${EUNOMIA_DEPLOY_COMPONENT_VERSION}",
+  "version_type": "${EUNOMIA_DEPLOY_COMPONENT_VERSION_TYPE}",
+  "version_num": "${EUNOMIA_DEPLOY_COMPONENT_VERSION_NUM}",
+  "cpu_arch": "${EUNOMIA_DEPLOY_COMPONENT_CPU_ARCH}",
+  "os": "${EUNOMIA_DEPLOY_COMPONENT_OS}"
+}
+EOF
+
   curl \
     -X POST ${EUNOMIA_DEPLOY_COMPONENT_SERVER}/api/open/ms/ta-version-managements/versions/paths/generate \
     -o $response_file \
@@ -319,6 +335,27 @@ eunomia::deploy_component_get_artifact() {
 eunomia::deploy_component_create_version() {
   local artificat_md5=$(eunomia::deploy_component_get_artifact_md5 $EUNOMIA_DEPLOY_COMPONENT_FILE_NAME)
   log::info "[$(timestamp)][eunomia::deploy_component_create_version] artifact_md5: ${artificat_md5}"
+
+  # debug info
+  cat <<EOF
+POST ${EUNOMIA_DEPLOY_COMPONENT_SERVER}/api/open/ms/ta-version-managements/versions
+
+{
+  "module_name": "${EUNOMIA_DEPLOY_COMPONENT_MODULE_NAME}",
+  "cluster_version": "${EUNOMIA_DEPLOY_COMPONENT_CLUSTER_VERSION}",
+  "version": "${EUNOMIA_DEPLOY_COMPONENT_VERSION}",
+  "git_commit_id": "${EUNOMIA_GIT_COMMIT}",
+  "version_type": "${EUNOMIA_DEPLOY_COMPONENT_VERSION_TYPE}",
+  "artifacts": [
+    {
+      "cpu_arch": "${EUNOMIA_DEPLOY_COMPONENT_CPU_ARCH}",
+      "artifact_path": "${EUNOMIA_DEPLOY_COMPONENT_OSS_PATH}",
+      "artifact_md5": "${artificat_md5}",
+      "os": "${EUNOMIA_DEPLOY_COMPONENT_OS}"
+    }
+  ]
+}
+EOF
 
   local response_file=$(os::tmp_file)
   curl \
