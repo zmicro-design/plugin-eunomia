@@ -218,27 +218,160 @@ eunomia::deploy_service() {
 # @TO_IMPLEMENT
 eunomia::deploy_component() {
   # module_name: EUNOMIA_DEPLOY_COMPONENT_MODULE_NAME
-  #
   # version_type: EUNOMIA_DEPLOY_COMPONENT_VERSION_TYPE
   # cluster_version: EUNOMIA_DEPLOY_COMPONENT_CLUSTER_VERSION
   # os: EUNOMIA_DEPLOY_COMPONENT_OS
+  # version_num: EUNOMIA_DEPLOY_COMPONENT_VERSION_NUM
   # cpu_arch: EUNOMIA_DEPLOY_COMPONENT_CPU_ARCH
-
+  export EUNOMIA_OSS_BUCKET="ta-repository"
+  export EUNOMIA_OSS_ROOT="module_repo"
+  export EUNOMIA_DEPLOY_FILE_NAME="component.tar"
   # 1. upload file with os::oss_upload
   log::info "[$(timestamp)][eunomia::deploy_component] start to upload oss ..."
-
   # 1.1 generate oss path
   log::info "[$(timestamp)][eunomia::deploy_component] generate oss path ..."
-
   # 1.2 upload file
   # file: component.tar => Dockerfile
   # use os::ossutil
+  eunomia::generate_oss_path
+  if [ "$?" != "0" ] ; then
+    log::error "[$(timestamp)][eunomia::deploy_component] failed to generate oss path."
+    return 1
+  fi
+
+  # build remote oss path
+  export EUNOMIA_DEPLOY_REMOTE_PATH="oss://"${EUNOMIA_OSS_BUCKET}"/"${EUNOMIA_OSS_ROOT}${EUNOMIA_OSS_PATH}
+  log::info "[$(timestamp)][eunomia::deploy_component] succeed to generate oss path: ${EUNOMIA_DEPLOY_REMOTE_PATH} ..."
+  # 1.2 upload file: PLUGIN_EUNOMIA_EXPORT_ID_PKG
+  log::info "[$(timestamp)][eunomia::deploy_component] start to download artifact from docker ..."
+
+  # unzip file
+  eunomia::get_artifact
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)][eunomia::deploy_service] failed to ."
+    cat $tmp_error
+    cat $tmp_error >>$PLUGIN_EUNOMIA_DEPLOYMENT_ERROR_LOG
+    return 1
+  fi
+  # upload to oss
   log::info "[$(timestamp)][eunomia::deploy_component] upload file to oss  ..."
+  os::ossutil cp $EUNOMIA_DEPLOY_FILE_NAME $EUNOMIA_DEPLOY_REMOTE_PATH
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)][eunomia::deploy_component] failed to upload file to oss."
+    return 1
+  fi
 
-  # 2. create a version release record
+  # 2. create a version record
   log::info "[$(timestamp)][eunomia::deploy_component] create a version release record ..."
+  eunomia::create_version
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)][eunomia::deploy_component] failed to create a version release record."
+    return 1
+  fi
 
-  return 1
+  return 0
+}
+
+eunomia::generate_oss_path() {
+  log::info "[$(timestamp)][eunomia::generate_oss_path] start to generate oss path ..."
+  # params decode && generate
+  export EUNOMIA_DEPLOY_COMPONENT_MODULE_NAME=$(echo $EUNOMIA_DEPLOY_COMPONENT_MODULE_NAME| base64 -d)
+  export EUNOMIA_DEPLOY_COMPONENT_CLUSTER_VERSION=$(echo $EUNOMIA_DEPLOY_COMPONENT_CLUSTER_VERSION| base64 -d)
+  export EUNOMIA_DEPLOY_COMPONENT_VERSION=$(echo $EUNOMIA_DEPLOY_COMPONENT_VERSION| base64 -d)
+  export EUNOMIA_DEPLOY_COMPONENT_VERSION_TYPE=$(echo $EUNOMIA_DEPLOY_COMPONENT_VERSION_TYPE| base64 -d)
+  export EUNOMIA_DEPLOY_COMPONENT_VERSION_NUM=$(TZ=Asia/Shanghai date +"%Y%m%d%H%M%S")
+  export EUNOMIA_DEPLOY_COMPONENT_CPU_ARCH=$(echo $EUNOMIA_DEPLOY_COMPONENT_CPU_ARCH| base64 -d)
+  export EUNOMIA_DEPLOY_COMPONENT_OS=$(echo $EUNOMIA_DEPLOY_COMPONENT_OS| base64 -d)
+  response_file=$(mktemp)
+  curl -X POST -H \
+    "Content-Type: application/json" \
+    -d '{
+    "module_name":"'"${EUNOMIA_DEPLOY_COMPONENT_MODULE_NAME}"'",
+    "cluster_version":"'"${EUNOMIA_DEPLOY_COMPONENT_CLUSTER_VERSION}"'",
+    "version":"'"${EUNOMIA_DEPLOY_COMPONENT_VERSION}"'",
+    "version_type":"'"${EUNOMIA_DEPLOY_COMPONENT_VERSION_TYPE}"'",
+    "version_num":"'"${EUNOMIA_DEPLOY_COMPONENT_VERSION_NUM}"'",
+    "cpu_arch":"'"${EUNOMIA_DEPLOY_COMPONENT_CPU_ARCH}"'",
+    "os":"'"${EUNOMIA_DEPLOY_COMPONENT_OS}"'"
+    }' \
+    https://eunomia-dev.idp.thinkingdata.cn/api/open/ms/ta-version-managements/versions/paths/generate \
+    -o "$response_file"
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)][eunomia::generate_oss_path] failed to generate oss path."
+    return 1
+  fi
+  response_code=$(cat "$response_file" | jq -r '.code')
+  if [ "$response_code" != "0" ]; then
+      log::error "[$(timestamp)][eunomia::create_version]failed to create version"
+      rm -f "$response_file"
+      return 1
+  fi
+  log::info "[$(timestamp)][eunomia::generate_oss_path] generate oss path return:"${VERSION_SERVER_RESPONSE}
+  export EUNOMIA_OSS_PATH=$(echo $VERSION_SERVER_RESPONSE | jq -r '.result.oss_path')
+  log::info "[$(timestamp)][eunomia::generate_oss_path] oss path: ${EUNOMIA_OSS_PATH}"
+  return 0
+}
+
+eunomia::get_artifact() {
+  wget -c http://10.1.0.169:9000/${EUNOMIA_BUILD_ID}.tar.gz
+  if [ "$?" != "0" ]; then
+      log::error "failed to download ${EUNOMIA_BUILD_ID}.tar.gz"
+      cat $tmp_error
+      cat $tmp_error >>$PLUGIN_EUNOMIA_DEPLOYMENT_ERROR_LOG
+      return 1
+  fi
+  if [ ! -f "${EUNOMIA_BUILD_ID}.tar.gz" ]; then
+      echo "cannot not found ${EUNOMIA_BUILD_ID}.tar.gz"
+      cat $tmp_error
+      cat $tmp_error >>$PLUGIN_EUNOMIA_DEPLOYMENT_ERROR_LOG
+      return 1
+  fi
+  tar -zxvf ${EUNOMIA_BUILD_ID}.tar.gz -C .
+  return 0
+}
+
+eunomia::create_version() {
+  log::info "[$(timestamp)][eunomia::create_version] start to create version ..."
+  eunomia::get_artifact_md5 $EUNOMIA_DEPLOY_FILE_NAME
+  log::info "[$(timestamp)][eunomia::create_version] artifact_md5: ${EUNOMIA_ARTIFACT_MD5}"
+  response_file=$(mktemp)
+  curl -X POST -d '{
+                     "module_name": "'"${EUNOMIA_DEPLOY_COMPONENT_MODULE_NAME}"'",
+                     "cluster_version": "'"${EUNOMIA_DEPLOY_COMPONENT_CLUSTER_VERSION}"'",
+                     "version": "'"${EUNOMIA_DEPLOY_COMPONENT_VERSION}"'",
+                     "git_commit_id": "'"${EUNOMIA_GIT_COMMIT}"'",
+                     "version_type": "'"${EUNOMIA_DEPLOY_COMPONENT_VERSION_TYPE}"'",
+                     "artifacts": [
+                       {
+                         "cpu_arch": "'"${EUNOMIA_DEPLOY_COMPONENT_CPU_ARCH}"'",
+                         "artifact_path": "'"${EUNOMIA_OSS_PATH}"'",
+                         "artifact_md5": "'"${EUNOMIA_ARTIFACT_MD5}"'",
+                         "os": "'"${EUNOMIA_DEPLOY_COMPONENT_OS}"'"
+                       }
+                     ]
+                   }' https://eunomia-dev.idp.thinkingdata.cn/api/open/ms/ta-version-managements/versions/ -o "$response_file"
+  log::info "[$(timestamp)][eunomia::create_version] create version response: $(cat "$response_file")"
+  if [ "$?" != "0" ]; then
+      log::error "[$(timestamp)][eunomia::create_version]failed to create version"
+      cat $tmp_error
+      cat $tmp_error >>$PLUGIN_EUNOMIA_DEPLOYMENT_ERROR_LOG
+      rm -f "$response_file"
+      return 1
+  fi
+  response_code=$(cat "$response_file" | jq -r '.code')
+  if [ "$response_code" != "0" ]; then
+      log::error "[$(timestamp)][eunomia::create_version]failed to create version"
+      cat $tmp_error
+      cat $tmp_error >>$PLUGIN_EUNOMIA_DEPLOYMENT_ERROR_LOG
+      rm -f "$response_file"
+      return 1
+  fi
+  log::info "[$(timestamp)][eunomia::create_version] create version success"
+  return 0
+}
+
+eunomia::get_artifact_md5() {
+  export EUNOMIA_ARTIFACT_MD5=$(md5sum $1 | awk '{print $1}')
 }
 
 export -f eunomia::deploy
@@ -246,3 +379,7 @@ export -f eunomia::deploy
 export -f eunomia::deploy_script
 export -f eunomia::deploy_service
 export -f eunomia::deploy_component
+export -f eunomia::generate_oss_path
+export -f eunomia::get_artifact
+export -f eunomia::create_version
+export -f eunomia::get_artifact_md5
