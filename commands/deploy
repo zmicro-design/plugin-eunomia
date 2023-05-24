@@ -16,6 +16,9 @@ core() {
 
   log::info "[$(timestamp)][deploy] start to deploy ..."
 
+  mkdir -p $EUNOMIA_DEPLOY_DIR
+  cd $EUNOMIA_DEPLOY_DIR
+
   # @TODO avoid to re base64 decode
   export FLOW_CI=false
 
