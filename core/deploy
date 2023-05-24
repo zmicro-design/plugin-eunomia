@@ -270,17 +270,21 @@ eunomia::deploy_component() {
 
 eunomia::deploy_component_generate_oss_path() {
   local response_file=$(os::tmp_file)
-  curl -X POST \
+  curl \
+    -X POST ${EUNOMIA_DEPLOY_COMPONENT_SERVER}/api/open/ms/ta-version-managements/versions/paths/generate \
+    -o $response_file \
     -H "Content-Type: application/json" \
-    -d '{
-    "module_name": "${EUNOMIA_DEPLOY_COMPONENT_MODULE_NAME}",
-    "cluster_version": "${EUNOMIA_DEPLOY_COMPONENT_CLUSTER_VERSION}",
-    "version": "${EUNOMIA_DEPLOY_COMPONENT_VERSION}",
-    "version_type": "${EUNOMIA_DEPLOY_COMPONENT_VERSION_TYPE}",
-    "version_num": "${EUNOMIA_DEPLOY_COMPONENT_VERSION_NUM}",
-    "cpu_arch": "${EUNOMIA_DEPLOY_COMPONENT_CPU_ARCH}",
-    "os": "${EUNOMIA_DEPLOY_COMPONENT_OS}"
-    }' ${EUNOMIA_DEPLOY_COMPONENT_SERVER}/api/open/ms/ta-version-managements/versions/paths/generate -o $response_file
+    --data-binary @- <<EOF
+{
+  "module_name": "${EUNOMIA_DEPLOY_COMPONENT_MODULE_NAME}",
+  "cluster_version": "${EUNOMIA_DEPLOY_COMPONENT_CLUSTER_VERSION}",
+  "version": "${EUNOMIA_DEPLOY_COMPONENT_VERSION}",
+  "version_type": "${EUNOMIA_DEPLOY_COMPONENT_VERSION_TYPE}",
+  "version_num": "${EUNOMIA_DEPLOY_COMPONENT_VERSION_NUM}",
+  "cpu_arch": "${EUNOMIA_DEPLOY_COMPONENT_CPU_ARCH}",
+  "os": "${EUNOMIA_DEPLOY_COMPONENT_OS}"
+}
+EOF
   if [ "$?" != "0" ]; then
     log::error "[$(timestamp)][eunomia::deploy_component_generate_oss_path] failed to generate oss path (1)."
     rm -f $response_file
@@ -317,23 +321,27 @@ eunomia::deploy_component_create_version() {
   log::info "[$(timestamp)][eunomia::deploy_component_create_version] artifact_md5: ${artificat_md5}"
 
   local response_file=$(os::tmp_file)
-  curl -X POST \
+  curl \
+    -X POST ${EUNOMIA_DEPLOY_COMPONENT_SERVER}/api/open/ms/ta-version-managements/versions \
+    -o $response_file \
     -H "Content-Type: application/json" \
-    -d '{
-        "module_name": "${EUNOMIA_DEPLOY_COMPONENT_MODULE_NAME}",
-        "cluster_version": "${EUNOMIA_DEPLOY_COMPONENT_CLUSTER_VERSION}",
-        "version": "${EUNOMIA_DEPLOY_COMPONENT_VERSION}",
-        "git_commit_id": "${EUNOMIA_GIT_COMMIT}",
-        "version_type": "${EUNOMIA_DEPLOY_COMPONENT_VERSION_TYPE}",
-        "artifacts": [
-          {
-            "cpu_arch": "${EUNOMIA_DEPLOY_COMPONENT_CPU_ARCH}",
-            "artifact_path": "${EUNOMIA_DEPLOY_COMPONENT_OSS_PATH}",
-            "artifact_md5": "${artificat_md5}",
-            "os": "${EUNOMIA_DEPLOY_COMPONENT_OS}"
-          }
-        ]
-      }' https://eunomia-dev.idp.thinkingdata.cn/api/open/ms/ta-version-managements/versions/ -o "$response_file"
+    --data-binary @- <<EOF
+{
+  "module_name": "${EUNOMIA_DEPLOY_COMPONENT_MODULE_NAME}",
+  "cluster_version": "${EUNOMIA_DEPLOY_COMPONENT_CLUSTER_VERSION}",
+  "version": "${EUNOMIA_DEPLOY_COMPONENT_VERSION}",
+  "git_commit_id": "${EUNOMIA_GIT_COMMIT}",
+  "version_type": "${EUNOMIA_DEPLOY_COMPONENT_VERSION_TYPE}",
+  "artifacts": [
+    {
+      "cpu_arch": "${EUNOMIA_DEPLOY_COMPONENT_CPU_ARCH}",
+      "artifact_path": "${EUNOMIA_DEPLOY_COMPONENT_OSS_PATH}",
+      "artifact_md5": "${artificat_md5}",
+      "os": "${EUNOMIA_DEPLOY_COMPONENT_OS}"
+    }
+  ]
+}
+EOF
   if [ "$?" != "0" ]; then
     log::error "[$(timestamp)][eunomia::deploy_component_create_version] failed to create version (1)."
     rm -f $response_file
