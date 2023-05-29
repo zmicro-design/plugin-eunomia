@@ -1,0 +1,92 @@
+#!/bin/bash
+
+# fix tee modify the exit code: https://stackoverflow.com/questions/6871859/piping-command-output-to-tee-but-also-save-exit-code-of-command
+set -o pipefail
+
+help() {
+  echo "Usage:"
+  echo "  zmicro eunomia combine"
+}
+
+core() {
+  if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    help
+    exit 0
+  fi
+
+  # @TODO avoid to re base64 decode
+  export FLOW_CI=false
+
+  zmicro eunomia pre
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)][docker][flow] failed to eunomia pre."
+    return 1
+  fi
+
+  # connect ignore build
+  if [ "$EUNOMIA_DEPLOYMENT_MODE" = "connect" ]; then
+    log::info "[$(timestamp)][docker][flow] ignore build because EUNOMIA_DEPLOYMENT_MODE is connect"
+    return 0
+  fi
+
+  if [ -z "$EUNOMIA_GIT_BRANCH" ]; then
+    log::error "[$(timestamp)][docker][flow] 无效发布分支，请重新配置发布分支."
+    # log::error "[$(timestamp)][docker][flow] env EUNOMIA_GIT_BRANCH is required."
+    return 1
+  fi
+
+  export EUNOMIA_GIT_CHECKOUT_DIR=$EUNOMIA_BUILD_GIT_DIR
+    
+  zmicro eunomia checkout
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)][docker][flow] failed to eunomia checkout."
+    return 1
+  fi
+
+  zmicro eunomia build
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)][docker][flow] failed to eunomia build."
+    return 1
+  fi
+
+  zmicro eunomia deploy
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)][docker][flow] failed to eunomia deploy."
+    return 1
+  fi
+
+  zmicro eunomia post
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)][docker][flow] failed to eunomia post."
+    return 1
+  fi
+}
+
+run() {
+  if [ -z "$EUNOMIA_BUILD_ID" ]; then
+    log::error "[$(timestamp)][docker][flow] EUNOMIA_BUILD_ID is required"
+    exit 1
+  fi
+
+  # must mkdir or tee log file not found in docker flow
+  if [ ! -d "$EUNOMIA_BUILD_DIR" ]; then
+    mkdir -p $EUNOMIA_BUILD_DIR
+  fi
+
+  # start
+  eunomia::hook_build_start
+
+  core "$@" | tee -a $EUNOMIA_BUILD_LOG
+  # end
+  if [ "$?" != "0" ]; then
+    eunomia::hook_build_failed
+    log::info "[$(timestamp)][docker_flow] flow failed."
+    exit 1
+  else
+    eunomia::hook_build_succeed
+    log::info "[$(timestamp)][docker_flow] flow succeed."
+    exit 0
+  fi
+}
+
+run "$@"
