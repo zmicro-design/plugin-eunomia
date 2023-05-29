@@ -29,6 +29,7 @@ eunomia::deploy() {
     fi
 
     log::success "[$(timestamp)][eunomia::deploy] succeed to deploy service"
+    return 0
     ;;
   component)
     log::info "[$(timestamp)][eunomia::deploy] start to deploy component ..."
@@ -39,9 +40,11 @@ eunomia::deploy() {
     fi
 
     log::success "[$(timestamp)][eunomia::deploy] succeed to deploy component"
+    return 0
     ;;
   *)
     log::error "[$(timestamp)][eunomia::deploy] unsupport deploy mode: $EUNOMIA_DEPLOY_MODE"
+    return 1
     ;;
   esac
 }
