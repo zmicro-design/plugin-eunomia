@@ -23,12 +23,6 @@ core() {
     return 1
   fi
 
-  # connect ignore build
-  if [ "$EUNOMIA_DEPLOYMENT_MODE" = "connect" ]; then
-    log::info "[$(timestamp)][docker][flow] ignore build because EUNOMIA_DEPLOYMENT_MODE is connect"
-    return 0
-  fi
-
   if [ -z "$EUNOMIA_GIT_BRANCH" ]; then
     log::error "[$(timestamp)][docker][flow] 无效发布分支，请重新配置发布分支."
     # log::error "[$(timestamp)][docker][flow] env EUNOMIA_GIT_BRANCH is required."
