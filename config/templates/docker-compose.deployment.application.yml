@@ -16,7 +16,7 @@ services:
   zmicro_plugin_eunomia_deployment_upstream:
     container_name: ${PLUGIN_EUNOMIA_DEPLOYMENT_NAME}_upstream
     restart: always
-    image: ${PLUGIN_EUNOMIA_DOCKER_REGISTRY}/${PLUGIN_EUNOMIA_DEPLOYMENT_IMAGE_NAME}:commit_${EUNOMIA_GIT_COMMIT}
+    image: ${PLUGIN_EUNOMIA_DOCKER_REGISTRY}/${PLUGIN_EUNOMIA_DEPLOYMENT_IMAGE_NAME}:build_${EUNOMIA_BUILD_ID}
     environment:
       PORT: 8080
       TZ: Asia/Shanghai
