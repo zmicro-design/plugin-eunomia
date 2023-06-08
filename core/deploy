@@ -124,21 +124,25 @@ eunomia::deploy_service() {
   "dev")
     export DOCKER_HOST=$EUNOMIA_DEPLOYMENT_DEV_DOCKER_HOST
     export PLUGIN_EUNOMIA_DEPLOYMENT_NAME=eunomia_deployment_dev_${EUNOMIA_TASK_ID}
+    export PLUGIN_EUNOMIA_DEPLOYMENT_EXTRA_HOSTNAME=${EUNOMIA_TASK_ID}.dev.idp.internal
 
     # custom domain name
     #   pattern: {CUSTOM_DOMAIN_NAME}-dev.example.com
     if [ -n "$EUNOMIA_DEPLOYMENT_CUSTOM_DOMAIN_NAME" ]; then
       export PLUGIN_EUNOMIA_DEPLOYMENT_NAME=eunomia_deployment_dev_${EUNOMIA_DEPLOYMENT_CUSTOM_DOMAIN_NAME}
+      export PLUGIN_EUNOMIA_DEPLOYMENT_EXTRA_HOSTNAME=${EUNOMIA_DEPLOYMENT_CUSTOM_DOMAIN_NAME}.dev.idp.internal
     fi
     ;;
   "prod")
     export DOCKER_HOST=$EUNOMIA_DEPLOYMENT_PROD_DOCKER_HOST
     export PLUGIN_EUNOMIA_DEPLOYMENT_NAME=eunomia_deployment_prod_${EUNOMIA_TASK_ID}
+    export PLUGIN_EUNOMIA_DEPLOYMENT_EXTRA_HOSTNAME=${EUNOMIA_TASK_ID}.prod.idp.internal
 
     # custom domain name
     #   pattern: {CUSTOM_DOMAIN_NAME}.example.com
     if [ -n "$EUNOMIA_DEPLOYMENT_CUSTOM_DOMAIN_NAME" ]; then
       export PLUGIN_EUNOMIA_DEPLOYMENT_NAME=eunomia_deployment_prod_${EUNOMIA_DEPLOYMENT_CUSTOM_DOMAIN_NAME}
+      export PLUGIN_EUNOMIA_DEPLOYMENT_EXTRA_HOSTNAME=${EUNOMIA_DEPLOYMENT_CUSTOM_DOMAIN_NAME}.prod.idp.internal
     fi
     ;;
   *)
