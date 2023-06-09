@@ -130,6 +130,11 @@ if [ "$FLOW_CI" = "true" ]; then
     export EUNOMIA_DEPLOYMENT_CPU_LIMIT=$(echo $EUNOMIA_DEPLOYMENT_CPU_LIMIT | base64 -d)
   fi
 
+  # CUSTOM VAR
+  if [ -n "$EUNOMIA_APPLICATION_NAME" ]; then
+    export EUNOMIA_APPLICATION_NAME=$(echo $EUNOMIA_APPLICATION_NAME | base64 -d)
+  fi
+
   # FLOW STAGE
   if [ -n "$EUNOMIA_FLOW_STAGE_DEPLOY" ]; then
     export EUNOMIA_FLOW_STAGE_DEPLOY=$(echo $EUNOMIA_FLOW_STAGE_DEPLOY | base64 -d)
