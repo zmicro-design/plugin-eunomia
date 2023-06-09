@@ -47,6 +47,10 @@ if [ "$FLOW_CI" = "true" ]; then
     export EUNOMIA_GIT_COMMIT_TIMESTAMP=$(echo $EUNOMIA_GIT_COMMIT_TIMESTAMP | base64 -d)
   fi
 
+  if [ -n "$EUNOMIA_BUILD_TIMESTAMP" ]; then
+    export EUNOMIA_BUILD_TIMESTAMP=$(echo $EUNOMIA_BUILD_TIMESTAMP | base64 -d)
+  fi
+
   if [ -n "$EUNOMIA_BUILD_DOCKER_BUILD_CONTEXT" ]; then
     export EUNOMIA_BUILD_DOCKER_BUILD_CONTEXT=$(echo $EUNOMIA_BUILD_DOCKER_BUILD_CONTEXT | base64 -d)
   fi
