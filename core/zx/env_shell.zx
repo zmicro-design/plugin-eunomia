@@ -187,9 +187,11 @@ function main() {
       value = decode(env[key]);
     }
 
-    // user var need base64 decode
-    if (key.startsWith('EUNOMIA_USER_VAR_')) {
-      value = decode(env[key]);
+    if (process.env.EUNOMIA_BUILD_TRIGGER !== 'idp') {
+      // user var need base64 decode
+      if (key.startsWith('EUNOMIA_USER_VAR_')) {
+        value = decode(env[key]);
+      }
     }
 
     if (process.env.FLOW_CI === 'true') {
