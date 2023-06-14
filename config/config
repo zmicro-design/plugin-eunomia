@@ -178,11 +178,11 @@ if [ "$FLOW_CI" = "true" ]; then
   fi
 
   # @TODO new env
-  # export EUNOMIA_BUILD_ID=${PIPELINE_ID}_${BUILD_NUMBER}
-  export EUNOMIA_BUILD_ID=${EUNOMIA_BUILD_ID:-$PLUGIN_EUNOMIA_BUILD_ID}
-  if [ -z "$EUNOMIA_BUILD_ID" ]; then
-    export EUNOMIA_BUILD_ID=${PIPELINE_ID}_${BUILD_NUMBER}
-  fi
+  export EUNOMIA_BUILD_ID=${PIPELINE_ID}_${BUILD_NUMBER}
+  # export EUNOMIA_BUILD_ID=${EUNOMIA_BUILD_ID:-$PLUGIN_EUNOMIA_BUILD_ID}
+  # if [ -z "$EUNOMIA_BUILD_ID" ]; then
+  #   export EUNOMIA_BUILD_ID=${PIPELINE_ID}_${BUILD_NUMBER}
+  # fi
 fi
 
 ####### Build #######
@@ -221,6 +221,7 @@ export PLUGIN_EUNOMIA_NOTIFICATION_FEISHU_URL=https://open.feishu.cn/open-apis/b
 # DEPLOY
 # EUNOMIA_DEPLOY_MODE is deploy mode, available values: service | script | component, default: service
 export EUNOMIA_DEPLOY_DIR=${EUNOMIA_BUILD_DIR}/deploy
+export EUNOMIA_DEPLOY_SCRIPTS_DIR=${EUNOMIA_DEPLOY_DIR}/scripts
 export EUNOMIA_DEPLOY_MODE=${EUNOMIA_DEPLOY_MODE:-"service"}
 # deploy_mode: script
 export EUNOMIA_DEPLOY_HOST=$EUNOMIA_DEPLOY_HOST
