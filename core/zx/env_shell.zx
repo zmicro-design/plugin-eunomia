@@ -182,12 +182,12 @@ function main() {
     
     let value = env[key];
 
-    // white keys need base64 decode
-    if (!!whiteKeysNeedBase64Map[key]) {
-      value = decode(env[key]);
-    }
-
     if (process.env.EUNOMIA_BUILD_TRIGGER !== 'idp') {
+      // white keys need base64 decode
+      if (!!whiteKeysNeedBase64Map[key]) {
+        value = decode(env[key]);
+      }
+      
       // user var need base64 decode
       if (key.startsWith('EUNOMIA_USER_VAR_')) {
         value = decode(env[key]);
