@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# eunomia::test - run tests
+eunomia::test() {
+  echo "[$(date)] 触发自动化测试 ..."
+  if [ -z "$EUNOMIA_TASK_TEST_URL" ]; then
+    echo "自动化测试地址未填写：$EUNOMIA_TASK_TEST_URL"
+    exit 1
+  fi
+
+  cat <<EOF
+POST http://192.168.0.121:18091/apt/openapi/ci/trigger
+
+{
+  "appName": "ta-common-service",
+  "domain": "${EUNOMIA_TASK_TEST_URL}",
+  "companyCode": "thinkingdata",
+  "type": "normal",
+  "runEnv": "api",
+  "env": "thinkingdata",
+  "pid": ${EUNOMIA_DEPLOYMENT_ID},
+  "taskIds": [$EUNOMIA_TASK_TEST_TASKIDS]
+}
+EOF
+
+  curl -X POST http://192.168.0.121:18091/apt/openapi/ci/trigger \
+        -H "Content-Type: application/json" \
+        --data-binary @- <<EOF
+{
+  "appName": "ta-common-service",
+  "domain": "${EUNOMIA_TASK_TEST_URL}",
+  "companyCode": "thinkingdata",
+  "type": "normal",
+  "runEnv": "api",
+  "env": "thinkingdata",
+  "pid": ${EUNOMIA_DEPLOYMENT_ID},
+  "taskIds": [$EUNOMIA_TASK_TEST_TASKIDS]
+}
+EOF
+
+  curl -X POST $EUNOMIA_TEST_REPORT_HOOK \
+        -H "Content-Type: application/json" \
+        --data-binary @- <<EOF
+{
+  "deployment": ${EUNOMIA_DEPLOYMENT_ID},
+  "report_url": "https://sun.idp.thinkingdata.cn/jupiter-pipline-report?pid=${EUNOMIA_DEPLOYMENT_ID}"
+}
+EOF
+}
+
+export -f eunomia::test
