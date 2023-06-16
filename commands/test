@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -o pipefail
+
 help() {
   echo "Usage:"
   echo "  zmicro eunomia test <fn>"
@@ -10,12 +12,25 @@ core() {
     help
     exit 0
   fi
-  
+
   eunomia::test
 }
 
 run() {
-  core $@
+  local log=$EUNOMIA_BUILD_DIR/test.log
+  if [ -f "$log" ]; then
+    log::info "[$(timestamp)] found test log, ignore retest."
+    exit 0
+  fi
+
+  core "$@" 2>&1 | tee -a $log
+  if [ "$?" != "0" ]; then
+    eunomia::hook_log $log
+    exit 1
+  else
+    eunomia::hook_log $log
+    exit 0
+  fi
 }
 
 run $@
