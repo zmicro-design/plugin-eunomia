@@ -6,7 +6,12 @@ help() {
 }
 
 core() {
-  plugin::run_zx "$@"
+  if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    help
+    exit 0
+  fi
+  
+  eunomia::test
 }
 
 run() {

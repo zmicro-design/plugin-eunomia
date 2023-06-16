@@ -49,6 +49,10 @@ core() {
     return 1
   fi
 
+  if [ "$EUNOMIA_PROJECT_ENABLE_AUTO_TEST" = "true" ]; then
+    zmicro eunomia test
+  fi
+
   zmicro eunomia post
   if [ "$?" != "0" ]; then
     log::error "[$(timestamp)][docker][flow] failed to eunomia post."
