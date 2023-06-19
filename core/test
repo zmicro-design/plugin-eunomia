@@ -8,44 +8,14 @@ eunomia::test() {
     exit 1
   fi
 
-  cat <<EOF
-POST http://192.168.0.121:18091/apt/openapi/ci/trigger
+  log::info "[$(timestamp)] start to test $EUNOMIA_TASK_TEST_URL ..."
+  plugin::run_zx trigger_test
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)] failed to trigger test."
+    exit 1
+  fi
 
-{
-  "appName": "ta-common-service",
-  "domain": "${EUNOMIA_TASK_TEST_URL}",
-  "companyCode": "thinkingdata",
-  "type": "normal",
-  "runEnv": "api",
-  "env": "thinkingdata",
-  "pid": ${EUNOMIA_DEPLOYMENT_ID},
-  "taskIds": [$EUNOMIA_TASK_TEST_TASKIDS]
-}
-EOF
-
-  curl -X POST http://192.168.0.121:18091/apt/openapi/ci/trigger \
-        -H "Content-Type: application/json" \
-        --data-binary @- <<EOF
-{
-  "appName": "ta-common-service",
-  "domain": "${EUNOMIA_TASK_TEST_URL}",
-  "companyCode": "thinkingdata",
-  "type": "normal",
-  "runEnv": "api",
-  "env": "thinkingdata",
-  "pid": ${EUNOMIA_DEPLOYMENT_ID},
-  "taskIds": [$EUNOMIA_TASK_TEST_TASKIDS]
-}
-EOF
-
-  curl -X POST $EUNOMIA_TEST_REPORT_HOOK \
-        -H "Content-Type: application/json" \
-        --data-binary @- <<EOF
-{
-  "deployment": ${EUNOMIA_DEPLOYMENT_ID},
-  "report_url": "https://sun.idp.thinkingdata.cn/jupiter-pipline-report?pid=${EUNOMIA_DEPLOYMENT_ID}"
-}
-EOF
+  log::info "[$(timestamp)] success to trigger test."
 }
 
 export -f eunomia::test
