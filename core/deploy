@@ -397,7 +397,8 @@ POST ${EUNOMIA_DEPLOY_COMPONENT_SERVER}/api/open/ms/ta-version-managements/versi
       "artifact_path": "${EUNOMIA_DEPLOY_COMPONENT_OSS_PATH}",
       "artifact_md5": "${artificat_md5}",
       "os": "${EUNOMIA_DEPLOY_COMPONENT_OS}",
-      "version_num": "${EUNOMIA_DEPLOY_COMPONENT_VERSION_NUM}"
+      "version_num": "${EUNOMIA_DEPLOY_COMPONENT_VERSION_NUM}",
+      "operator": "${EUNOMIA_BUILD_AUTHOR_ID}"
     }
   ]
 }
@@ -421,7 +422,8 @@ EOF
       "artifact_path": "${EUNOMIA_DEPLOY_COMPONENT_OSS_PATH}",
       "artifact_md5": "${artificat_md5}",
       "os": "${EUNOMIA_DEPLOY_COMPONENT_OS}",
-      "version_num": "${EUNOMIA_DEPLOY_COMPONENT_VERSION_NUM}"
+      "version_num": "${EUNOMIA_DEPLOY_COMPONENT_VERSION_NUM}",
+      "operator": "${EUNOMIA_BUILD_AUTHOR_ID}"
     }
   ]
 }
