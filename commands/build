@@ -24,15 +24,6 @@ core() {
     exit 1
   fi
 
-  eunomia::show_version_info
-
-  log::info "[$(timestamp)][build] preparing ..."
-  eunomia::prepare
-  if [ "$?" != "0" ]; then
-    log::error "[$(timestamp)][build] failed to prepare"
-    exit 1
-  fi
-
   if [ "$PLUGIN_EUNOMIA_TASK_QUEUE_IS_ENABLED" = "true" ]; then
     log::info "[$(timestamp)][build] task queue is enabled"
 
@@ -72,15 +63,6 @@ core() {
       fi
     done
   fi
-
-  # env shell
-  log::info "[$(timestamp)] start to generate env shell at ${EUNOMIA_BUILD_ENV_SHELL} ..."
-  plugin::run_zx env_shell
-  if [ "$?" != "0" ]; then
-    log::error "[$(timestamp)] failed to generate env shell at ${EUNOMIA_BUILD_ENV_SHELL}."
-    return 1
-  fi
-  log::success "[$(timestamp)] succeed to generate env shell at ${EUNOMIA_BUILD_ENV_SHELL} ..."
 
   # build
   log::info "[$(timestamp)][build] start to build ..."
