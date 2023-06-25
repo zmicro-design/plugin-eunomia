@@ -64,6 +64,14 @@ core() {
     done
   fi
 
+  # prepare
+  log::info "[$(timestamp)][build] preparing ..."
+  eunomia::prepare
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)][build] failed to prepare"
+    exit 1
+  fi
+
   # build
   log::info "[$(timestamp)][build] start to build ..."
   eunomia::build
