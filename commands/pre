@@ -14,17 +14,11 @@ core() {
     exit 0
   fi
 
-  eunomia::show_version_info
-
-  log::info "[$(timestamp)][pre] build id: $EUNOMIA_BUILD_ID"
-  log::info "[$(timestamp)][pre] executor: $EUNOMIA_BUILD_AUTHOR($EUNOMIA_BUILD_AUTHOR_EMAIL)"
-  log::info "[$(timestamp)][pre] git info:"
-  log::info "[$(timestamp)][pre]  url: $EUNOMIA_GIT_REPOSITORY"
-  log::info "[$(timestamp)][pre]  branch: $EUNOMIA_GIT_BRANCH"
-  log::info "[$(timestamp)][pre]  commit hash: $EUNOMIA_GIT_COMMIT"
-  log::info "[$(timestamp)][pre]  commit message: $EUNOMIA_GIT_COMMIT_MESSAGE"
-  log::info "[$(timestamp)][pre]  commit author: $EUNOMIA_GIT_COMMIT_AUTHOR"
-  log::info "[$(timestamp)][pre]  commit timestamp: $EUNOMIA_GIT_COMMIT_TIMESTAMP"
+  eunomia::pre
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)][pre] failed to eunomia pre."
+    return 1
+  fi
 }
 
 run() {

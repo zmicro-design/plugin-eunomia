@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# gvm::current gets the current version of Go
+eunomia::pre() {
+  if [ -z "$EUNOMIA_BUILD_ID" ]; then
+    log::error "[$(timestamp)][pre] EUNOMIA_BUILD_ID is required"
+    return 1
+  fi
+
+  eunomia::show_version_info
+
+  log::info "[$(timestamp)][pre] build id: $EUNOMIA_BUILD_ID"
+  log::info "[$(timestamp)][pre] executor: $EUNOMIA_BUILD_AUTHOR($EUNOMIA_BUILD_AUTHOR_EMAIL)"
+  log::info "[$(timestamp)][pre] git info:"
+  log::info "[$(timestamp)][pre]  url: $EUNOMIA_GIT_REPOSITORY"
+  log::info "[$(timestamp)][pre]  branch: $EUNOMIA_GIT_BRANCH"
+  log::info "[$(timestamp)][pre]  commit hash: $EUNOMIA_GIT_COMMIT"
+  log::info "[$(timestamp)][pre]  commit message: $EUNOMIA_GIT_COMMIT_MESSAGE"
+  log::info "[$(timestamp)][pre]  commit author: $EUNOMIA_GIT_COMMIT_AUTHOR"
+  log::info "[$(timestamp)][pre]  commit timestamp: $EUNOMIA_GIT_COMMIT_TIMESTAMP"
+
+  ## env
+  log::info "[$(timestamp)] start to generate env shell at ${EUNOMIA_BUILD_ENV_SHELL} ..."
+  plugin::run_zx env_shell
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)] failed to generate env shell at ${EUNOMIA_BUILD_ENV_SHELL}."
+    return 1
+  fi
+  log::success "[$(timestamp)] succeed to generate env shell at ${EUNOMIA_BUILD_ENV_SHELL} ..."
+}
+
+export -f eunomia::pre
