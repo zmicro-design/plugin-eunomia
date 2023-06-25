@@ -25,6 +25,31 @@ core() {
   log::info "[$(timestamp)][pre]  commit message: $EUNOMIA_GIT_COMMIT_MESSAGE"
   log::info "[$(timestamp)][pre]  commit author: $EUNOMIA_GIT_COMMIT_AUTHOR"
   log::info "[$(timestamp)][pre]  commit timestamp: $EUNOMIA_GIT_COMMIT_TIMESTAMP"
+
+  if [ "$EUNOMIA_SKIP_BUILD_STAGE" = "true" ]; then
+    ## prepare
+    if [ -z "$EUNOMIA_BUILD_ID" ]; then
+      log::error "[$(timestamp)][build] EUNOMIA_BUILD_ID is required"
+      exit 1
+    fi
+
+    eunomia::show_version_info
+
+    log::info "[$(timestamp)][build] preparing ..."
+    eunomia::prepare
+    if [ "$?" != "0" ]; then
+      log::error "[$(timestamp)][build] failed to prepare"
+      exit 1
+    fi
+    ## env
+    log::info "[$(timestamp)] start to generate env shell at ${EUNOMIA_BUILD_ENV_SHELL} ..."
+    plugin::run_zx env_shell
+    if [ "$?" != "0" ]; then
+      log::error "[$(timestamp)] failed to generate env shell at ${EUNOMIA_BUILD_ENV_SHELL}."
+      return 1
+    fi
+    log::success "[$(timestamp)] succeed to generate env shell at ${EUNOMIA_BUILD_ENV_SHELL} ..."
+  fi
 }
 
 run() {
