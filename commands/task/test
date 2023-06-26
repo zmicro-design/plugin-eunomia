@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# fix tee modify the exit code: https://stackoverflow.com/questions/6871859/piping-command-output-to-tee-but-also-save-exit-code-of-command
+set -o pipefail
+
+help() {
+  echo "Usage:"
+  echo "  zmicro eunomia task test"
+}
+
+core() {
+  if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    help
+    exit 0
+  fi
+
+  eunomia::test
+}
+
+run() {
+  core
+}
+
+run "$@"

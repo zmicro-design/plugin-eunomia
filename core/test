@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# eunomia::test - run tests
+eunomia::test() {
+  echo "[$(date)] 触发自动化测试 ..."
+  if [ -z "$EUNOMIA_TASK_TEST_URL" ]; then
+    echo "自动化测试地址未填写：$EUNOMIA_TASK_TEST_URL"
+    exit 1
+  fi
+
+  log::info "[$(timestamp)] start to test $EUNOMIA_TASK_TEST_URL ..."
+  plugin::run_zx trigger_test
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)] failed to trigger test."
+    exit 1
+  fi
+
+  log::info "[$(timestamp)] success to trigger test."
+}
+
+export -f eunomia::test

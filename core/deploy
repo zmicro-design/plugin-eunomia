@@ -1,10 +1,19 @@
 #!/bin/bash
 
 eunomia::deploy() {
-  # @1
-  if [ "$EUNOMIA_DEPLOY_SKIP_DEPLOY_SCRIPT" != "true" ]; then
-    if [ -f "${EUNOMIA_DEPLOY_SCRIPT}" ]; then
-      export EUNOMIA_DEPLOY_MODE="script"
+  # check online scripts
+  log::info "[$(timestamp)] checking online scripts ..."
+  if [ "$(eunomia::deploy_scripts_exists)" = "true" ]; then
+    export EUNOMIA_DEPLOY_MODE="online_script"
+  fi
+
+  # check local scripts
+  if [ "$EUNOMIA_DEPLOY_MODE" != "online_script" ]; then
+    log::info "[$(timestamp)] checking local scripts ..."
+    if [ "$EUNOMIA_DEPLOY_SKIP_DEPLOY_SCRIPT" != "true" ]; then
+      if [ -f "${EUNOMIA_DEPLOY_SCRIPT}" ]; then
+        export EUNOMIA_DEPLOY_MODE="script"
+      fi
     fi
   fi
 
@@ -18,6 +27,17 @@ eunomia::deploy() {
     fi
 
     log::success "[$(timestamp)][eunomia::deploy] succeed to deploy script"
+    return 0
+    ;;
+  online_script)
+    log::info "[$(timestamp)][eunomia::deploy] start to deploy script(online) ..."
+    eunomia::deploy_script_online
+    if [ "$?" != "0" ]; then
+      log::error "[$(timestamp)][eunomia::deploy] failed to deploy script(online)"
+      return 1
+    fi
+
+    log::success "[$(timestamp)][eunomia::deploy] succeed to deploy script(online)"
     return 0
     ;;
   service)
@@ -76,6 +96,24 @@ eunomia::deploy_script() {
   fi
 
   log::success "[$(timestamp)][eunomia::deploy_script] succeed to execute"
+}
+
+eunomia::deploy_script_online() {
+  if [ ! -f "$EUNOMIA_BUILD_ENV_SHELL" ]; then
+    log::error "[eunomia::deploy_script_online] EUNOMIA_BUILD_ENV_SHELL is required"
+    return 1
+  fi
+
+  mkdir -p $EUNOMIA_DEPLOY_SCRIPTS_DIR
+
+  log::info "[$(timestamp)][eunomia::deploy_script_online] start to execute ..."
+  plugin::run_zx execute_deploy_scripts
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)][eunomia::deploy_script_online] failed to execute"
+    return 1
+  fi
+  
+  log::success "[$(timestamp)][eunomia::deploy_script_online] succeed to execute"
 }
 
 eunomia::deploy_service() {
@@ -353,6 +391,7 @@ POST ${EUNOMIA_DEPLOY_COMPONENT_SERVER}/api/open/ms/ta-version-managements/versi
   "version": "${EUNOMIA_DEPLOY_COMPONENT_VERSION}",
   "git_commit_id": "${EUNOMIA_GIT_COMMIT}",
   "version_type": "${EUNOMIA_DEPLOY_COMPONENT_VERSION_TYPE}",
+  "operator": "${EUNOMIA_BUILD_AUTHOR_ID}",
   "artifacts": [
     {
       "cpu_arch": "${EUNOMIA_DEPLOY_COMPONENT_CPU_ARCH}",
@@ -377,6 +416,7 @@ EOF
   "version": "${EUNOMIA_DEPLOY_COMPONENT_VERSION}",
   "git_commit_id": "${EUNOMIA_GIT_COMMIT}",
   "version_type": "${EUNOMIA_DEPLOY_COMPONENT_VERSION_TYPE}",
+  "operator": "${EUNOMIA_BUILD_AUTHOR_ID}",
   "artifacts": [
     {
       "cpu_arch": "${EUNOMIA_DEPLOY_COMPONENT_CPU_ARCH}",
@@ -423,9 +463,14 @@ eunomia::deploy_component_upload_file() {
   log::info "[$(timestamp)][eunomia::deploy_component_upload_file] upload file to oss success"
 }
 
+eunomia::deploy_scripts_exists() {
+  plugin::run_zx is_deploy_scripts_exist
+}
+
 export -f eunomia::deploy
 
 export -f eunomia::deploy_script
+export -f eunomia::deploy_script_online
 export -f eunomia::deploy_service
 
 export -f eunomia::deploy_component
@@ -435,3 +480,5 @@ export -f eunomia::deploy_component_create_version
 export -f eunomia::deploy_component_get_artifact_md5
 
 export -f eunomia::deploy_component_upload_file
+
+export -f eunomia::deploy_scripts_exists

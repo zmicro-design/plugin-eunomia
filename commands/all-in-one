@@ -30,23 +30,33 @@ core() {
   fi
 
   export EUNOMIA_GIT_CHECKOUT_DIR=$EUNOMIA_BUILD_GIT_DIR
-    
+
   zmicro eunomia checkout
   if [ "$?" != "0" ]; then
     log::error "[$(timestamp)][docker][flow] failed to eunomia checkout."
     return 1
   fi
 
-  zmicro eunomia build
-  if [ "$?" != "0" ]; then
-    log::error "[$(timestamp)][docker][flow] failed to eunomia build."
-    return 1
+  if [ "$EUNOMIA_SKIP_BUILD_STAGE" != "true" ]; then
+    zmicro eunomia build
+    if [ "$?" != "0" ]; then
+      log::error "[$(timestamp)][docker][flow] failed to eunomia build."
+      return 1
+    fi
   fi
 
   zmicro eunomia deploy
   if [ "$?" != "0" ]; then
     log::error "[$(timestamp)][docker][flow] failed to eunomia deploy."
     return 1
+  fi
+
+  if [ "$EUNOMIA_PROJECT_ENABLE_AUTO_TEST" = "true" ]; then
+    zmicro eunomia test
+    if [ "$?" != "0" ]; then
+      log::error "[$(timestamp)][docker][flow] failed to eunomia deploy."
+      return 1
+    fi
   fi
 
   zmicro eunomia post
