@@ -1,0 +1,28 @@
+#!/bin/bash
+
+set -o pipefail
+
+
+help() {
+  echo "Usage:"
+  echo "  zmicro eunomia upload"
+}
+
+core() {
+  eunomia::upload
+  if [ "$?" != "0" ]; then
+      return 1
+  fi
+}
+
+run() {
+  core "$@"
+  if [ "$?" != "0" ]; then
+    exit 1
+  fi
+}
+
+
+# get artifact name
+
+run "$@"
