@@ -7,6 +7,11 @@ eunomia::pre() {
     return 1
   fi
 
+  if [ -z "$PLUGIN_EUNOMIA_DOCKER_REGISTRY" ]; then
+    log::error "[eunomia::build] PLUGIN_EUNOMIA_DOCKER_REGISTRY is required"
+    return 1
+  fi
+
   eunomia::show_version_info
 
   log::info "[$(timestamp)][pre] build id: $EUNOMIA_BUILD_ID"
