@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# eunomia::export_product downloads the export_product dist
+eunomia::export_product() {
+  local filepath=$1
+
+  if [ -z "$EUNOMIA_EXPORT_DIST_URL" ]; then
+    log::error "[$(timestamp)] EUNOMIA_EXPORT_DIST_URL is required"
+    return 1
+  fi
+
+  if [ -z "$filepath" ]; then
+    log::error "[$(timestamp)] filepath is required"
+    return 1
+  fi
+
+  log::info "[$(timestamp)] start to download product dist ..."
+
+  wget -c $EUNOMIA_EXPORT_DIST_URL -O $filepath #>>/dev/null 2>&1
+  if [ "$?" != "0" ]; then
+      echo "failed to download $EUNOMIA_EXPORT_DIST to $filepath"
+      exit 1
+  fi
+}
+
+export -f eunomia::export_product
