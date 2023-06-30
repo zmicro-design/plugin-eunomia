@@ -8,7 +8,7 @@ eunomia::deploy() {
   fi
 
   # check local scripts
-  if [ "$EUNOMIA_DEPLOY_MODE" != "online_script" ]; then
+  if [ "$EUNOMIA_DEPLOY_MODE" != "online_script" ] && [ "$EUNOMIA_DEPLOY_MODE" != "component" ]; then
     log::info "[$(timestamp)] checking local scripts ..."
     if [ "$EUNOMIA_DEPLOY_SKIP_DEPLOY_SCRIPT" != "true" ]; then
       if [ -f "${EUNOMIA_DEPLOY_SCRIPT}" ]; then
