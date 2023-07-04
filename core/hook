@@ -28,7 +28,36 @@ eunomia::hook_log() {
   fi
 }
 
+eunomia::hook_info_supply() {
+  if [ -n "$EUNOMIA_INFO_SUPPLY_HOOK" ]; then
+    log::info "[$(timestamp)][eunomia::hook_info_supply] call $EUNOMIA_INFO_SUPPLY_HOOK ..."
+
+    curl \
+      -s \
+      -X POST $EUNOMIA_INFO_SUPPLY_HOOK \
+      -H "Content-Type: application/json" \
+      --data-binary @- <<EOF
+{
+    "git_repo_url": "$EUNOMIA_GIT_REPO_URL",
+    "git_repo_name": "$EUNOMIA_GIT_REPO_NAME",
+    "git_branch": "$EUNOMIA_GIT_BRANCH",
+    "git_commit": "$EUNOMIA_GIT_COMMIT",
+    "git_commit_message": "$EUNOMIA_GIT_COMMIT_MESSAGE",
+    "git_commit_author": "$EUNOMIA_GIT_COMMIT_AUTHOR",
+    "git_commit_timestamp": "$EUNOMIA_GIT_COMMIT_TIMESTAMP",
+    "build_id": "$EUNOMIA_BUILD_ID",
+    "build_timestamp": "$EUNOMIA_BUILD_TIMESTAMP",
+    "build_author": "$EUNOMIA_BUILD_AUTHOR",
+    "build_author_email": "$EUNOMIA_BUILD_AUTHOR_EMAIL"
+}
+EOF
+  fi
+}
+
 eunomia::hook_build_start() {
+  # info supply
+  eunomia::hook_info_supply
+
   if [ -n "$EUNOMIA_START_HOOK" ]; then
     log::info "[$(timestamp)][eunomia::hook_build_start] call $EUNOMIA_START_HOOK ..."
 
@@ -113,6 +142,8 @@ eunomia::hook_deploy_failed() {
 }
 
 export -f eunomia::hook_log
+
+export -f eunomia::hook_info_supply
 
 export -f eunomia::hook_build_start
 export -f eunomia::hook_build_succeed

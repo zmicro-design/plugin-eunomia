@@ -23,21 +23,20 @@ core() {
     return 1
   fi
 
-  if [ -z "$EUNOMIA_GIT_BRANCH" ]; then
-    log::error "[$(timestamp)][docker][flow] 无效发布分支，请重新配置发布分支."
-    # log::error "[$(timestamp)][docker][flow] env EUNOMIA_GIT_BRANCH is required."
-    return 1
-  fi
-
   export EUNOMIA_GIT_CHECKOUT_DIR=$EUNOMIA_BUILD_GIT_DIR
 
-  zmicro eunomia checkout
-  if [ "$?" != "0" ]; then
-    log::error "[$(timestamp)][docker][flow] failed to eunomia checkout."
-    return 1
-  fi
-
   if [ "$EUNOMIA_SKIP_BUILD_STAGE" != "true" ]; then
+    if [ -z "$EUNOMIA_GIT_BRANCH" ]; then
+      log::error "[$(timestamp)][docker][flow] 无效发布分支，请重新配置发布分支."
+      return 1
+    fi
+
+    zmicro eunomia checkout
+    if [ "$?" != "0" ]; then
+      log::error "[$(timestamp)][docker][flow] failed to eunomia checkout."
+      return 1
+    fi
+
     zmicro eunomia build
     if [ "$?" != "0" ]; then
       log::error "[$(timestamp)][docker][flow] failed to eunomia build."
