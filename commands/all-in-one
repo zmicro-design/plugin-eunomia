@@ -19,7 +19,7 @@ core() {
 
   zmicro eunomia pre
   if [ "$?" != "0" ]; then
-    log::error "[$(timestamp)][docker][flow] failed to eunomia pre."
+    log::error "[$(timestamp)][idp] failed to eunomia pre."
     return 1
   fi
 
@@ -28,41 +28,41 @@ core() {
   if [ "$EUNOMIA_SKIP_BUILD_STAGE" != "true" ]; then
     zmicro eunomia checkout
     if [ "$?" != "0" ]; then
-      log::error "[$(timestamp)][docker][flow] failed to eunomia checkout."
+      log::error "[$(timestamp)][idp] failed to eunomia checkout."
       return 1
     fi
 
     zmicro eunomia build
     if [ "$?" != "0" ]; then
-      log::error "[$(timestamp)][docker][flow] failed to eunomia build."
+      log::error "[$(timestamp)][idp] failed to eunomia build."
       return 1
     fi
   fi
 
   zmicro eunomia deploy
   if [ "$?" != "0" ]; then
-    log::error "[$(timestamp)][docker][flow] failed to eunomia deploy."
+    log::error "[$(timestamp)][idp] failed to eunomia deploy."
     return 1
   fi
 
   if [ "$EUNOMIA_PROJECT_ENABLE_AUTO_TEST" = "true" ]; then
     zmicro eunomia test
     if [ "$?" != "0" ]; then
-      log::error "[$(timestamp)][docker][flow] failed to eunomia deploy."
+      log::error "[$(timestamp)][idp] failed to eunomia deploy."
       return 1
     fi
   fi
 
   zmicro eunomia post
   if [ "$?" != "0" ]; then
-    log::error "[$(timestamp)][docker][flow] failed to eunomia post."
+    log::error "[$(timestamp)][idp] failed to eunomia post."
     return 1
   fi
 }
 
 run() {
   if [ -z "$EUNOMIA_BUILD_ID" ]; then
-    log::error "[$(timestamp)][docker][flow] EUNOMIA_BUILD_ID is required"
+    log::error "[$(timestamp)][idp] EUNOMIA_BUILD_ID is required"
     exit 1
   fi
 
