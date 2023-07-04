@@ -4,22 +4,22 @@
 eunomia::checkout() {
   if [ -z "$EUNOMIA_GIT_BRANCH" ]; then
     log::error "[eunomia::checkout] env EUNOMIA_GIT_BRANCH is required"
-    exit 1
+    return 1
   fi
 
   if [ -z "$EUNOMIA_GIT_COMMIT" ]; then
     log::error "[eunomia::checkout] env EUNOMIA_GIT_COMMIT is required"
-    exit 1
+    return 1
   fi
 
   if [ -z "$EUNOMIA_GIT_CHECKOUT_DIR" ]; then
     log::error "[eunomia::checkout] env EUNOMIA_GIT_CHECKOUT_DIR is required"
-    exit 1
+    return 1
   fi
 
   if [ -z "$EUNOMIA_GIT_REPOSITORY" ]; then
     log::error "[eunomia::checkout] env EUNOMIA_GIT_REPOSITORY is required"
-    exit 1
+    return 1
   fi
 
   log::info "[$(timestamp)][eunomia::checkout] checkouting $EUNOMIA_GIT_REPOSITORY at branch $EUNOMIA_GIT_BRANCH ..."
