@@ -31,8 +31,8 @@ eunomia::build() {
     log::info "[$(timestamp)] dockerfiles not found repo, so use local Dockerfile ..." 
   fi
 
-  if [ ! -f "$PLUGIN_EUNOMIA_DOCKERFILE_FOR_GIT_REPO" ]; then
-    log::error "[eunomia::build] Dockerfile not found at for $EUNOMIA_GIT_REPO_NAME"
+  if [ ! -f "$PIPELINE_GIT_REPOSITORY_DIR/Dockerfile" ]; then
+    log::error "[eunomia::build] Dockerfile($PIPELINE_GIT_REPOSITORY_DIR/Dockerfile) not found at for $EUNOMIA_GIT_REPO_NAME"
     return 1
   fi
 
