@@ -199,12 +199,12 @@ eunomia::prepare() {
     export PIPELINE_IMAGE_TAGS="$PIPELINE_IMAGE_TAGS,$EUNOMIA_BUILD_DOCKER_IMAGE_VERSION"
   fi
 
-  log::info "[$(timestamp)] PIPELINE_BUILD_ID: $PIPELINE_BUILD_ID"
-  log::info "[$(timestamp)] PIPELINE_BUILD_CONTEXT: $PIPELINE_BUILD_CONTEXT"
-  log::info "[$(timestamp)] PIPELINE_GIT_REPOSITORY_DIR: $PIPELINE_GIT_REPOSITORY_DIR"
-  log::info "[$(timestamp)] PIPELINE_DOCKER_REGISTRY: $PIPELINE_DOCKER_REGISTRY"
-  log::info "[$(timestamp)] PIPELINE_IMAGE_NAME: $PIPELINE_IMAGE_NAME"
-  log::info "[$(timestamp)] PIPELINE_IMAGE_TAGS: $PIPELINE_IMAGE_TAGS"
+  # log::info "[$(timestamp)] PIPELINE_BUILD_ID: $PIPELINE_BUILD_ID"
+  # log::info "[$(timestamp)] PIPELINE_BUILD_CONTEXT: $PIPELINE_BUILD_CONTEXT"
+  # log::info "[$(timestamp)] PIPELINE_GIT_REPOSITORY_DIR: $PIPELINE_GIT_REPOSITORY_DIR"
+  # log::info "[$(timestamp)] PIPELINE_DOCKER_REGISTRY: $PIPELINE_DOCKER_REGISTRY"
+  # log::info "[$(timestamp)] PIPELINE_IMAGE_NAME: $PIPELINE_IMAGE_NAME"
+  # log::info "[$(timestamp)] PIPELINE_IMAGE_TAGS: $PIPELINE_IMAGE_TAGS"
   ##############
   ##############
 
