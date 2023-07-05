@@ -41,7 +41,7 @@ async function main() {
     const all = data.length;
     for (const index in data) {
       const { id, name, content, host } = data[index];
-      const script_filepath = `${process.env.EUNOMIA_DEPLOY_SCRIPTS_DIR}/${id}.${name}.sh`;
+      const script_filepath = `${process.env.EUNOMIA_DEPLOY_SCRIPTS_DIR}/${id}.sh`;
       fs.writeFileSync(script_filepath, content);
       // const response = await $`gzcaas client -s ${hostIP} --scriptfile ${script_filepath} --envfile ${process.env.EUNOMIA_BUILD_ENV_SHELL}`
       // console.log('[execute_deploy_scripts] exit code:', response.exitCode);
