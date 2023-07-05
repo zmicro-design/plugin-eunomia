@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# fix tee modify the exit code: https://stackoverflow.com/questions/6871859/piping-command-output-to-tee-but-also-save-exit-code-of-command
+set -o pipefail
+
 help() {
   echo "Usage:"
   echo "  zmicro eunomia checkout"
@@ -15,7 +18,7 @@ core() {
   eunomia::checkout
   if [ "$?" != "0" ]; then
     log::error "[$(timestamp)][checkout] failed to checkout git repo."
-    exit 1
+    return 1
   fi
 
   log::success "[$(timestamp)][checkout] succeed to checkout git repo."
