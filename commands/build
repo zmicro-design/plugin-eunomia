@@ -99,38 +99,16 @@ core() {
 }
 
 run() {
-  # if [ -z "$EUNOMIA_BUILD_ID" ]; then
-  #   log::error "[$(timestamp)][docker][flow] EUNOMIA_BUILD_ID is required"
-  #   exit 1
-  # fi
-
-  # # must mkdir or tee log file not found in docker flow
-  # if [ ! -d "$EUNOMIA_BUILD_DIR" ]; then
-  #   mkdir -p $EUNOMIA_BUILD_DIR
-  # fi
-
-  # # start
-  # eunomia::hook_build_start
-
-  # set -o pipefail
-  # core "$@" | tee -a $EUNOMIA_BUILD_LOG
-  # # end
-  # if [ "$?" != "0" ]; then
-  #   eunomia::hook_build_failed
-  #   log::info "[$(timestamp)][docker_flow] flow failed."
-  #   exit 1
-  # else
-  #   eunomia::hook_build_succeed
-  #   log::info "[$(timestamp)][docker_flow] flow succeed."
-  #   exit 0
-  # fi
+  eunomia::hook_build_start
 
   local log=$EUNOMIA_BUILD_DIR/build.log
   core "$@" 2>&1 | tee -a $log
   if [ "$?" != "0" ]; then
+    eunomia::hook_build_failed
     eunomia::hook_log $log
     exit 1
   else
+    eunomia::hook_build_succeed
     eunomia::hook_log $log
     exit 0
   fi

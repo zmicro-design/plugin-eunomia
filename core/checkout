@@ -29,6 +29,19 @@ eunomia::checkout() {
     return 1
   fi
 
+  cd $EUNOMIA_GIT_CHECKOUT_DIR
+  export EUNOMIA_GIT_REPO_URL=$(git::origin_url)
+  export EUNOMIA_GIT_REPO_NAME=$(git::repo_name)
+  export EUNOMIA_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+  export EUNOMIA_GIT_COMMIT=$(git::commit_hash_full)
+  export EUNOMIA_GIT_COMMIT_MESSAGE=$(git::commit_message | head -n 1)
+  export EUNOMIA_GIT_COMMIT_AUTHOR=$(git::commit_author)
+  export EUNOMIA_GIT_COMMIT_TIMESTAMP="$(git show -s --format=%cd --date='format:%Y-%m-%d_%H:%M:%S')"
+
+
+  # info supply
+  eunomia::hook_info_supply
+
   # @TODO add .eunomia to git repository
   log::info "[$(timestamp)][eunomia::checkout] generating .eunomia at $EUNOMIA_GIT_CHECKOUT_DIR/.eunomia ..."
   cat <<EOF >$EUNOMIA_GIT_CHECKOUT_DIR/.eunomia

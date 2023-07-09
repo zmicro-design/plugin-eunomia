@@ -86,6 +86,10 @@ eunomia::deploy_script() {
   fi
 
   log::info "[$(timestamp)][eunomia::deploy_script] start to execute ..."
+  echo "EUNOMIA_DEPLOY_HOST: $EUNOMIA_DEPLOY_HOST"
+  echo "EUNOMIA_DEPLOY_SCRIPT: $EUNOMIA_DEPLOY_SCRIPT"
+  echo "EUNOMIA_BUILD_ENV_SHELL: $EUNOMIA_BUILD_ENV_SHELL"
+  set -x
   gzcaas client \
     -s ${EUNOMIA_DEPLOY_HOST} \
     --scriptfile ${EUNOMIA_DEPLOY_SCRIPT} \
@@ -94,6 +98,7 @@ eunomia::deploy_script() {
     log::error "[$(timestamp)][eunomia::deploy_script] failed to execute"
     return 1
   fi
+  set +x
 
   log::success "[$(timestamp)][eunomia::deploy_script] succeed to execute"
 }

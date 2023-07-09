@@ -25,12 +25,16 @@ core() {
 }
 
 run() {
+  eunomia::hook_checkout_start
+
   local log=$EUNOMIA_BUILD_DIR/checkout.log
   core "$@" 2>&1 | tee -a $log
   if [ "$?" != "0" ]; then
+    eunomia::hook_checkout_failed
     eunomia::hook_log $log
     exit 1
   else
+    eunomia::hook_checkout_succeed
     eunomia::hook_log $log
     exit 0
   fi

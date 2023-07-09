@@ -54,12 +54,9 @@ EOF
   fi
 }
 
-eunomia::hook_build_start() {
-  # info supply
-  eunomia::hook_info_supply
-
+eunomia::hook_start() {
   if [ -n "$EUNOMIA_START_HOOK" ]; then
-    log::info "[$(timestamp)][eunomia::hook_build_start] call $EUNOMIA_START_HOOK ..."
+    log::info "[$(timestamp)][eunomia::hook_start] call $EUNOMIA_START_HOOK ..."
 
     local FLOW_PIPELINE_ID=$(echo $EUNOMIA_BUILD_ID | awk -F '_' '{print $1}')
     local FLOW_BUILD_ID=$(echo $EUNOMIA_BUILD_ID | awk -F '_' '{print $2}')
@@ -88,17 +85,88 @@ EOF
   fi
 }
 
-eunomia::hook_build_succeed() {
+eunomia::hook_succeed() {
   if [ -n "$EUNOMIA_SUCCEED_HOOK" ]; then
-    log::info "[$(timestamp)][eunomia::hook_build_succeed] call $EUNOMIA_SUCCEED_HOOK ..."
+    log::info "[$(timestamp)][eunomia::hook_succeed] call $EUNOMIA_SUCCEED_HOOK ..."
     curl -s -X POST $EUNOMIA_SUCCEED_HOOK >>/dev/null
   fi
 }
 
-eunomia::hook_build_failed() {
+eunomia::hook_failed() {
   if [ -n "$EUNOMIA_FAILED_HOOK" ]; then
-    log::info "[$(timestamp)][eunomia::hook_build_failed] call $EUNOMIA_FAILED_HOOK ..."
+    log::info "[$(timestamp)][eunomia::hook_failed] call $EUNOMIA_FAILED_HOOK ..."
     curl -s -X POST $EUNOMIA_FAILED_HOOK >>/dev/null
+  fi
+}
+
+eunomia::hook_checkout_start() {
+  if [ -n "$EUNOMIA_CHECKOUT_START_HOOK" ]; then
+    log::info "[$(timestamp)][eunomia::hook_checkout_start] call $EUNOMIA_CHECKOUT_START_HOOK ..."
+
+    local FLOW_PIPELINE_ID=$(echo $EUNOMIA_BUILD_ID | awk -F '_' '{print $1}')
+    local FLOW_BUILD_ID=$(echo $EUNOMIA_BUILD_ID | awk -F '_' '{print $2}')
+
+    curl \
+      -s \
+      -X POST $EUNOMIA_CHECKOUT_START_HOOK \
+      -H "Content-Type: application/json" \
+      --data-binary @- <<EOF
+{
+    "build_id": "$EUNOMIA_BUILD_ID",
+    "task_id": "$EUNOMIA_TASK_ID"
+}
+EOF
+  fi
+}
+
+eunomia::hook_checkout_succeed() {
+  # info supply
+  # eunomia::hook_info_supply
+
+  if [ -n "$EUNOMIA_CHECKOUT_SUCCEED_HOOK" ]; then
+    log::info "[$(timestamp)][eunomia::hook_checkout_succeed] call $EUNOMIA_CHECKOUT_SUCCEED_HOOK ..."
+    curl -s -X POST $EUNOMIA_CHECKOUT_SUCCEED_HOOK >>/dev/null
+  fi
+}
+
+eunomia::hook_checkout_failed() {
+  if [ -n "$EUNOMIA_CHECKOUT_FAILED_HOOK" ]; then
+    log::info "[$(timestamp)][eunomia::hook_checkout_failed] call $EUNOMIA_CHECKOUT_FAILED_HOOK ..."
+    curl -s -X POST $EUNOMIA_CHECKOUT_FAILED_HOOK >>/dev/null
+  fi
+}
+
+eunomia::hook_build_start() {
+  if [ -n "$EUNOMIA_BUILD_START_HOOK" ]; then
+    log::info "[$(timestamp)][eunomia::hook_build_start] call $EUNOMIA_BUILD_START_HOOK ..."
+
+    local FLOW_PIPELINE_ID=$(echo $EUNOMIA_BUILD_ID | awk -F '_' '{print $1}')
+    local FLOW_BUILD_ID=$(echo $EUNOMIA_BUILD_ID | awk -F '_' '{print $2}')
+
+    curl \
+      -s \
+      -X POST $EUNOMIA_BUILD_START_HOOK \
+      -H "Content-Type: application/json" \
+      --data-binary @- <<EOF
+{
+    "build_id": "$EUNOMIA_BUILD_ID",
+    "task_id": "$EUNOMIA_TASK_ID"
+}
+EOF
+  fi
+}
+
+eunomia::hook_build_succeed() {
+  if [ -n "$EUNOMIA_BUILD_SUCCEED_HOOK" ]; then
+    log::info "[$(timestamp)][eunomia::hook_build_succeed] call $EUNOMIA_BUILD_SUCCEED_HOOK ..."
+    curl -s -X POST $EUNOMIA_BUILD_SUCCEED_HOOK >>/dev/null
+  fi
+}
+
+eunomia::hook_build_failed() {
+  if [ -n "$EUNOMIA_BUILD_FAILED_HOOK" ]; then
+    log::info "[$(timestamp)][eunomia::hook_build_failed] call $EUNOMIA_BUILD_FAILED_HOOK ..."
+    curl -s -X POST $EUNOMIA_BUILD_FAILED_HOOK >>/dev/null
   fi
 }
 
@@ -142,8 +210,15 @@ eunomia::hook_deploy_failed() {
 }
 
 export -f eunomia::hook_log
-
 export -f eunomia::hook_info_supply
+
+export -f eunomia::hook_start
+export -f eunomia::hook_succeed
+export -f eunomia::hook_failed
+
+export -f eunomia::hook_checkout_start
+export -f eunomia::hook_checkout_succeed
+export -f eunomia::hook_checkout_failed
 
 export -f eunomia::hook_build_start
 export -f eunomia::hook_build_succeed
