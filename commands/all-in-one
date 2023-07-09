@@ -71,6 +71,8 @@ run() {
     mkdir -p $EUNOMIA_BUILD_DIR
   fi
 
+  log::info "[$(timestamp)][idp] start to run ..."
+
   # start
   eunomia::hook_start
 
@@ -78,11 +80,11 @@ run() {
   # end
   if [ "$?" != "0" ]; then
     eunomia::hook_failed
-    log::info "[$(timestamp)][docker_flow] flow failed."
+    log::info "[$(timestamp)][idp] failed to run."
     exit 1
   else
     eunomia::hook_succeed
-    log::info "[$(timestamp)][docker_flow] flow succeed."
+    log::info "[$(timestamp)][idp] succeed to run."
     exit 0
   fi
 }
