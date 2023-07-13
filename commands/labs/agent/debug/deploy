@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# set -e
+
+help() {
+  echo "Usage:"
+  echo "  zmicro eunomia labs agent debug deploy"
+}
+
+core() {
+  if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    help
+    exit 0
+  fi
+
+  gzcaas client -s 127.0.0.1 --scriptfile ./script --envfile ./env
+}
+
+run() {
+  core "$@"
+}
+
+run "$@"
