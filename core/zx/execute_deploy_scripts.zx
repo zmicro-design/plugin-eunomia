@@ -49,7 +49,7 @@ async function main() {
       //   throw new Error(`failed to execute script ${script_filepath}`);
       // }
 
-      console.log(`[execute_deploy_scripts][${index + 1}/${all}] execute ${name} on ${host.name}(${host.ip}) ...`);
+      console.log(`[execute_deploy_scripts][${+index + 1}/${all}] execute step(${name}) on ${host.name}(${host.ip}) ...`);
       await runShell(`gzcaas client -s ${host.ip} --scriptfile ${script_filepath} --envfile ${process.env.EUNOMIA_BUILD_ENV_SHELL}`);
     }
   } catch (error) {

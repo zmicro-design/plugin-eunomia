@@ -71,12 +71,13 @@ run() {
     mkdir -p $EUNOMIA_BUILD_DIR
   fi
 
+  local log=$EUNOMIA_BUILD_DIR/all-in-one.log
   log::info "[$(timestamp)][idp] start to run ..."
 
   # start
   eunomia::hook_start
 
-  core "$@" | tee -a $EUNOMIA_BUILD_LOG
+  core "$@" | tee -a $log
   # end
   if [ "$?" != "0" ]; then
     eunomia::hook_failed
