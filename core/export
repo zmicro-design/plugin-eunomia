@@ -11,6 +11,8 @@ eunomia::export() {
     return 1
   fi
 
+  log::info "[$(timestamp)][eunomia::export] image: $PLUGIN_EUNOMIA_EXPORT_RUNNER_IMAGE ..."
+
   # ensure container removed
   docker rm -f $PLUGIN_EUNOMIA_EXPORT_RUNNER_NAME >> /dev/null 2>&1
 
