@@ -1,0 +1,44 @@
+$.verbose = false;
+
+async function main() {
+  if (!process.env.PLUGIN_EUNOMIA_CONFIG_CENTER) {
+    throw new Error('env PLUGIN_EUNOMIA_CONFIG_CENTER is not set');
+  }
+
+  if (!process.env.PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_ID) {
+    throw new Error('env PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_ID is not set');
+  }
+
+  if (!process.env.PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_SECRET) {
+    throw new Error('env PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_SECRET is not set');
+  }
+
+  if (!process.env.EUNOMIA_PROJECT_ID) {
+    throw new Error('env EUNOMIA_PROJECT_ID is not set');
+  }
+
+  const response = await fetch(`${process.env.PLUGIN_EUNOMIA_CONFIG_CENTER}/api/open/v1/client/pipeline/${process.env.EUNOMIA_PROJECT_ID}/build_scripts`, {
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'X-Client-ID': process.env.PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_ID,
+      'X-Client-Secret': process.env.PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_SECRET,
+    },
+  });
+  if (!response.ok) {
+    throw new Error(`unexpected response ${response.statusText}`);
+  }
+
+  const resp = await response.json();
+  if (resp.code !== 200) {
+    throw new Error(`unexpected response ${resp.message}`);
+  }
+
+  if (resp?.result?.data?.length === 0) {
+    process.stdout.write('false');
+  } else {
+    process.stdout.write('true');
+  }
+}
+
+main();

@@ -14,7 +14,11 @@ core() {
     exit 0
   fi
 
-  log::info "[$(timestamp)][post] branch: $EUNOMIA_GIT_BRANCH (commit: $EUNOMIA_GIT_COMMIT)"
+  if [ -n "$EUNOMIA_GIT_BRANCH" ]; then
+    log::info "[$(timestamp)][post] branch: $EUNOMIA_GIT_BRANCH (commit: $EUNOMIA_GIT_COMMIT)"
+  else
+    log::info "[$(timestamp)][post] not a git repo pipeline."
+  fi
 }
 
 run() {

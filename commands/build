@@ -81,18 +81,6 @@ core() {
     exit 1
   fi
 
-  log::info "[$(timestamp)][build] env PLUGIN_EUNOMIA_EXPORT_DISABLE: $PLUGIN_EUNOMIA_EXPORT_DISABLE"
-  if [ "$PLUGIN_EUNOMIA_EXPORT_DISABLE" != "true" ]; then
-    # export
-    log::info "[$(timestamp)][build] exporting ..."
-    eunomia::export
-    if [ "$?" != "0" ]; then
-      log::error "[$(timestamp)][build] failed to export"
-      eunomia::task_queue_done >>/dev/null
-      exit 1
-    fi
-  fi
-
   # done
   log::info "[$(timestamp)][build] done"
   eunomia::task_queue_done >>/dev/null

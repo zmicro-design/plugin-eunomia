@@ -2,42 +2,50 @@
 
 eunomia::build() {
   if [ -z "$EUNOMIA_BUILD_GIT_DIR" ]; then
-    log::error "[eunomia::build] EUNOMIA_BUILD_GIT_DIR is required"
+    log::error "[$(timestamp)][eunomia::build] EUNOMIA_BUILD_GIT_DIR is required"
     return 1
   fi
 
   if [ ! -d "$EUNOMIA_BUILD_GIT_DIR" ]; then
-    log::error "[eunomia::build] EUNOMIA_BUILD_GIT_DIR($EUNOMIA_BUILD_GIT_DIR) not found, you must run prepare first"
+    log::error "[$(timestamp)][eunomia::build] EUNOMIA_BUILD_GIT_DIR($EUNOMIA_BUILD_GIT_DIR) not found, you must run prepare first"
     return 1
   fi
 
-  #    Solution 2 => 本地 Dockerfile 优先级小于于全局服务 zmicro dockerfiles 中的
-  log::info "[$(timestamp)] checking Dockerfile exist ..."
-  if [ -d "$PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO" ]; then
-    log::info "[$(timestamp)] dockerfiles found repo, so use repo ..." 
-    # RSYNC DOKCERFILE_DIR/*
-    # @TODO with "DIR/" suffix copy file
-    if [ -n "$PLUGIN_EUNOMIA_DOCKERFILE_MODULE" ]; then
-      log::info "[$(timestamp)] using PLUGIN_EUNOMIA_DOCKERFILE_MODULE(${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/$PLUGIN_EUNOMIA_DOCKERFILE_MODULE/) ..."
-      # 子模块
-      rsync -av ${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/$PLUGIN_EUNOMIA_DOCKERFILE_MODULE/ $EUNOMIA_BUILD_GIT_DIR
-    else
-      log::info "[$(timestamp)] using PLUGIN_EUNOMIA_DOCKERFILE_MODULE(${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/) ..."
-      # 主模块
-      # rsync -av --exclude="$PLUGIN_EUNOMIA_DOCKERFILE_ENV_FOR_GIT_REPO" ${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/ $EUNOMIA_BUILD_GIT_DIR
-      rsync -av ${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/ $EUNOMIA_BUILD_GIT_DIR
+  eunomia::build_info
+
+  case $EUNOMIA_BUILD_MODE in
+  image)
+    log::info "[$(timestamp)][eunomia::build] start to build image with dockerfile ..."
+    eunomia::build_image
+    if [ "$?" != "0" ]; then
+      log::error "[$(timestamp)][eunomia::build] failed to build image with dockerfile"
+      return 1
     fi
-  else
-    log::info "[$(timestamp)] dockerfiles not found repo, so use local Dockerfile ..." 
-  fi
 
-  if [ ! -f "$PIPELINE_GIT_REPOSITORY_DIR/Dockerfile" ]; then
-    log::error "[eunomia::build] Dockerfile($PIPELINE_GIT_REPOSITORY_DIR/Dockerfile) not found at for $EUNOMIA_GIT_REPO_NAME"
+    log::success "[$(timestamp)][eunomia::build] succeed to build image with dockerfile"
+    return 0
+    ;;
+  script)
+    log::info "[$(timestamp)][eunomia::build] start to build script ..."
+    eunomia::build_script
+    if [ "$?" != "0" ]; then
+      log::error "[$(timestamp)][eunomia::build] failed to build script"
+      return 1
+    fi
+
+    log::success "[$(timestamp)][eunomia::build] succeed to build script"
+    return 0
+    ;;
+  *)
+    log::error "[$(timestamp)][eunomia::build] unsupport build mode: $EUNOMIA_BUILD_MODE"
     return 1
-  fi
+    ;;
+  esac
+}
 
+eunomia::build_info() {
   # ADD build files for dockerfile
-  cat <<EOF >$EUNOMIA_BUILD_GIT_DIR/build.history.eunomia
+  cat <<EOF >$EUNOMIA_BUILD_GIT_DIR/build.eunomia.js
 # GIT
 EUNOMIA_GIT_REPO_URL: $EUNOMIA_GIT_REPO_URL
 EUNOMIA_GIT_REPO_NAME: $EUNOMIA_GIT_REPO_NAME
@@ -64,9 +72,33 @@ EUNOMIA_USER_VAR_VERSION: ${EUNOMIA_USER_VAR_VERSION}
 # Application (TE_MODULE)
 EUNOMIA_APPLICATION_NAME: ${EUNOMIA_APPLICATION_NAME}
 EOF
+}
 
-  # @DEPRECIATED @TO_REMOVE @TODO Compatible with old version
-  cat $EUNOMIA_BUILD_GIT_DIR/build.history.eunomia >$EUNOMIA_BUILD_GIT_DIR/build.eunomia.js
+eunomia::build_image() {
+  #    Solution 2 => 本地 Dockerfile 优先级小于于全局服务 zmicro dockerfiles 中的
+  log::info "[$(timestamp)][eunomia::build_image] checking Dockerfile exist ..."
+  if [ -d "$PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO" ]; then
+    log::info "[$(timestamp)][eunomia::build_image] dockerfiles found repo, so use repo ..."
+    # RSYNC DOKCERFILE_DIR/*
+    # @TODO with "DIR/" suffix copy file
+    if [ -n "$PLUGIN_EUNOMIA_DOCKERFILE_MODULE" ]; then
+      log::info "[$(timestamp)][eunomia::build_image] using PLUGIN_EUNOMIA_DOCKERFILE_MODULE(${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/$PLUGIN_EUNOMIA_DOCKERFILE_MODULE/) ..."
+      # 子模块
+      rsync -av ${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/$PLUGIN_EUNOMIA_DOCKERFILE_MODULE/ $EUNOMIA_BUILD_GIT_DIR
+    else
+      log::info "[$(timestamp)][eunomia::build_image] using PLUGIN_EUNOMIA_DOCKERFILE_MODULE(${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/) ..."
+      # 主模块
+      # rsync -av --exclude="$PLUGIN_EUNOMIA_DOCKERFILE_ENV_FOR_GIT_REPO" ${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/ $EUNOMIA_BUILD_GIT_DIR
+      rsync -av ${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/ $EUNOMIA_BUILD_GIT_DIR
+    fi
+  else
+    log::info "[$(timestamp)][eunomia::build_image] dockerfiles not found repo, so use local Dockerfile ..."
+  fi
+
+  if [ ! -f "$PIPELINE_GIT_REPOSITORY_DIR/Dockerfile" ]; then
+    log::error "[$(timestamp)][eunomia::build_image] Dockerfile($PIPELINE_GIT_REPOSITORY_DIR/Dockerfile) not found at for $EUNOMIA_GIT_REPO_NAME"
+    return 1
+  fi
 
   export PIPELINE_DOCKER_BUILD_DOCKERFILE=$EUNOMIA_BUILD_DOCKERFILE_PATH
   export PIPELINE_DOCKER_BUILD_ARGS_ENVFILE=$EUNOMIA_BUILD_ENV_SHELL
@@ -77,7 +109,41 @@ EOF
     return 1
   fi
 
-  log::info "[eunomia::build] done"
+  # @TODO export product
+  log::info "[$(timestamp)][build] env PLUGIN_EUNOMIA_EXPORT_DISABLE: $PLUGIN_EUNOMIA_EXPORT_DISABLE"
+  if [ "$PLUGIN_EUNOMIA_EXPORT_DISABLE" != "true" ]; then
+    # export
+    log::info "[$(timestamp)][build] exporting ..."
+    eunomia::export
+    if [ "$?" != "0" ]; then
+      log::error "[$(timestamp)][build] failed to export"
+      eunomia::task_queue_done >>/dev/null
+      exit 1
+    fi
+  fi
+}
+
+eunomia::build_script() {
+  if [ ! -f "$EUNOMIA_BUILD_ENV_SHELL" ]; then
+    log::error "[eunomia::build_script] EUNOMIA_BUILD_ENV_SHELL is required"
+    return 1
+  fi
+
+  mkdir -p $EUNOMIA_BUILD_SCRIPTS_DIR
+
+  log::info "[$(timestamp)][eunomia::build_script] start to execute ..."
+  plugin::run_zx execute_build_scripts
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)][eunomia::build_script] failed to execute"
+    return 1
+  fi
+
+  log::success "[$(timestamp)][eunomia::build_script] succeed to execute"
 }
 
 export -f eunomia::build
+
+export -f eunomia::build_info
+
+export -f eunomia::build_image
+export -f eunomia::build_script

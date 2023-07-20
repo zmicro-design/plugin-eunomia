@@ -1,0 +1,88 @@
+const cp = require('child_process');
+
+$.verbose = false;
+
+async function main() {
+  try {
+    if (!process.env.PLUGIN_EUNOMIA_CONFIG_CENTER) {
+      throw new Error('env PLUGIN_EUNOMIA_CONFIG_CENTER is not set');
+    }
+
+    if (!process.env.PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_ID) {
+      throw new Error('env PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_ID is not set');
+    }
+
+    if (!process.env.PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_SECRET) {
+      throw new Error('env PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_SECRET is not set');
+    }
+
+    if (!process.env.EUNOMIA_PROJECT_ID) {
+      throw new Error('env EUNOMIA_PROJECT_ID is not set');
+    }
+
+    const response = await fetch(`${process.env.PLUGIN_EUNOMIA_CONFIG_CENTER}/api/open/v1/client/pipeline/${process.env.EUNOMIA_PROJECT_ID}/build_scripts`, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-Client-ID': process.env.PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_ID,
+        'X-Client-Secret': process.env.PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_SECRET,
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`unexpected response ${response.statusText}`);
+    }
+
+    const respData = await response.json();
+    if (respData.code !== 200) {
+      throw new Error(`unexpected response ${respData.message}`);
+    }
+
+    const { total, data } = respData.result;
+    const all = data.length;
+    for (const index in data) {
+      const { id, name, content, host } = data[index];
+      const script_filepath = `${process.env.EUNOMIA_DEPLOY_SCRIPTS_DIR}/${id}.sh`;
+      fs.writeFileSync(script_filepath, content);
+      // const response = await $`gzcaas client -s ${hostIP} --scriptfile ${script_filepath} --envfile ${process.env.EUNOMIA_BUILD_ENV_SHELL}`
+      // console.log('[execute_build_scripts] exit code:', response.exitCode);
+      // if (response.exitCode !== 0) {
+      //   throw new Error(`failed to execute script ${script_filepath}`);
+      // }
+
+      console.log(`[execute_build_scripts][${+index + 1}/${all}] execute step(${name}) on ${host.name}(${host.ip}) ...`);
+      // await runShell(`source ${process.env.EUNOMIA_BUILD_ENV_SHELL} && bash ${script_filepath}`);
+      await runShell(`bash ${script_filepath}`);
+    }
+  } catch (error) {
+    console.error("[execute_build_scripts] catch error:", error);
+    process.exit(1);
+  }
+}
+
+async function runShell(command, options) {
+  if (options?.env) {
+    for (const key in options.env) {
+      process.env[key] = '' + options.env[key];
+    }
+  }
+
+  return new Promise((resolve, reject) => {
+    const child = cp.spawn(command, {
+      shell: true,
+      stdio: 'inherit',
+      cwd: options?.cwd || $.cwd,
+    });
+
+    child.on('exit', (code) => {
+      if (code !== 0) return reject(`run command error (command: ${command}, code: ${code})`);
+
+      resolve();
+    });
+
+    child.on('error', (error) => {
+      return reject(`run command error (command: ${command}, error: ${error?.message})`);
+    });
+  });
+}
+
+main();
