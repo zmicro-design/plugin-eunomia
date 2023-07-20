@@ -13,6 +13,15 @@ eunomia::build() {
 
   eunomia::build_info
 
+  # check scripts
+  log::info "[$(timestamp)] checking scripts ..."
+  if [ "$(eunomia::build_scripts_exists)" = "true" ]; then
+    export EUNOMIA_BUILD_MODE="script"
+    log::info "[$(timestamp)] found scripts, build mode: $EUNOMIA_BUILD_MODE"
+  else
+    log::info "[$(timestamp)] no scripts found"
+  fi
+
   case $EUNOMIA_BUILD_MODE in
   image)
     log::info "[$(timestamp)][eunomia::build] start to build image with dockerfile ..."
@@ -74,6 +83,10 @@ EUNOMIA_APPLICATION_NAME: ${EUNOMIA_APPLICATION_NAME}
 EOF
 }
 
+eunomia::build_scripts_exists() {
+  plugin::run_zx is_build_scripts_exist
+}
+
 eunomia::build_image() {
   #    Solution 2 => 本地 Dockerfile 优先级小于于全局服务 zmicro dockerfiles 中的
   log::info "[$(timestamp)][eunomia::build_image] checking Dockerfile exist ..."
@@ -113,10 +126,10 @@ eunomia::build_image() {
   log::info "[$(timestamp)][eunomia::build] env PLUGIN_EUNOMIA_EXPORT_DISABLE: $PLUGIN_EUNOMIA_EXPORT_DISABLE"
   if [ "$PLUGIN_EUNOMIA_EXPORT_DISABLE" != "true" ]; then
     # export
-    log::info "[$(timestamp)][eunomia::build] exporting ..."
+    log::info "[$(timestamp)][eunomia::build] exporting product ..."
     eunomia::export
     if [ "$?" != "0" ]; then
-      log::error "[$(timestamp)][eunomia::build] failed to export"
+      log::error "[$(timestamp)][eunomia::build] failed to export product"
       return 1
     fi
   fi
@@ -143,6 +156,8 @@ eunomia::build_script() {
 export -f eunomia::build
 
 export -f eunomia::build_info
+
+export -f eunomia::build_scripts_exists
 
 export -f eunomia::build_image
 export -f eunomia::build_script
