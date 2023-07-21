@@ -2,27 +2,27 @@
 
 eunomia::upload() {
   # Generate OSS Path
-  log::info "[$(timestamp)][upload] start to generate oss path: $EUNOMIA_DEPLOY_COMPONENT_FILE_NAME"
+  log::info "[$(timestamp)][eunomia::upload] start to generate oss path: $EUNOMIA_DEPLOY_COMPONENT_FILE_NAME"
   eunomia::deploy_component_generate_oss_path
   if [ "$?" != "0" ]; then
-    log::error "[$(timestamp)][upload] failed to generate oss path"
+    log::error "[$(timestamp)][eunomia::upload] failed to generate oss path"
     return 1
   fi
 
   # Execute upload
-  log::info "[$(timestamp)][upload] start to upload artifact: $EUNOMIA_DEPLOY_COMPONENT_OSS_PATH"
-  log::info "[$(timestamp)][eunomia::deploy_component] upload file to oss  ..."
+  log::info "[$(timestamp)][eunomia::upload] start to upload artifact: $EUNOMIA_DEPLOY_COMPONENT_OSS_PATH"
+  log::info "[$(timestamp)][eunomia::upload] upload file to oss  ..."
   eunomia::deploy_component_upload_file
   if [ "$?" != "0" ]; then
-    log::error "[$(timestamp)][eunomia::deploy_component] failed to upload file to oss."
+    log::error "[$(timestamp)][eunomia::upload] failed to upload file to oss."
     return 1
   fi
-  log::info "[$(timestamp)][eunomia::deploy_component] create a version release record ..."
+  log::info "[$(timestamp)][eunomia::upload] create a version release record ..."
 
   # Create version
   eunomia::deploy_component_create_version
   if [ "$?" != "0" ]; then
-    log::error "[$(timestamp)][eunomia::deploy_component] failed to create a version release record."
+    log::error "[$(timestamp)][eunomia::upload] failed to create a version release record."
     return 1
   fi
 }
