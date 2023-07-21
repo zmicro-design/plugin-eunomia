@@ -51,7 +51,17 @@ async function main() {
 
       console.log(`[execute_build_scripts][${+index + 1}/${all}] execute step(${name}) with env ${env.name} ...`);
       // await runShell(`source ${process.env.EUNOMIA_BUILD_ENV_SHELL} && bash ${script_filepath}`);
-      await runShell(`bash ${script_filepath}`);
+      // await runShell(`bash ${script_filepath}`);
+      await runShell([
+        `docker run -it --rm`,
+        `--env-file ${process.env.EUNOMIA_BUILD_ENV_SHELL}`,
+        `--volume ${process.env.EUNOMIA_BUILD_GIT_DIR}:/build`,
+        `--volume ${process.env.EUNOMIA_BUILD_PRODUCT_DIR}:${process.env.PLUGIN_EUNOMIA_EXPORT_RUNNER_DIST_DIR}`,
+        `--volume ${script_filepath}:/script.sh`,
+        `--workdir /build`,
+        `${process.env.EUNOMIA_BUILD_IMAGE}`,
+        `bash /script.sh`
+      ].join(' '));
     }
   } catch (error) {
     console.error("[execute_build_scripts] catch error:", error);
