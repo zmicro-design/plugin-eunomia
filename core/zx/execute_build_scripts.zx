@@ -56,7 +56,7 @@ async function main() {
         `docker run -it --rm`,
         `--env-file ${process.env.EUNOMIA_BUILD_ENV_SHELL}`,
         `--volume ${process.env.EUNOMIA_BUILD_GIT_DIR}:/build`,
-        `--volume ${process.env.EUNOMIA_BUILD_PRODUCT_DIR}:${process.env.PLUGIN_EUNOMIA_EXPORT_RUNNER_DIST_DIR}`,
+        `--volume ${process.env.EUNOMIA_BUILD_PRODUCT_DIR}:${process.env.EUNOMIA_BUILD_EXPORT_DIR}`,
         `--volume ${script_filepath}:/script.sh`,
         `--workdir /build`,
         `${process.env.EUNOMIA_BUILD_IMAGE}`,

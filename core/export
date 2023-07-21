@@ -22,8 +22,8 @@ eunomia::export() {
     return 1
   fi
   
-  log::info "[$(timestamp)][eunomia::export] copy from docker:$PLUGIN_EUNOMIA_EXPORT_RUNNER_DIST_DIR to host:$PLUGIN_EUNOMIA_EXPORT_ID_DIR"
-  docker cp $PLUGIN_EUNOMIA_EXPORT_RUNNER_NAME:${PLUGIN_EUNOMIA_EXPORT_RUNNER_DIST_DIR} $PLUGIN_EUNOMIA_EXPORT_ID_DIR >> /dev/null
+  log::info "[$(timestamp)][eunomia::export] copy from docker:$EUNOMIA_BUILD_EXPORT_DIR to host:$PLUGIN_EUNOMIA_EXPORT_ID_DIR"
+  docker cp $PLUGIN_EUNOMIA_EXPORT_RUNNER_NAME:${EUNOMIA_BUILD_EXPORT_DIR} $PLUGIN_EUNOMIA_EXPORT_ID_DIR >> /dev/null
   if [ "$?" != "0" ]; then
     # log::error "[$(timestamp)][eunomia::export] failed to export when copying from runner"
     # return 1
