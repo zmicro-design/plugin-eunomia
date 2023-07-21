@@ -1,30 +1,39 @@
 #!/bin/bash
 
 eunomia::upload() {
+  log::info "[$(timestamp)][eunomia::upload] start ..."
+
   # Generate OSS Path
-  log::info "[$(timestamp)][upload] start to upload artifact: $EUNOMIA_DEPLOY_COMPONENT_FILE_NAME"
+  log::info "[$(timestamp)][eunomia::upload] start to generate oss path（file: $EUNOMIA_DEPLOY_COMPONENT_FILE_NAME) ..."
   eunomia::deploy_component_generate_oss_path
   if [ "$?" != "0" ]; then
-    log::error "[$(timestamp)][upload] failed to generate oss path"
+    log::error "[$(timestamp)][eunomia::upload] failed to generate oss path"
+    log::error "[$(timestamp)][eunomia::upload] finish ..."
     return 1
   fi
+  log::success "[$(timestamp)][eunomia::upload] succeed to generate oss path (oss path: $EUNOMIA_DEPLOY_COMPONENT_OSS_PATH)."
 
   # Execute upload
-  log::info "[$(timestamp)][upload] start to upload artifact: $EUNOMIA_DEPLOY_COMPONENT_OSS_PATH"
-  log::info "[$(timestamp)][eunomia::deploy_component] upload file to oss  ..."
+  log::info "[$(timestamp)][eunomia::upload] start to upload artifact to oss (oss path: $EUNOMIA_DEPLOY_COMPONENT_OSS_PATH) ..."
   eunomia::deploy_component_upload_file
   if [ "$?" != "0" ]; then
-    log::error "[$(timestamp)][eunomia::deploy_component] failed to upload file to oss."
+    log::error "[$(timestamp)][eunomia::upload] failed to upload file to oss."
+    log::error "[$(timestamp)][eunomia::upload] finish ..."
     return 1
   fi
-  log::info "[$(timestamp)][eunomia::deploy_component] create a version release record ..."
+  log::success "[$(timestamp)][eunomia::upload] upload artifact to oss (oss path: $EUNOMIA_DEPLOY_COMPONENT_OSS_PATH, file: $EUNOMIA_DEPLOY_COMPONENT_FILE_NAME)."
 
   # Create version
+  log::info "[$(timestamp)][eunomia::upload] start to create a version release record ..."
   eunomia::deploy_component_create_version
   if [ "$?" != "0" ]; then
-    log::error "[$(timestamp)][eunomia::deploy_component] failed to create a version release record."
+    log::error "[$(timestamp)][eunomia::upload] failed to create a version release record."
+    log::error "[$(timestamp)][eunomia::upload] finish ..."
     return 1
   fi
+  log::success "[$(timestamp)][eunomia::upload] succeed to create a version release record."
+
+  log::success "[$(timestamp)][eunomia::upload] finish ..."
 }
 
 export -f eunomia::upload
