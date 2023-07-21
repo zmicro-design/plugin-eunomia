@@ -40,8 +40,8 @@ async function main() {
     const { total, data } = respData.result;
     const all = data.length;
     for (const index in data) {
-      const { id, name, content, host } = data[index];
-      const script_filepath = `${process.env.EUNOMIA_DEPLOY_SCRIPTS_DIR}/${id}.sh`;
+      const { id, name, content, env } = data[index];
+      const script_filepath = `${process.env.EUNOMIA_BUILD_SCRIPTS_DIR}/${id}.sh`;
       fs.writeFileSync(script_filepath, content);
       // const response = await $`gzcaas client -s ${hostIP} --scriptfile ${script_filepath} --envfile ${process.env.EUNOMIA_BUILD_ENV_SHELL}`
       // console.log('[execute_build_scripts] exit code:', response.exitCode);
@@ -49,7 +49,7 @@ async function main() {
       //   throw new Error(`failed to execute script ${script_filepath}`);
       // }
 
-      console.log(`[execute_build_scripts][${+index + 1}/${all}] execute step(${name}) on ${host.name}(${host.ip}) ...`);
+      console.log(`[execute_build_scripts][${+index + 1}/${all}] execute step(${name}) with env ${env.name} ...`);
       // await runShell(`source ${process.env.EUNOMIA_BUILD_ENV_SHELL} && bash ${script_filepath}`);
       await runShell(`bash ${script_filepath}`);
     }
