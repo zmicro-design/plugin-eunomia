@@ -53,13 +53,13 @@ async function main() {
       // await runShell(`source ${process.env.EUNOMIA_BUILD_ENV_SHELL} && bash ${script_filepath}`);
       // await runShell(`bash ${script_filepath}`);
       await runShell([
-        `docker run -it --rm`,
+        `docker run -i --rm`,
         `--env-file ${process.env.EUNOMIA_BUILD_ENV_SHELL}`,
         `--volume ${process.env.EUNOMIA_BUILD_GIT_DIR}:/build`,
         `--volume ${process.env.EUNOMIA_BUILD_PRODUCT_DIR}:${process.env.EUNOMIA_BUILD_EXPORT_DIR}`,
         `--volume ${script_filepath}:/script.sh`,
         `--workdir /build`,
-        `${process.env.EUNOMIA_BUILD_IMAGE}`,
+        `${env.image}`,
         `bash /script.sh`
       ].join(' '));
     }
