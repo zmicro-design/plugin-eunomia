@@ -26,13 +26,13 @@ async function main() {
     
     await Promise.all(tags.map(e => createImageWithTag(e)));
   } catch (error) {
-    console.error("[execute_build_scripts] catch error:", error);
+    console.error("[create_image_record] catch error:", error);
     process.exit(1);
   }
 }
 
 async function createImageWithTag(tag) {
-  console.log(`[createImageWithTag] create image: ${process.env.EUNOMIA_BUILD_DOCKER_IMAGE_NAME}:${tag} (commit: ${process.env.EUNOMIA_GIT_COMMIT}) ...`)
+  console.log(`[create_image_record] create image: ${process.env.EUNOMIA_BUILD_DOCKER_IMAGE_NAME}:${tag} (commit: ${process.env.EUNOMIA_GIT_COMMIT}) ...`)
 
   const response = await fetch(`${process.env.PLUGIN_EUNOMIA_CONFIG_CENTER}/api/open/v1/client/devops/images`, {
     method: 'POST',

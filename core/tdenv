@@ -1,0 +1,101 @@
+#!/bin/bash
+
+eunomia::tdenv_create_start() {
+  if [ -z "$EUNOMIA_TDENV_IMAGE_NAME" ]; then
+    log::error "[$(timestamp)][eunomia::tdenv_create_start] EUNOMIA_TDENV_IMAGE_NAME is required"
+    return 1
+  fi
+
+  if [ -z "$EUNOMIA_TDENV_IMAGE_TAG" ]; then
+    log::error "[$(timestamp)][eunomia::tdenv_create_start] EUNOMIA_TDENV_IMAGE_TAG is required"
+    return 1
+  fi
+
+  if [ -z "$EUNOMIA_TDENV_INSTANCE_NAME" ]; then
+    log::error "[$(timestamp)][eunomia::tdenv_create_start] EUNOMIA_TDENV_INSTANCE_NAME is required"
+    return 1
+  fi
+
+  export EUNOMIA_TDENV_STATUS=1
+  plugin::run_zx tdenv_update_status
+}
+
+eunomia::tdenv_create_success() {
+  if [ -z "$EUNOMIA_TDENV_IMAGE_NAME" ]; then
+    log::error "[$(timestamp)][eunomia::tdenv_create_start] EUNOMIA_TDENV_IMAGE_NAME is required"
+    return 1
+  fi
+
+  if [ -z "$EUNOMIA_TDENV_IMAGE_TAG" ]; then
+    log::error "[$(timestamp)][eunomia::tdenv_create_start] EUNOMIA_TDENV_IMAGE_TAG is required"
+    return 1
+  fi
+
+  if [ -z "$EUNOMIA_TDENV_INSTANCE_NAME" ]; then
+    log::error "[$(timestamp)][eunomia::tdenv_create_start] EUNOMIA_TDENV_INSTANCE_NAME is required"
+    return 1
+  fi
+
+  if [ -z "$EUNOMIA_TDENV_PUBLISH_URL" ]; then
+    log::error "[$(timestamp)][eunomia::tdenv_create_start] EUNOMIA_TDENV_PUBLISH_URL is required"
+    return 1
+  fi
+
+  if [ -z "$EUNOMIA_TDENV_VISIT_URL" ]; then
+    log::error "[$(timestamp)][eunomia::tdenv_create_start] EUNOMIA_TDENV_VISIT_URL is required"
+    return 1
+  fi
+
+  if [ -z "$EUNOMIA_TDENV_TERMINAL_URL" ]; then
+    log::error "[$(timestamp)][eunomia::tdenv_create_start] EUNOMIA_TDENV_TERMINAL_URL is required"
+    return 1
+  fi
+
+  export EUNOMIA_TDENV_STATUS=2
+  plugin::run_zx tdenv_update_status
+}
+
+eunomia::tdenv_create_failure() {
+  export EUNOMIA_TDENV_STATUS=3
+  plugin::run_zx tdenv_update_status
+}
+
+eunomia::tdenv_delete_start() {
+  if [ -z "$EUNOMIA_TDENV_INSTANCE_NAME" ]; then
+    log::error "[$(timestamp)][eunomia::tdenv_create_start] EUNOMIA_TDENV_INSTANCE_NAME is required"
+    return 1
+  fi
+
+  export EUNOMIA_TDENV_STATUS=4
+  plugin::run_zx tdenv_update_status
+}
+
+eunomia::tdenv_delete_success() {
+  if [ -z "$EUNOMIA_TDENV_INSTANCE_NAME" ]; then
+    log::error "[$(timestamp)][eunomia::tdenv_create_start] EUNOMIA_TDENV_INSTANCE_NAME is required"
+    return 1
+  fi
+
+  export EUNOMIA_TDENV_STATUS=5
+  plugin::run_zx tdenv_update_status
+}
+
+eunomia::tdenv_delete_failure() {
+  if [ -z "$EUNOMIA_TDENV_INSTANCE_NAME" ]; then
+    log::error "[$(timestamp)][eunomia::tdenv_create_start] EUNOMIA_TDENV_INSTANCE_NAME is required"
+    return 1
+  fi
+
+  export EUNOMIA_TDENV_STATUS=6
+  plugin::run_zx tdenv_update_status
+}
+
+
+export -f eunomia::tdenv_create_start
+export -f eunomia::tdenv_create_success
+export -f eunomia::tdenv_create_failure
+
+export -f eunomia::tdenv_delete_start
+export -f eunomia::tdenv_delete_success
+export -f eunomia::tdenv_delete_failure
+
