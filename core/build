@@ -87,6 +87,10 @@ eunomia::build_scripts_exists() {
   plugin::run_zx is_build_scripts_exist
 }
 
+eunomia::create_image_record() {
+  plugin::run_zx create_image_record
+}
+
 eunomia::build_image() {
   #    Solution 2 => 本地 Dockerfile 优先级小于于全局服务 zmicro dockerfiles 中的
   log::info "[$(timestamp)][eunomia::build_image] checking Dockerfile exist ..."
@@ -119,6 +123,13 @@ eunomia::build_image() {
   zmicro pipeline bp
   if [ "$?" != "0" ]; then
     log::error "[eunomia::build] failed to build"
+    return 1
+  fi
+
+  log::info "[$(timestamp)][eunomia::build] start to create image record ..."
+  eunomia::create_image_record
+  if [ "$?" != "0" ]; then
+    log::error "[eunomia::build] failed to create image record"
     return 1
   fi
 
@@ -158,6 +169,7 @@ export -f eunomia::build
 export -f eunomia::build_info
 
 export -f eunomia::build_scripts_exists
+export -f eunomia::create_image_record
 
 export -f eunomia::build_image
 export -f eunomia::build_script

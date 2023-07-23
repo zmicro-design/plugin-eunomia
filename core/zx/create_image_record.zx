@@ -1,0 +1,68 @@
+const cp = require('child_process');
+
+$.verbose = false;
+
+async function main() {
+  try {
+    if (!process.env.PLUGIN_EUNOMIA_CONFIG_CENTER) {
+      throw new Error('env PLUGIN_EUNOMIA_CONFIG_CENTER is not set');
+    }
+
+    if (!process.env.PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_ID) {
+      throw new Error('env PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_ID is not set');
+    }
+
+    if (!process.env.PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_SECRET) {
+      throw new Error('env PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_SECRET is not set');
+    }
+
+    const tags = [
+      `build_${process.env.EUNOMIA_BUILD_ID}`,
+      `commit_${process.env.EUNOMIA_GIT_COMMIT}`,
+    ];
+    if (!!process.env.EUNOMIA_BUILD_DOCKER_IMAGE_VERSION) {
+      tags.push(process.env.EUNOMIA_BUILD_DOCKER_IMAGE_VERSION);
+    }
+    
+    await Promise.all(tags.map(e => createImageWithTag(e)));
+  } catch (error) {
+    console.error("[execute_build_scripts] catch error:", error);
+    process.exit(1);
+  }
+}
+
+async function createImageWithTag(tag) {
+  console.log(`[createImageWithTag] create image: ${process.env.EUNOMIA_BUILD_DOCKER_IMAGE_NAME}:${tag} (commit: ${process.env.EUNOMIA_GIT_COMMIT}) ...`)
+
+  const response = await fetch(`${process.env.PLUGIN_EUNOMIA_CONFIG_CENTER}/api/open/v1/client/devops/images`, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'X-Client-ID': process.env.PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_ID,
+      'X-Client-Secret': process.env.PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_SECRET,
+    },
+    body: JSON.stringify({
+      name: process.env.EUNOMIA_BUILD_DOCKER_IMAGE_NAME,
+      tag,
+      //
+      git_commit: process.env.EUNOMIA_GIT_COMMIT,
+      git_branch: process.env.EUNOMIA_GIT_BRANCH,
+      git_tag: process.env.EUNOMIA_GIT_TAG,
+      git_url: process.env.EUNOMIA_GIT_REPOSITORY,
+      git_commit_author: process.env.EUNOMIA_GIT_COMMIT_AUTHOR,
+      git_commit_message: process.env.EUNOMIA_GIT_COMMIT_MESSAGE,
+      git_commit_timestamp: process.env.EUNOMIA_GIT_COMMIT_TIMESTAMP,
+    }),
+  });
+  if (!response.ok) {
+    throw new Error(`unexpected response ${response.statusText}`);
+  }
+
+  const respData = await response.json();
+  if (respData.code !== 200) {
+    throw new Error(`unexpected response ${respData.message}`);
+  }
+}
+
+main();
