@@ -56,7 +56,7 @@ eunomia::tdenv_create_success() {
 }
 
 eunomia::tdenv_create_failure() {
-  export EUNOMIA_TDENV_STATUS=3
+  export EUNOMIA_TDENV_STATUS=5
   plugin::run_zx tdenv_update_status
 }
 
@@ -66,7 +66,7 @@ eunomia::tdenv_delete_start() {
     return 1
   fi
 
-  export EUNOMIA_TDENV_STATUS=4
+  export EUNOMIA_TDENV_STATUS=3
   plugin::run_zx tdenv_update_status
 }
 
@@ -76,7 +76,7 @@ eunomia::tdenv_delete_success() {
     return 1
   fi
 
-  export EUNOMIA_TDENV_STATUS=5
+  export EUNOMIA_TDENV_STATUS=4
   plugin::run_zx tdenv_update_status
 }
 
