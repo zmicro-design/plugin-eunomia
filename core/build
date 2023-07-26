@@ -119,7 +119,7 @@ eunomia::build_image() {
 
   export PIPELINE_DOCKER_BUILD_DOCKERFILE=$EUNOMIA_BUILD_DOCKERFILE_PATH
   export PIPELINE_DOCKER_BUILD_ARGS_ENVFILE=$EUNOMIA_BUILD_ENV_SHELL
-  export PIPELINE_DOCKER_BUILD_CACHE_ENABLE=true
+  # export PIPELINE_DOCKER_BUILD_CACHE_ENABLE=true
   zmicro pipeline bp
   if [ "$?" != "0" ]; then
     log::error "[eunomia::build] failed to build"
