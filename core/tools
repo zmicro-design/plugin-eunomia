@@ -16,7 +16,7 @@ eunomia::export_product() {
 
   log::info "[$(timestamp)] start to download product dist ..."
 
-  wget -c $EUNOMIA_EXPORT_DIST_URL -O $filepath #>>/dev/null 2>&1
+  wget -q -c $EUNOMIA_EXPORT_DIST_URL -O $filepath #>>/dev/null 2>&1
   if [ "$?" != "0" ]; then
       echo "failed to download $EUNOMIA_EXPORT_DIST to $filepath"
       exit 1
