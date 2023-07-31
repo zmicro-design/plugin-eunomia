@@ -22,32 +22,32 @@ eunomia::tdenv_create_start() {
 
 eunomia::tdenv_create_success() {
   if [ -z "$EUNOMIA_TDENV_IMAGE_NAME" ]; then
-    log::error "[$(timestamp)][eunomia::tdenv_create_start] EUNOMIA_TDENV_IMAGE_NAME is required"
+    log::error "[$(timestamp)][eunomia::tdenv_create_success] EUNOMIA_TDENV_IMAGE_NAME is required"
     return 1
   fi
 
   if [ -z "$EUNOMIA_TDENV_IMAGE_TAG" ]; then
-    log::error "[$(timestamp)][eunomia::tdenv_create_start] EUNOMIA_TDENV_IMAGE_TAG is required"
+    log::error "[$(timestamp)][eunomia::tdenv_create_success] EUNOMIA_TDENV_IMAGE_TAG is required"
     return 1
   fi
 
   if [ -z "$EUNOMIA_TDENV_INSTANCE_NAME" ]; then
-    log::error "[$(timestamp)][eunomia::tdenv_create_start] EUNOMIA_TDENV_INSTANCE_NAME is required"
+    log::error "[$(timestamp)][eunomia::tdenv_create_success] EUNOMIA_TDENV_INSTANCE_NAME is required"
     return 1
   fi
 
   if [ -z "$EUNOMIA_TDENV_PUBLISH_URL" ]; then
-    log::error "[$(timestamp)][eunomia::tdenv_create_start] EUNOMIA_TDENV_PUBLISH_URL is required"
+    log::error "[$(timestamp)][eunomia::tdenv_create_success] EUNOMIA_TDENV_PUBLISH_URL is required"
     return 1
   fi
 
   if [ -z "$EUNOMIA_TDENV_VISIT_URL" ]; then
-    log::error "[$(timestamp)][eunomia::tdenv_create_start] EUNOMIA_TDENV_VISIT_URL is required"
+    log::error "[$(timestamp)][eunomia::tdenv_create_success] EUNOMIA_TDENV_VISIT_URL is required"
     return 1
   fi
 
   if [ -z "$EUNOMIA_TDENV_TERMINAL_URL" ]; then
-    log::error "[$(timestamp)][eunomia::tdenv_create_start] EUNOMIA_TDENV_TERMINAL_URL is required"
+    log::error "[$(timestamp)][eunomia::tdenv_create_success] EUNOMIA_TDENV_TERMINAL_URL is required"
     return 1
   fi
 
@@ -62,7 +62,7 @@ eunomia::tdenv_create_failure() {
 
 eunomia::tdenv_delete_start() {
   if [ -z "$EUNOMIA_TDENV_INSTANCE_NAME" ]; then
-    log::error "[$(timestamp)][eunomia::tdenv_create_start] EUNOMIA_TDENV_INSTANCE_NAME is required"
+    log::error "[$(timestamp)][eunomia::tdenv_create_failure] EUNOMIA_TDENV_INSTANCE_NAME is required"
     return 1
   fi
 
@@ -72,7 +72,7 @@ eunomia::tdenv_delete_start() {
 
 eunomia::tdenv_delete_success() {
   if [ -z "$EUNOMIA_TDENV_INSTANCE_NAME" ]; then
-    log::error "[$(timestamp)][eunomia::tdenv_create_start] EUNOMIA_TDENV_INSTANCE_NAME is required"
+    log::error "[$(timestamp)][eunomia::tdenv_delete_success] EUNOMIA_TDENV_INSTANCE_NAME is required"
     return 1
   fi
 
@@ -82,7 +82,7 @@ eunomia::tdenv_delete_success() {
 
 eunomia::tdenv_delete_failure() {
   if [ -z "$EUNOMIA_TDENV_INSTANCE_NAME" ]; then
-    log::error "[$(timestamp)][eunomia::tdenv_create_start] EUNOMIA_TDENV_INSTANCE_NAME is required"
+    log::error "[$(timestamp)][eunomia::tdenv_delete_failure] EUNOMIA_TDENV_INSTANCE_NAME is required"
     return 1
   fi
 
