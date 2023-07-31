@@ -36,20 +36,20 @@ eunomia::tdenv_create_success() {
     return 1
   fi
 
-  if [ -z "$EUNOMIA_TDENV_PUBLISH_URL" ]; then
-    log::error "[$(timestamp)][eunomia::tdenv_create_success] EUNOMIA_TDENV_PUBLISH_URL is required"
-    return 1
-  fi
+  # if [ -z "$EUNOMIA_TDENV_PUBLISH_URL" ]; then
+  #   log::error "[$(timestamp)][eunomia::tdenv_create_success] EUNOMIA_TDENV_PUBLISH_URL is required"
+  #   return 1
+  # fi
 
-  if [ -z "$EUNOMIA_TDENV_VISIT_URL" ]; then
-    log::error "[$(timestamp)][eunomia::tdenv_create_success] EUNOMIA_TDENV_VISIT_URL is required"
-    return 1
-  fi
+  # if [ -z "$EUNOMIA_TDENV_VISIT_URL" ]; then
+  #   log::error "[$(timestamp)][eunomia::tdenv_create_success] EUNOMIA_TDENV_VISIT_URL is required"
+  #   return 1
+  # fi
 
-  if [ -z "$EUNOMIA_TDENV_TERMINAL_URL" ]; then
-    log::error "[$(timestamp)][eunomia::tdenv_create_success] EUNOMIA_TDENV_TERMINAL_URL is required"
-    return 1
-  fi
+  # if [ -z "$EUNOMIA_TDENV_TERMINAL_URL" ]; then
+  #   log::error "[$(timestamp)][eunomia::tdenv_create_success] EUNOMIA_TDENV_TERMINAL_URL is required"
+  #   return 1
+  # fi
 
   export EUNOMIA_TDENV_STATUS=2
   plugin::run_zx tdenv_update_status
