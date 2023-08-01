@@ -21,6 +21,7 @@ services:
       # Solution: https://docs.docker.com/develop/develop-images/build_enhancements/
       DOCKER_BUILDKIT: 1
       # PLUGIN_EUNOMIA_TASK_QUEUE_IS_ENABLED: 'false'
+    privileged: true
     volumes:
       # # DEBUG START
       # - /usr/local/lib/zmicro:/usr/local/lib/zmicro
