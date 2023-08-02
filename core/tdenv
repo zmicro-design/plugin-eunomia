@@ -1,26 +1,11 @@
 #!/bin/bash
 
-eunomia::tdenv_create_start() {
-  if [ -z "$EUNOMIA_TDENV_IMAGE_NAME" ]; then
-    log::error "[$(timestamp)][eunomia::tdenv_create_start] EUNOMIA_TDENV_IMAGE_NAME is required"
-    return 1
-  fi
-
-  if [ -z "$EUNOMIA_TDENV_IMAGE_TAG" ]; then
-    log::error "[$(timestamp)][eunomia::tdenv_create_start] EUNOMIA_TDENV_IMAGE_TAG is required"
-    return 1
-  fi
-
-  if [ -z "$EUNOMIA_TDENV_INSTANCE_NAME" ]; then
-    log::error "[$(timestamp)][eunomia::tdenv_create_start] EUNOMIA_TDENV_INSTANCE_NAME is required"
-    return 1
-  fi
-
-  export EUNOMIA_TDENV_STATUS=1
-  plugin::run_zx tdenv_update_status
-}
-
 eunomia::tdenv_create_success() {
+  if [ -z "$EUNOMIA_TDENV_ID" ]; then
+    log::warn "[$(timestamp)][eunomia::tdenv_create_success] ignore => because EUNOMIA_TDENV_ID not found"
+    return 0
+  fi
+
   if [ -z "$EUNOMIA_TDENV_IMAGE_NAME" ]; then
     log::error "[$(timestamp)][eunomia::tdenv_create_success] EUNOMIA_TDENV_IMAGE_NAME is required"
     return 1
@@ -36,21 +21,6 @@ eunomia::tdenv_create_success() {
     return 1
   fi
 
-  # if [ -z "$EUNOMIA_TDENV_PUBLISH_URL" ]; then
-  #   log::error "[$(timestamp)][eunomia::tdenv_create_success] EUNOMIA_TDENV_PUBLISH_URL is required"
-  #   return 1
-  # fi
-
-  # if [ -z "$EUNOMIA_TDENV_VISIT_URL" ]; then
-  #   log::error "[$(timestamp)][eunomia::tdenv_create_success] EUNOMIA_TDENV_VISIT_URL is required"
-  #   return 1
-  # fi
-
-  # if [ -z "$EUNOMIA_TDENV_TERMINAL_URL" ]; then
-  #   log::error "[$(timestamp)][eunomia::tdenv_create_success] EUNOMIA_TDENV_TERMINAL_URL is required"
-  #   return 1
-  # fi
-
   # @TODO get terminal url
   local pod_name=$(kubectl get po -n te --selector app.kubernetes.io/instance=$EUNOMIA_TDENV_INSTANCE_NAME --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
   export EUNOMIA_TDENV_TERMINAL_URL="https://k8s.idp.thinkingdata.cn/#/shell/te/$pod_name/te-alone?namespace=te"
@@ -60,21 +30,21 @@ eunomia::tdenv_create_success() {
 }
 
 eunomia::tdenv_create_failure() {
+  if [ -z "$EUNOMIA_TDENV_ID" ]; then
+    log::warn "[$(timestamp)][eunomia::tdenv_create_success] ignore => because EUNOMIA_TDENV_ID not found"
+    return 0
+  fi
+
   export EUNOMIA_TDENV_STATUS=5
   plugin::run_zx tdenv_update_status
 }
 
-eunomia::tdenv_delete_start() {
-  if [ -z "$EUNOMIA_TDENV_INSTANCE_NAME" ]; then
-    log::error "[$(timestamp)][eunomia::tdenv_create_failure] EUNOMIA_TDENV_INSTANCE_NAME is required"
-    return 1
+eunomia::tdenv_delete_success() {
+  if [ -z "$EUNOMIA_TDENV_ID" ]; then
+    log::warn "[$(timestamp)][eunomia::tdenv_create_success] ignore => because EUNOMIA_TDENV_ID not found"
+    return 0
   fi
 
-  export EUNOMIA_TDENV_STATUS=3
-  plugin::run_zx tdenv_update_status
-}
-
-eunomia::tdenv_delete_success() {
   if [ -z "$EUNOMIA_TDENV_INSTANCE_NAME" ]; then
     log::error "[$(timestamp)][eunomia::tdenv_delete_success] EUNOMIA_TDENV_INSTANCE_NAME is required"
     return 1
@@ -85,6 +55,11 @@ eunomia::tdenv_delete_success() {
 }
 
 eunomia::tdenv_delete_failure() {
+  if [ -z "$EUNOMIA_TDENV_ID" ]; then
+    log::warn "[$(timestamp)][eunomia::tdenv_create_success] ignore => because EUNOMIA_TDENV_ID not found"
+    return 0
+  fi
+  
   if [ -z "$EUNOMIA_TDENV_INSTANCE_NAME" ]; then
     log::error "[$(timestamp)][eunomia::tdenv_delete_failure] EUNOMIA_TDENV_INSTANCE_NAME is required"
     return 1
@@ -95,11 +70,9 @@ eunomia::tdenv_delete_failure() {
 }
 
 
-export -f eunomia::tdenv_create_start
 export -f eunomia::tdenv_create_success
 export -f eunomia::tdenv_create_failure
 
-export -f eunomia::tdenv_delete_start
 export -f eunomia::tdenv_delete_success
 export -f eunomia::tdenv_delete_failure
 
