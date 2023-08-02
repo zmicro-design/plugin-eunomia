@@ -25,13 +25,13 @@ eunomia::pre() {
   # log::info "[$(timestamp)][pre]  commit timestamp: $EUNOMIA_GIT_COMMIT_TIMESTAMP"
 
   ## env
-  log::info "[$(timestamp)] start to generate env shell ..."
+  log::debug "[$(timestamp)] start to generate env shell ..."
   plugin::run_zx env_shell
   if [ "$?" != "0" ]; then
     log::error "[$(timestamp)] failed to generate env shell at ${EUNOMIA_BUILD_ENV_SHELL}."
     return 1
   fi
-  log::success "[$(timestamp)] succeed to generate env shell at ${EUNOMIA_BUILD_ENV_SHELL} ..."
+  log::debug "[$(timestamp)] succeed to generate env shell at ${EUNOMIA_BUILD_ENV_SHELL} ..."
 }
 
 export -f eunomia::pre
