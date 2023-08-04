@@ -2,8 +2,11 @@
 
 eunomia::tdenv_create_success() {
   if [ -z "$EUNOMIA_TDENV_ID" ]; then
-    log::warn "[$(timestamp)][eunomia::tdenv_create_success] ignore => because EUNOMIA_TDENV_ID not found"
-    return 0
+    log::warn "[$(timestamp)][eunomia::tdenv_create_success] none-standard ta docker env creator"
+
+    export EUNOMIA_TDENV_INSTANCE_NAME=${EUNOMIA_TDENV_INSTANCE_NAME:-$name}
+    export EUNOMIA_TDENV_IMAGE_NAME=${EUNOMIA_TDENV_IMAGE_NAME:-$imageurl}
+    export EUNOMIA_TDENV_IMAGE_TAG=${EUNOMIA_TDENV_IMAGE_TAG:-$tag}
   fi
 
   if [ -z "$EUNOMIA_TDENV_IMAGE_NAME" ]; then
@@ -41,8 +44,11 @@ eunomia::tdenv_create_failure() {
 
 eunomia::tdenv_delete_success() {
   if [ -z "$EUNOMIA_TDENV_ID" ]; then
-    log::warn "[$(timestamp)][eunomia::tdenv_create_success] ignore => because EUNOMIA_TDENV_ID not found"
-    return 0
+    log::warn "[$(timestamp)][eunomia::tdenv_create_success] none-standard ta docker env deletor"
+
+    export EUNOMIA_TDENV_INSTANCE_NAME=${EUNOMIA_TDENV_INSTANCE_NAME:-$name}
+    export EUNOMIA_TDENV_IMAGE_NAME=${EUNOMIA_TDENV_IMAGE_NAME:-$imageurl}
+    export EUNOMIA_TDENV_IMAGE_TAG=${EUNOMIA_TDENV_IMAGE_TAG:-$tag}
   fi
 
   if [ -z "$EUNOMIA_TDENV_INSTANCE_NAME" ]; then
