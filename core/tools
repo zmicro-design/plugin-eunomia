@@ -37,6 +37,9 @@ eunomia::export_product() {
   fi
   log::info "[$(timestamp)] extract product dist success"
 
+  log::info "[$(timestamp)] show product files ..."
+  ls -al
+
   # log::info "[$(timestamp)] start to remove product dist ..."
   # rm -rf $filepath >>/dev/null 2>&1
   # if [ "$?" != "0" ]; then
