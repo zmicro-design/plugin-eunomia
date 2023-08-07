@@ -2,18 +2,18 @@
 
 # eunomia::export_product downloads the export_product dist
 eunomia::export_product() {
+  if [ -z "$EUNOMIA_EXPORT_DIST_URL" ]; then
+    log::error "[$(timestamp)] EUNOMIA_EXPORT_DIST_URL is required"
+    return 1
+  fi
+
   local filepath=$1
   if [ -z "$filepath" ]; then
     filepath=${EUNOMIA_EXPORT_DIST}
   fi
   
   if [ -z "$filepath" ]; then
-    filepath=${EUNOMIA_BUILD_ID}.tar.gz
-  fi
-
-  if [ -z "$EUNOMIA_EXPORT_DIST_URL" ]; then
-    log::error "[$(timestamp)] EUNOMIA_EXPORT_DIST_URL is required"
-    return 1
+    filepath=./${EUNOMIA_BUILD_ID}.tar.gz
   fi
 
   if [ -z "$filepath" ]; then
@@ -46,4 +46,40 @@ eunomia::export_product() {
   # log::info "[$(timestamp)] remove product dist success"
 }
 
+eunomia::depends_product() {
+  eunomia::export_product "$@"
+}
+
+eunomia::depends_git() {
+  if [ -z "$EUNOMIA_GIT_BRANCH" ]; then
+    log::error "[eunomia::checkout] env EUNOMIA_GIT_BRANCH is required"
+    return 1
+  fi
+
+  if [ -z "$EUNOMIA_GIT_COMMIT" ]; then
+    log::error "[eunomia::checkout] env EUNOMIA_GIT_COMMIT is required"
+    return 1
+  fi
+
+  if [ -z "$EUNOMIA_GIT_CHECKOUT_DIR" ]; then
+    log::error "[eunomia::checkout] env EUNOMIA_GIT_CHECKOUT_DIR is required"
+    return 1
+  fi
+
+  if [ -z "$EUNOMIA_GIT_REPOSITORY" ]; then
+    log::error "[eunomia::checkout] env EUNOMIA_GIT_REPOSITORY is required"
+    return 1
+  fi
+
+  log::info "[$(timestamp)][eunomia::depends_git] checkouting $EUNOMIA_GIT_REPOSITORY at branch $EUNOMIA_GIT_BRANCH ..."
+  git::checkout $EUNOMIA_GIT_BRANCH $EUNOMIA_GIT_COMMIT $EUNOMIA_GIT_CHECKOUT_DIR $EUNOMIA_GIT_REPOSITORY
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)][eunomia::depends_git] failed to checkout $EUNOMIA_GIT_REPOSITORY at branch $EUNOMIA_GIT_BRANCH."
+    return 1
+  fi
+}
+
 export -f eunomia::export_product
+
+export -f eunomia::depends_product
+export -f eunomia::depends_git
