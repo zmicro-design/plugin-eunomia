@@ -123,11 +123,15 @@ eunomia::build_image() {
   case $EUNOMIA_DEPLOY_COMPONENT_CPU_ARCH in
   aarch64)
     export PIPELINE_DOCKER_BUILD_PLATFORM=linux/arm64
+    export EUNOMIA_DOCKER_BUILDX_PLATFORMS=linux/arm64
     ;;
   x86_64)
     export PIPELINE_DOCKER_BUILD_PLATFORM=linux/amd64
+    export EUNOMIA_DOCKER_BUILDX_PLATFORMS=linux/amd64
     ;;
   esac
+  log::info "[$(timestamp)][eunomia::build_image] PIPELINE_DOCKER_BUILD_PLATFORM: $PIPELINE_DOCKER_BUILD_PLATFORM"
+  log::info "[$(timestamp)][eunomia::build_image] EUNOMIA_DOCKER_BUILDX_PLATFORMS: $EUNOMIA_DOCKER_BUILDX_PLATFORMS"
   # export PIPELINE_DOCKER_BUILD_CACHE_ENABLE=true
   zmicro pipeline bp
   if [ "$?" != "0" ]; then
