@@ -116,22 +116,6 @@ eunomia::build_image() {
     log::error "[$(timestamp)][eunomia::build_image] Dockerfile($PIPELINE_GIT_REPOSITORY_DIR/Dockerfile) not found at for $EUNOMIA_GIT_REPO_NAME"
     return 1
   fi
-
-  export PIPELINE_DOCKER_BUILD_DOCKERFILE=$EUNOMIA_BUILD_DOCKERFILE_PATH
-  export PIPELINE_DOCKER_BUILD_ARGS_ENVFILE=$EUNOMIA_BUILD_ENV_SHELL
-  log::info "[$(timestamp)][eunomia::build_image] DEP CPU ARCH $EUNOMIA_DEPLOY_COMPONENT_CPU_ARCH"
-  case $EUNOMIA_DEPLOY_COMPONENT_CPU_ARCH in
-  aarch64)
-    export PIPELINE_DOCKER_BUILD_PLATFORM=linux/arm64
-    export EUNOMIA_DOCKER_BUILDX_PLATFORMS=linux/arm64
-    ;;
-  x86_64)
-    export PIPELINE_DOCKER_BUILD_PLATFORM=linux/amd64
-    export EUNOMIA_DOCKER_BUILDX_PLATFORMS=linux/amd64
-    ;;
-  esac
-  log::info "[$(timestamp)][eunomia::build_image] PIPELINE_DOCKER_BUILD_PLATFORM: $PIPELINE_DOCKER_BUILD_PLATFORM"
-  log::info "[$(timestamp)][eunomia::build_image] EUNOMIA_DOCKER_BUILDX_PLATFORMS: $EUNOMIA_DOCKER_BUILDX_PLATFORMS"
   # export PIPELINE_DOCKER_BUILD_CACHE_ENABLE=true
   zmicro pipeline bp
   if [ "$?" != "0" ]; then
