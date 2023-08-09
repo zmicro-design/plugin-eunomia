@@ -119,6 +119,15 @@ eunomia::build_image() {
 
   export PIPELINE_DOCKER_BUILD_DOCKERFILE=$EUNOMIA_BUILD_DOCKERFILE_PATH
   export PIPELINE_DOCKER_BUILD_ARGS_ENVFILE=$EUNOMIA_BUILD_ENV_SHELL
+  
+  case $EUNOMIA_DEPLOY_COMPONENT_CPU_ARCH in
+  aarch64)
+    export PIPELINE_DOCKER_BUILD_PLATFORM=linux/arm64
+    ;;
+  x86_64)
+    export PIPELINE_DOCKER_BUILD_PLATFORM=linux/amd64
+    ;;
+  esac
   # export PIPELINE_DOCKER_BUILD_CACHE_ENABLE=true
   zmicro pipeline bp
   if [ "$?" != "0" ]; then
