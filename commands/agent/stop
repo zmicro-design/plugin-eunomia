@@ -1,0 +1,26 @@
+#!/bin/bash
+
+
+help() {
+  echo "Usage:"
+  echo "  zmicro eunomia agent stop"
+}
+
+core() {
+  if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    help
+    exit 0
+  fi
+
+  eunomia::agent_stop
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)][agent][stop] failed to eunomia agent stop."
+    return 1
+  fi
+}
+
+run() {
+  core "$@"
+}
+
+run "$@"
