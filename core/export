@@ -15,7 +15,9 @@ eunomia::export() {
 
   # ensure container removed
   docker rm -f $PLUGIN_EUNOMIA_EXPORT_RUNNER_NAME >> /dev/null 2>&1
-
+  if [ "$EUNOMIA_DOCKER_BUILDX_PLATFORMS" = "linux/arm64" ]; then
+      docker pull --platform linux/arm64 $PLUGIN_EUNOMIA_EXPORT_RUNNER_IMAGE
+  fi
   docker run -d --name $PLUGIN_EUNOMIA_EXPORT_RUNNER_NAME $PLUGIN_EUNOMIA_EXPORT_RUNNER_IMAGE >> /dev/null
   if [ "$?" != "0" ]; then
     log::error "[$(timestamp)][eunomia::export] failed to start runner container"
