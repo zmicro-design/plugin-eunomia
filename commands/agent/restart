@@ -1,0 +1,26 @@
+#!/bin/bash
+
+
+help() {
+  echo "Usage:"
+  echo "  zmicro eunomia agent restart"
+}
+
+core() {
+  if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    help
+    exit 0
+  fi
+
+  eunomia::agent_restart
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)][agent][restart] failed to eunomia agent restart."
+    return 1
+  fi
+}
+
+run() {
+  core "$@"
+}
+
+run "$@"

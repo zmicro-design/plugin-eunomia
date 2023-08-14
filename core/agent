@@ -1,0 +1,125 @@
+#!/bin/bash
+
+eunomia::agent_start() {
+  log::info "[$(timestamp)] start to start eunomia agent ..."
+  
+  gzcaas server -s eunomia-shell -d --metadata-dir /data/idp/agent/deploys --workdir /data/idp_build_cache
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)] failed to start eunomia agent"
+    return 1
+  fi
+
+  log::info "[$(timestamp)] eunomia agent started"
+}
+
+eunomia::agent_stop() {
+  local pid_file="/tmp/gzcli.daemon.gzcaas_server.pid"
+  if [ ! -f "$pid_file" ]; then
+    log::info "[$(timestamp)] eunomia agent not started"
+    return 0
+  fi
+
+  log::info "[$(timestamp)] start to stop eunomia agent ..."
+
+  local pid=$(cat $pid_file)
+  if [ -z "$pid" ]; then
+    log::info "[$(timestamp)] eunomia agent not started"
+    return 0
+  fi
+
+  kill -9 $pid
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)] failed to stop eunomia agent"
+    return 1
+  fi
+
+  log::info "[$(timestamp)] eunomia agent stopped"
+}
+
+eunomia::agent_restart() {
+  log::info "[$(timestamp)] start to restart eunomia agent ..."
+  eunomia::agent_stop
+  if [ "$?" != "0" ]; then
+    return 1
+  fi
+
+  sleep 1
+  eunomia::agent_start
+  if [ "$?" != "0" ]; then
+    return 1
+  fi
+
+  log::info "[$(timestamp)] eunomia agent restarted"
+}
+
+eunomia::agent_upgrade() {
+  log::info "[$(timestamp)] start to upgrade eunomia agent ..."
+
+  local fileurl=https://storage.idp.thinkingdata.cn/packages/zmicro.tar.gz
+  local filepath=/tmp/zmicro.tar.gz
+  local nfs_dir=/data/idp
+
+  log::info "[$(timestamp)] check nfs ..."
+  if [ ! -d "$nfs_dir" ]; then
+    df -h | grep $nfs_dir >>/dev/null
+    if [ "$?" != "0" ]; then
+      which nfsstat >>/dev/null
+      if [ "$?" != "0" ]; then
+        yum install -y nfs-utils
+      fi
+
+      echo "[$(timestamp)] start to mount aliyun nas with NFSv3 ..."
+      mkdir -p $nfs_dir
+      mount -t nfs -o vers=3,nolock,proto=tcp,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport 374084bb43-pkn68.cn-shanghai.nas.aliyuncs.com:/idp /data/idp
+      if [ "$?" != "0" ]; then
+        echo "[$(timestamp)] NFSv3 not support, use aliyun nas NFSv4 ..."
+        mount -t nfs -o vers=4,nolock,proto=tcp,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport 374084bb43-pkn68.cn-shanghai.nas.aliyuncs.com:/idp /data/idp
+        if [ "$?" != "0" ]; then
+          echo "[$(timestamp)] failed to mount aliyun nas"
+          exit 1
+        fi
+      fi
+    fi
+  fi
+
+  # install zmicro/eunomia
+  wget $fileurl -O $filepath &&
+    tar -zxvf $filepath -C / &&
+    /usr/local/lib/zmicro/install
+
+  # register plugin
+  which eunomia-shell >>/dev/null 2>&1
+  if [ "$?" != "0" ]; then
+    zmicro plugin register eunomia
+  fi
+
+  # install idp agent
+  curl https://storage.idp.thinkingdata.cn/packages/gzcaas >./gzcaas &&
+    chmod +x gzcaas &&
+    mv -f gzcaas /usr/bin/gzcaas
+
+  eunomia::agent_restart
+
+  # clean
+  if [ -f "$filepath" ]; then
+    rm -f $filepath
+  fi
+
+  sleep 1
+
+  tail /tmp/gzcli.daemon.gzcaas_server.log
+
+  log::info "[$(timestamp)] eunomia agent upgraded"
+}
+
+eunomia::agent_install() {
+  curl -o- https://storage.idp.thinkingdata.cn/packages/idp-agent.install | bash
+}
+
+export -f eunomia::agent_start
+export -f eunomia::agent_stop
+export -f eunomia::agent_restart
+
+export -f eunomia::agent_upgrade
+
+export -f eunomia::agent_install
