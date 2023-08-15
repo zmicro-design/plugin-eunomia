@@ -11,7 +11,7 @@ eunomia::export_product() {
   if [ -z "$filepath" ]; then
     filepath=${EUNOMIA_EXPORT_DIST}
   fi
-  
+
   if [ -z "$filepath" ]; then
     filepath=./${EUNOMIA_BUILD_ID}.tar.gz
   fi
@@ -24,18 +24,21 @@ eunomia::export_product() {
   log::info "[$(timestamp)] start to download product dist ..."
   wget -q -c $EUNOMIA_EXPORT_DIST_URL -O $filepath #>>/dev/null 2>&1
   if [ "$?" != "0" ]; then
-      echo "failed to download $EUNOMIA_EXPORT_DIST to $filepath"
-      exit 1
+    echo "failed to download $EUNOMIA_EXPORT_DIST to $filepath"
+    exit 1
   fi
   log::info "[$(timestamp)] download product dist success"
 
   log::info "[$(timestamp)] start to extract product dist ..."
   tar -xvf $filepath -C . >>/dev/null 2>&1
   if [ "$?" != "0" ]; then
-      echo "failed to extract $filepath"
-      exit 1
+    echo "failed to extract $filepath"
+    exit 1
   fi
   log::info "[$(timestamp)] extract product dist success"
+
+  # clean tar.gz
+  rm -rf $filepath >>/dev/null 2>&1
 
   log::info "[$(timestamp)] show product files ..."
   ls -al

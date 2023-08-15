@@ -117,7 +117,7 @@ eunomia::deploy_script_online() {
     log::error "[$(timestamp)][eunomia::deploy_script_online] failed to execute"
     return 1
   fi
-  
+
   log::success "[$(timestamp)][eunomia::deploy_script_online] succeed to execute"
 }
 
@@ -206,7 +206,7 @@ eunomia::deploy_service() {
 
   # env config
   # @TODO avoid docker-compose env file error when file not found
-  echo > $EUNOMIA_DEPLOYMENT_ENV_CONFIG
+  echo >$EUNOMIA_DEPLOYMENT_ENV_CONFIG
   #
   if [ -n "$EUNOMIA_DEPLOYMENT_CONFIG_ID" ]; then
     log::info "[$(timestamp)][eunomia::deploy_service] start to generate deployment env config at ${EUNOMIA_DEPLOYMENT_ENV_CONFIG} ..."
@@ -245,7 +245,7 @@ eunomia::deploy_service() {
     return 1
   fi
 
-  docker-compose config > $EUNOMIA_DEPLOYMENT_MANIFEST_FILE
+  docker-compose config >$EUNOMIA_DEPLOYMENT_MANIFEST_FILE
   # service manifest file
   export COMPOSE_FILE=$EUNOMIA_DEPLOYMENT_MANIFEST_FILE
 
@@ -276,18 +276,6 @@ eunomia::deploy_component() {
 
   local tmp_error=$(os::tmp_file)
 
-  # 1. upload file with os::oss_upload
-  log::info "[$(timestamp)][eunomia::deploy_component] start to upload oss ..."
-
-  # 1.1 generate oss path
-  log::info "[$(timestamp)][eunomia::deploy_component] generate oss path ..."
-  eunomia::deploy_component_generate_oss_path
-  if [ "$?" != "0" ]; then
-    log::error "[$(timestamp)][eunomia::deploy_component] failed to generate oss path."
-    return 1
-  fi
-  log::info "[$(timestamp)][eunomia::deploy_component] succeed to generate oss path: ${EUNOMIA_DEPLOY_COMPONENT_OSS_PATH} ."
-
   # 1.2 upload file
   # build remote oss path
   # 1.2 upload file: PLUGIN_EUNOMIA_EXPORT_ID_PKG
@@ -299,22 +287,8 @@ eunomia::deploy_component() {
     return 1
   fi
 
-  # upload to oss
-  log::info "[$(timestamp)][eunomia::deploy_component] upload file to oss  ..."
-  eunomia::deploy_component_upload_file
-  if [ "$?" != "0" ]; then
-    log::error "[$(timestamp)][eunomia::deploy_component] failed to upload file to oss."
-    return 1
-  fi
-
-  # 2. create a version record
-  log::info "[$(timestamp)][eunomia::deploy_component] create a version release record ..."
-  eunomia::deploy_component_create_version
-  if [ "$?" != "0" ]; then
-    log::error "[$(timestamp)][eunomia::deploy_component] failed to create a version release record."
-    return 1
-  fi
-
+  eunomia::upload
+  
   rm -f $tmp_error
 }
 
@@ -373,13 +347,15 @@ EOF
 }
 
 eunomia::deploy_component_get_artifact() {
-  wget -c $EUNOMIA_EXPORT_DIST_URL
-  if [ "$?" != "0" ]; then
-    log::error "failed to download ${EUNOMIA_BUILD_ID}.tar.gz"
-    return 1
-  fi
+  # wget -c $EUNOMIA_EXPORT_DIST_URL
+  # if [ "$?" != "0" ]; then
+  #   log::error "failed to download ${EUNOMIA_BUILD_ID}.tar.gz"
+  #   return 1
+  # fi
 
-  tar -zxvf ${EUNOMIA_BUILD_ID}.tar.gz -C .
+  # tar -zxvf ${EUNOMIA_BUILD_ID}.tar.gz -C .
+
+  eunomia::export_product
 }
 
 eunomia::deploy_component_create_version() {

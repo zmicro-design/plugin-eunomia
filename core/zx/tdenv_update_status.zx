@@ -32,10 +32,6 @@ async function main() {
     //   throw new Error('env EUNOMIA_TDENV_IMAGE_TAG is not set');
     // }
 
-    if (!process.env.EUNOMIA_TDENV_ID) {
-      throw new Error('env EUNOMIA_TDENV_ID is not set');
-    }
-
     if (!process.env.EUNOMIA_TDENV_STATUS) {
       throw new Error('env EUNOMIA_TDENV_STATUS is not set');
     }
