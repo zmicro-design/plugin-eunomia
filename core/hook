@@ -86,7 +86,7 @@ eunomia::hook_start() {
 EOF
 
     if [ "$EUNOMIA_SKIP_BUILD_STAGE" = "true" ]; then
-      os::wait 60
+      os::wait $(os::random_int 30 60)
     fi
   fi
 }

@@ -85,7 +85,26 @@ eunomia::depends_git() {
   fi
 }
 
+eunnomia::upload_git_info() {
+  if [ -f ".git" ]; then
+    log::error "[$(timestamp)][eunomia::upload_git_info] .git is not a directory"
+    return 1
+  fi
+
+  export EUNOMIA_GIT_REPO_URL=$(git::origin_url)
+  export EUNOMIA_GIT_REPO_NAME=$(git::repo_name)
+  export EUNOMIA_GIT_BRANCH=$(git::branch)
+  export EUNOMIA_GIT_COMMIT=$(git::commit_hash_full)
+  export EUNOMIA_GIT_COMMIT_MESSAGE=$(git::commit_message | head -n 1)
+  export EUNOMIA_GIT_COMMIT_AUTHOR=$(git::commit_author)
+  export EUNOMIA_GIT_COMMIT_TIMESTAMP="$(git::commit_timestamp)"
+
+  eunomia::hook_info_supply
+}
+
 export -f eunomia::export_product
 
 export -f eunomia::depends_product
 export -f eunomia::depends_git
+
+export -f eunnomia::upload_git_info

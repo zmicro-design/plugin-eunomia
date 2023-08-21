@@ -143,11 +143,11 @@ eunomia::prepare() {
   if [ -d ".git" ]; then
     export EUNOMIA_GIT_REPO_URL=$(git::origin_url)
     export EUNOMIA_GIT_REPO_NAME=$(git::repo_name)
-    export EUNOMIA_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+    export EUNOMIA_GIT_BRANCH=$(git::branch)
     export EUNOMIA_GIT_COMMIT=$(git::commit_hash_full)
     export EUNOMIA_GIT_COMMIT_MESSAGE=$(git::commit_message | head -n 1)
     export EUNOMIA_GIT_COMMIT_AUTHOR=$(git::commit_author)
-    export EUNOMIA_GIT_COMMIT_TIMESTAMP="$(git show -s --format=%cd --date='format:%Y-%m-%d_%H:%M:%S')"
+    export EUNOMIA_GIT_COMMIT_TIMESTAMP="$(git::commit_timestamp)"
   else
     # if not git repo, use default value
     # used for PLUGIN_EUNOMIA_BUILD_TYPE_TEMPLATE == command project
