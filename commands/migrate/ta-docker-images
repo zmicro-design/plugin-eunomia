@@ -1,0 +1,25 @@
+#!/bin/bash
+
+help() {
+  echo "Usage:"
+  echo "  zmicro eunomia migrate ta-docker-images"
+}
+
+core() {
+  if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    help
+    exit 0
+  fi
+
+  # export MIGRATE_TA_DOCKER_IMAGES_SCRIPT=/tmp/idp_migrate_ta_docker_images.sh #$(os::tmp_file)
+
+  plugin::run_zx migrate_ta_docker_images
+
+  # bash $MIGRATE_TA_DOCKER_IMAGES_SCRIPT
+}
+
+run() {
+  core "$@"
+}
+
+run "$@"

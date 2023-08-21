@@ -1,0 +1,70 @@
+const cp = require('child_process');
+
+$.verbose = false;
+
+const images = [
+  ['docker-ta.thinkingdata.cn/ta/ta-docker-inner-test:4.1-latest', 'docker-ta.thinkingdata.cn/ta/ta-docker-inner-test:4.1-analysis-latest'],
+  ['docker-ta.thinkingdata.cn/ta/ta-docker-inner-test:4.1-release', 'docker-ta.thinkingdata.cn/ta/ta-docker-inner-test:4.1-analysis-release'],
+  ['docker-ta.thinkingdata.cn/ta/ta-docker-inner-test:4.1-saas', 'docker-ta.thinkingdata.cn/ta/ta-docker-inner-test:4.1-analysis-saas'],
+  ['docker-ta.thinkingdata.cn/ta/ta-dockertest-02131:4.0', 'docker-ta.thinkingdata.cn/ta/ta-docker-inner-test:4.0-analysis-latest'],
+  ['docker-ta.thinkingdata.cn/ta/ta-dockertest-02131:4.0', 'docker-ta.thinkingdata.cn/ta/ta-docker-inner-test:4.0-analysis-release'],
+  ['docker-ta.thinkingdata.cn/ta/ta-dockertest-02131:4.0', 'docker-ta.thinkingdata.cn/ta/ta-docker-inner-test:4.0-analysis-saas'],
+  ['docker-ta.thinkingdata.cn/ta/ta-docker-inner-test:3.8-release', 'docker-ta.thinkingdata.cn/ta/ta-docker-inner-test:3.8-analysis-latest'],
+  ['docker-ta.thinkingdata.cn/ta/ta-docker-inner-test:3.8-release', 'docker-ta.thinkingdata.cn/ta/ta-docker-inner-test:3.8-analysis-release'],
+  ['docker-ta.thinkingdata.cn/ta/ta-docker-inner-test:3.8-release', 'docker-ta.thinkingdata.cn/ta/ta-docker-inner-test:3.8-analysis-saas'],
+  ['docker-ta.thinkingdata.cn/ta/ta-docker-inner-test:4.1-hermes-release', 'docker-ta.thinkingdata.cn/ta/ta-docker-inner-test:4.1-hermes-latest'],
+  ['docker-ta.thinkingdata.cn/ta/ta-docker-inner-test:4.1-hermes-release', 'docker-ta.thinkingdata.cn/ta/ta-docker-inner-test:4.1-hermes-release'],
+  ['docker-ta.thinkingdata.cn/ta/ta-docker-inner-test:4.1-hermes-release', 'docker-ta.thinkingdata.cn/ta/ta-docker-inner-test:4.1-hermes-saas'],
+];
+
+async function main() {
+  const commands = [];
+  const total = images.length;
+  let current = 0;
+  try {
+    for (const [source, target] of images) {      
+      console.log(`[${++current}/${total}] ${source} -> ${target} ...`)
+
+      // await runShell(`docker pull ${source}`);
+      await runShell(`docker tag ${source} ${target}`);
+      await runShell(`docker push ${target}`);
+      
+    // //  commands.push(`docker pull ${source}`);
+    //  commands.push(`docker tag ${source} ${target}`);
+    //  commands.push(`docker push ${target}`);
+    }
+  } catch (error) {
+    console.error("[migrate_te_docker_images] catch error:", error);
+    process.exit(1);
+  }
+
+  // fs.writeFileSync(process.env.MIGRATE_TA_DOCKER_IMAGES_SCRIPT, commands.join('\n'));
+}
+
+async function runShell(command, options) {
+  if (options?.env) {
+    for (const key in options.env) {
+      process.env[key] = '' + options.env[key];
+    }
+  }
+
+  return new Promise((resolve, reject) => {
+    const child = cp.spawn(command, {
+      shell: true,
+      stdio: 'inherit',
+      cwd: options?.cwd || $.cwd,
+    });
+
+    child.on('exit', (code) => {
+      if (code !== 0) return reject(`run command error (command: ${command}, code: ${code})`);
+
+      resolve();
+    });
+
+    child.on('error', (error) => {
+      return reject(`run command error (command: ${command}, error: ${error?.message})`);
+    });
+  });
+}
+
+main();
