@@ -56,6 +56,10 @@ eunomia::depends_product() {
   eunomia::export_product "$@"
 }
 
+eunomia::download_product() {
+  eunomia::export_product "$@"
+}
+
 eunomia::depends_git() {
   if [ -z "$EUNOMIA_GIT_BRANCH" ]; then
     log::error "[eunomia::checkout] env EUNOMIA_GIT_BRANCH is required"
@@ -85,7 +89,7 @@ eunomia::depends_git() {
   fi
 }
 
-eunnomia::upload_git_info() {
+eunomia::upload_git_info() {
   if [ -f ".git" ]; then
     log::error "[$(timestamp)][eunomia::upload_git_info] .git is not a directory"
     return 1
@@ -103,8 +107,9 @@ eunnomia::upload_git_info() {
 }
 
 export -f eunomia::export_product
+export -f eunomia::download_product
 
 export -f eunomia::depends_product
 export -f eunomia::depends_git
 
-export -f eunnomia::upload_git_info
+export -f eunomia::upload_git_info
