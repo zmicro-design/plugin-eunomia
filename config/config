@@ -324,16 +324,18 @@ if [ -n "$EUNOMIA_DEPLOYMENT_APPLICATION_NAME" ]; then
   export EUNOMIA_DEPLOYMENT_CUSTOM_DOMAIN_NAME=$EUNOMIA_DEPLOYMENT_APPLICATION_NAME
 fi
 
-if [ ! -d "$EUNOMIA_BUILD_DIR" ]; then
-  mkdir -p $EUNOMIA_BUILD_DIR
-fi
+if [ -n "$EUNOMIA_BUILD_ID" ]; then
+  if [ ! -d "$EUNOMIA_BUILD_DIR" ]; then
+    mkdir -p $EUNOMIA_BUILD_DIR
+  fi
 
-if [ ! -d "$PLUGIN_EUNOMIA_EXPORT_DIR" ]; then
-  mkdir -p $PLUGIN_EUNOMIA_EXPORT_DIR
-fi
+  if [ ! -d "$PLUGIN_EUNOMIA_EXPORT_DIR" ]; then
+    mkdir -p $PLUGIN_EUNOMIA_EXPORT_DIR
+  fi
 
-if [ ! -d "$EUNOMIA_DEPLOYMENT_DIR" ]; then
-  mkdir -p $EUNOMIA_DEPLOYMENT_DIR
+  if [ ! -d "$EUNOMIA_DEPLOYMENT_DIR" ]; then
+    mkdir -p $EUNOMIA_DEPLOYMENT_DIR
+  fi
 fi
 
 # # GIT
