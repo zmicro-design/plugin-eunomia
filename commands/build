@@ -25,7 +25,9 @@ core() {
   fi
 
   if [ "$PLUGIN_EUNOMIA_TASK_QUEUE_IS_ENABLED" = "true" ]; then
-    log::info "[$(timestamp)][build] task queue is enabled"
+    local total=$(eunomia::task_queue_count_total)
+    local running=$(eunomia::task_queue_count_running)
+    log::info "[$(timestamp)][build] task queue is enabled(total: $total, running: $running)"
 
     while true; do
       # random sleep
