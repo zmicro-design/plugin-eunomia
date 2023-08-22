@@ -42,10 +42,7 @@ async function main() {
     for (const index in data) {
       const { id, name, content, host } = data[index];
       const script_filepath = `${process.env.EUNOMIA_DEPLOY_SCRIPTS_DIR}/${id}.sh`;
-      fs.writeFileSync(script_filepath, [
-        'set -e',
-        content,
-      ].join('\n'));
+      fs.writeFileSync(script_filepath, generateScript(content));
       // const response = await $`gzcaas client -s ${hostIP} --scriptfile ${script_filepath} --envfile ${process.env.EUNOMIA_BUILD_ENV_SHELL}`
       // console.log('[execute_deploy_scripts] exit code:', response.exitCode);
       // if (response.exitCode !== 0) {
@@ -59,6 +56,40 @@ async function main() {
     console.error("[execute_deploy_scripts] catch error:", error);
     process.exit(1);
   }
+}
+
+function generateScript(content) {
+  const scripts = [];
+  function pre(lines) {
+    for (const [name, script] of lines) {
+      scripts.push(script)
+    }
+  }
+
+  function post(lines) {
+    for (const [name, script] of lines) {
+      scripts.push(script)
+    }
+  }
+
+  function main() {
+    return scripts.push(content);
+  }
+
+  function get() {
+    return scripts.join('\n');
+  }
+
+  pre([
+    ['force exit on error', 'set -e'],
+    ['show current directory', 'log::info "[$(timestamp)] current directory: $(pwd)"'],
+  ])
+  main()
+  post([
+    ['show current directory', 'log::info "[$(timestamp)] current directory: $(pwd)"'],
+  ])
+
+  return get();
 }
 
 async function runShell(command, options) {
