@@ -27,7 +27,7 @@ core() {
   if [ "$PLUGIN_EUNOMIA_TASK_QUEUE_IS_ENABLED" = "true" ]; then
     local total=$(eunomia::task_queue_count_total)
     local running=$(eunomia::task_queue_count_running)
-    log::info "[$(timestamp)][build] task queue is enabled(total: $total, running: $running)"
+    log::info "[$(timestamp)][build] task queue is enabled(running: $running, total: $total)"
 
     while true; do
       # random sleep
@@ -37,13 +37,14 @@ core() {
 
       local total=$(eunomia::task_queue_count_total)
       local running=$(eunomia::task_queue_count_running)
+      local is_queue_full="false"
 
       # @TODO >= 80%
       if [ "$(lock::request eunomia_flow_queue_alert 10)" = "true" ]; then
         if [ "$running" = "$PLUGIN_EUNOMIA_TASK_QUEUE_COCURRENCY" ]; then
-          notify::feishu $PLUGIN_EUNOMIA_NOTIFICATION_FEISHU_URL "[$(timestamp)] 任务队列预警" "状态: 当前队列已满（${running}/${total}）\n当前时间: $(timestamp)"
+          notify::feishu $PLUGIN_EUNOMIA_NOTIFICATION_FEISHU_URL "[$(timestamp)] 任务队列预警" "状态: CICD 任务队列已满（${running}/${total}）\n当前时间: $(timestamp)"
         elif [ "$running" -gt "3" ]; then
-          notify::feishu $PLUGIN_EUNOMIA_NOTIFICATION_FEISHU_URL "[$(timestamp)] 任务队列预警" "状态: 当前队列利用率 > 80%（${running}/${total}）\n当前时间: $timestamp"
+          notify::feishu $PLUGIN_EUNOMIA_NOTIFICATION_FEISHU_URL "[$(timestamp)] 任务队列预警" "状态: CICD 任务队列利用率 > 80%（${running}/${total}）\n当前时间: $timestamp"
         fi
       fi
 
@@ -51,6 +52,11 @@ core() {
         log::info "[$(timestamp)][build] task queue is available(running: ${running}, total: ${total}), go ..."
         local start_result=$(eunomia::task_queue_start)
         if [ "$start_result" = "true" ]; then
+          if [ "$is_queue_full" = "true" ]; then
+            notify::feishu $PLUGIN_EUNOMIA_NOTIFICATION_FEISHU_URL "[$(timestamp)] 任务队列恢复" "状态: CICD 任务队列已恢复正常\n当前时间: $(timestamp)"
+            is_queue_full="false"
+          fi
+
           log::info "[$(timestamp)][build] task is started"
           break
         else
@@ -61,6 +67,10 @@ core() {
           fi
         fi
       else
+        if [ "$is_queue_full" != "true" ]; then
+          is_queue_full=true
+        fi
+
         log::info "[$(timestamp)][build] task queue is full(running: ${running}, total: ${total}), waiting ..."
       fi
     done
