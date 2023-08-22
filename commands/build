@@ -27,6 +27,7 @@ core() {
   if [ "$PLUGIN_EUNOMIA_TASK_QUEUE_IS_ENABLED" = "true" ]; then
     local total=$(eunomia::task_queue_count_total)
     local running=$(eunomia::task_queue_count_running)
+    local is_queue_full="false"
     log::info "[$(timestamp)][build] task queue is enabled(running: $running, total: $total)"
 
     while true; do
@@ -37,7 +38,6 @@ core() {
 
       local total=$(eunomia::task_queue_count_total)
       local running=$(eunomia::task_queue_count_running)
-      local is_queue_full="false"
 
       # @TODO >= 80%
       if [ "$(lock::request eunomia_flow_queue_alert 10)" = "true" ]; then
@@ -70,7 +70,7 @@ core() {
         if [ "$is_queue_full" != "true" ]; then
           is_queue_full=true
         fi
-
+        
         log::info "[$(timestamp)][build] task queue is full(running: ${running}, total: ${total}), waiting ..."
       fi
     done

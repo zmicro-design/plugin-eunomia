@@ -60,6 +60,11 @@ eunomia::task_queue_done() {
   echo "true"
 }
 
+eunomia::task_queue_reset() {
+  echo "0" > $PLUGIN_EUNOMIA_TASK_QUEUE_LOCK
+  echo "true"
+}
+
 export -f eunomia::task_queue_is_available
 export -f eunomia::task_queue_count_running
 export -f eunomia::task_queue_count_rest
@@ -67,3 +72,5 @@ export -f eunomia::task_queue_count_total
 
 export -f eunomia::task_queue_start
 export -f eunomia::task_queue_done
+
+export -f eunomia::task_queue_reset
