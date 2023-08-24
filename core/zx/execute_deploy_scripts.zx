@@ -82,6 +82,40 @@ function generateScript(content) {
 
   pre([
     ['force exit on error', 'set -e'],
+    // ['show eunomia version', 'log::info "[$(timestamp)] Eunomia: ${PLUGIN_VERSION}"'],
+    ['show eunomia version', 'log::info "[$(timestamp)] Eunomia: $(plugin::version_echo eunomia)"'],
+    //
+    ['show eunomia version', 'log::info "[$(timestamp)] Zmicro: $(zmicro -v)"'],
+    //
+    ['show os kernel', 'log::info "[$(timestamp)] OS Kernel: $(os::kernel)"'],
+    ['show os release', 'log::info "[$(timestamp)] OS Release: $(os::release)"'],
+    ['show os distribution', 'log::info "[$(timestamp)] OS Distribution: $(os::distribution)"'],
+    ['show os platform', 'log::info "[$(timestamp)] OS Platform: $(os::platform)"'],
+    ['show os arch', 'log::info "[$(timestamp)] OS Arch: $(os::arch)"'],
+    //
+    ['show cpu cores', 'log::info "[$(timestamp)] CPU Cores: $(os::cpu_cores)"'],
+    ['show cpu brand', 'log::info "[$(timestamp)] CPU Brand: $(os::cpu_brand)"'],
+    //
+    ['show device config', 'log::info "[$(timestamp)] Device Config: $(os::device_config)"'],
+    //
+    ['show net ip', 'log::info "[$(timestamp)] Net IP: $(net::get_ip_internal)"'],
+    // ['show net ip global', 'log::info "[$(timestamp)] Net IP Global: $(net::get_ip)"'],
+    //
+    ['show curl version', 'log::info "[$(timestamp)] CURL: $(version::curl)"'],
+    ['show wget version', 'log::info "[$(timestamp)] WGET: $(version::wget)"'],
+    ['show ssh version', 'log::info "[$(timestamp)] SSH: $(version::ssh)"'],
+    ['show git version', 'log::info "[$(timestamp)] Git: $(version::git)"'],
+    //
+    ['show docker version', 'log::info "[$(timestamp)] Docker: $(version::docker)"'],
+    //
+    // ['show kubectl version', 'log::info "[$(timestamp)] Kubectl: $(version::kubectl)"'],
+    // Language
+    ['show nodejs version', 'log::info "[$(timestamp)] Node.js: $(version::node)"'],
+    ['show go version', 'log::info "[$(timestamp)] Go: $(version::go)"'],
+    ['show python version', 'log::info "[$(timestamp)] Python: $(version::python)"'],
+    ['show java version', 'log::info "[$(timestamp)] Java: $(version::java)"'],
+    ['show rust version', 'log::info "[$(timestamp)] Rust: $(version::rust)"'],
+    //
     ['show current directory', 'log::info "[$(timestamp)] current directory: $(pwd)"'],
   ])
   main()
