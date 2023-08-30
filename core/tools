@@ -1,5 +1,47 @@
 #!/bin/bash
 
+eunomia::git_checkout() {
+  if [ -z "$EUNOMIA_GIT_BRANCH" ]; then
+    log::error "[eunomia::checkout] env EUNOMIA_GIT_BRANCH is required"
+    return 1
+  fi
+
+  if [ -z "$EUNOMIA_GIT_COMMIT" ]; then
+    log::error "[eunomia::checkout] env EUNOMIA_GIT_COMMIT is required"
+    return 1
+  fi
+
+  if [ -z "$EUNOMIA_GIT_CHECKOUT_DIR" ]; then
+    log::error "[eunomia::checkout] env EUNOMIA_GIT_CHECKOUT_DIR is required"
+    return 1
+  fi
+
+  if [ -z "$EUNOMIA_GIT_REPOSITORY" ]; then
+    log::error "[eunomia::checkout] env EUNOMIA_GIT_REPOSITORY is required"
+    return 1
+  fi
+
+  log::info "[$(timestamp)][eunomia::git_checkout] checkouting $EUNOMIA_GIT_REPOSITORY at branch $EUNOMIA_GIT_BRANCH ..."
+  git::checkout $EUNOMIA_GIT_BRANCH $EUNOMIA_GIT_COMMIT $EUNOMIA_GIT_CHECKOUT_DIR $EUNOMIA_GIT_REPOSITORY
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)][eunomia::git_checkout] failed to checkout $EUNOMIA_GIT_REPOSITORY at branch $EUNOMIA_GIT_BRANCH."
+    return 1
+  fi
+
+  cd $EUNOMIA_GIT_CHECKOUT_DIR
+  
+  tar -zcvf ${EUNOMIA_STORAGE_GITS_DIR}/${EUNOMIA_BUILD_ID}.git.tar.gz . >>/dev/null 2>&1
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)][eunomia::git_checkout] failed to tar $EUNOMIA_GIT_CHECKOUT_DIR."
+    return 1
+  fi
+
+  # clean
+  rm -rf $EUNOMIA_GIT_CHECKOUT_DIR >>/dev/null 2>&1
+
+  log::info "[$(timestamp)][eunomia::git_checkout] checkout $EUNOMIA_GIT_REPOSITORY at branch $EUNOMIA_GIT_BRANCH success."
+}
+
 # eunomia::export_product downloads the export_product dist
 eunomia::export_product() {
   if [ -z "$EUNOMIA_EXPORT_DIST_URL" ]; then
@@ -61,32 +103,35 @@ eunomia::download_product() {
 }
 
 eunomia::depends_git() {
-  if [ -z "$EUNOMIA_GIT_BRANCH" ]; then
-    log::error "[eunomia::checkout] env EUNOMIA_GIT_BRANCH is required"
+  if [ -z "$EUNOMIA_DEPENDS_GIT_SOURCE_CODE" ]; then
+    log::error "[eunomia::depends_git] env EUNOMIA_DEPENDS_GIT_SOURCE_CODE is required"
     return 1
   fi
 
-  if [ -z "$EUNOMIA_GIT_COMMIT" ]; then
-    log::error "[eunomia::checkout] env EUNOMIA_GIT_COMMIT is required"
-    return 1
-  fi
+  local url=https://storage.idp.thinkingdata.cn/gits/${EUNOMIA_BUILD_ID}.git.tar.gz
+  local filepath=./${EUNOMIA_BUILD_ID}.git.tar.gz
 
-  if [ -z "$EUNOMIA_GIT_CHECKOUT_DIR" ]; then
-    log::error "[eunomia::checkout] env EUNOMIA_GIT_CHECKOUT_DIR is required"
-    return 1
-  fi
-
-  if [ -z "$EUNOMIA_GIT_REPOSITORY" ]; then
-    log::error "[eunomia::checkout] env EUNOMIA_GIT_REPOSITORY is required"
-    return 1
-  fi
-
-  log::info "[$(timestamp)][eunomia::depends_git] checkouting $EUNOMIA_GIT_REPOSITORY at branch $EUNOMIA_GIT_BRANCH ..."
-  git::checkout $EUNOMIA_GIT_BRANCH $EUNOMIA_GIT_COMMIT $EUNOMIA_GIT_CHECKOUT_DIR $EUNOMIA_GIT_REPOSITORY
+  log::info "[$(timestamp)][eunomia::depends_git] start to download git source code ..."
+  wget -q -c $url -O $filepath #>>/dev/null 2>&1
   if [ "$?" != "0" ]; then
-    log::error "[$(timestamp)][eunomia::depends_git] failed to checkout $EUNOMIA_GIT_REPOSITORY at branch $EUNOMIA_GIT_BRANCH."
-    return 1
+    echo "failed to download $EUNOMIA_EXPORT_DIST to $filepath"
+    exit 1
   fi
+  log::info "[$(timestamp)] download git source code success"
+
+  log::info "[$(timestamp)] start to extract git source code ..."
+  tar -xvf $filepath -C . >>/dev/null 2>&1
+  if [ "$?" != "0" ]; then
+    echo "failed to extract $filepath"
+    exit 1
+  fi
+  log::info "[$(timestamp)] extract git source code success"
+
+  # clean tar.gz
+  rm -rf $filepath >>/dev/null 2>&1
+
+  log::info "[$(timestamp)] show git source code files ..."
+  ls -al
 }
 
 eunomia::upload_git_info() {
@@ -105,6 +150,8 @@ eunomia::upload_git_info() {
 
   eunomia::hook_info_supply
 }
+
+export -f eunomia::git_checkout
 
 export -f eunomia::export_product
 export -f eunomia::download_product

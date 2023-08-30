@@ -19,6 +19,16 @@ core() {
     log::error "[$(timestamp)][pre] failed to eunomia pre."
     return 1
   fi
+
+  if [ "$EUNOMIA_DEPENDS_GIT_SOURCE_CODE" = "true" ]; then
+    log::info "[$(timestamp)][pre] start to eunomia git checkout ..."
+    eunomia::git_checkout
+    if [ "$?" != "0" ]; then
+      log::error "[$(timestamp)][pre] failed to eunomia git checkout."
+      return 1
+    fi
+    log::info "[$(timestamp)][pre] eunomia git checkout success"
+  fi
 }
 
 run() {
