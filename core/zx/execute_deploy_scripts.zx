@@ -141,7 +141,7 @@ async function runShell(command, options) {
     });
 
     child.on('exit', (code) => {
-      if (code !== 0) return reject(`run command error (command: ${command}, code: ${code})`);
+      if (code !== 0) return reject(`process exit code: ${code} (command: ${command})`);
 
       resolve();
     });
