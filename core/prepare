@@ -214,7 +214,10 @@ eunomia::prepare() {
       ;;
     esac
   fi
-  log::info "[$(timestamp)][eunomia::build_image] EUNOMIA_DOCKER_BUILDX_PLATFORMS: $EUNOMIA_DOCKER_BUILDX_PLATFORMS"
+
+  if [ -n "$EUNOMIA_DOCKER_BUILDX_PLATFORMS" ]; then
+    log::info "[$(timestamp)][eunomia::build_image] EUNOMIA_DOCKER_BUILDX_PLATFORMS: $EUNOMIA_DOCKER_BUILDX_PLATFORMS"
+  fi
 
   # log::info "[$(timestamp)] PIPELINE_BUILD_ID: $PIPELINE_BUILD_ID"
   # log::info "[$(timestamp)] PIPELINE_BUILD_CONTEXT: $PIPELINE_BUILD_CONTEXT"
