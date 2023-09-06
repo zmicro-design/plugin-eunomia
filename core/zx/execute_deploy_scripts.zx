@@ -85,7 +85,9 @@ function generateScript(content) {
     // ['show eunomia version', 'log::info "[$(timestamp)] Eunomia: ${PLUGIN_VERSION}"'],
     ['show eunomia version', 'log::info "[$(timestamp)] Eunomia: $(plugin::version_echo eunomia)"'],
     //
-    ['show eunomia version', 'log::info "[$(timestamp)] Zmicro: $(zmicro -v)"'],
+    ['show zmicro version', 'log::info "[$(timestamp)] Zmicro: $(zmicro -v)"'],
+    //
+    ['show idp agent version', 'log::info "[$(timestamp)] IDP Agent: $(version::gzcaas)"'],
     //
     ['show os kernel', 'log::info "[$(timestamp)] OS Kernel: $(os::kernel)"'],
     ['show os release', 'log::info "[$(timestamp)] OS Release: $(os::release)"'],
@@ -96,8 +98,10 @@ function generateScript(content) {
     ['show cpu cores', 'log::info "[$(timestamp)] CPU Cores: $(os::cpu_cores)"'],
     ['show cpu brand', 'log::info "[$(timestamp)] CPU Brand: $(os::cpu_brand)"'],
     //
+    ['show device id', 'log::info "[$(timestamp)] Device ID: $(os::device_id)"'],
     ['show device config', 'log::info "[$(timestamp)] Device Config: $(os::device_config)"'],
     //
+    ['show hostname', 'log::info "[$(timestamp)] Hostname: $(os::hostname)"'],
     ['show net ip', 'log::info "[$(timestamp)] Net IP: $(net::get_ip_internal)"'],
     // ['show net ip global', 'log::info "[$(timestamp)] Net IP Global: $(net::get_ip)"'],
     //
