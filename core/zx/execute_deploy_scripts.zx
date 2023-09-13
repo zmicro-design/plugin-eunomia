@@ -29,7 +29,14 @@ async function main() {
       },
     });
     if (!response.ok) {
-      throw new Error(`unexpected response ${response.statusText}`);
+      let text = '';
+      try {
+        text = await response.text();
+      } catch (err) {
+        //
+      }
+
+      throw new Error(`unexpected response (status: ${response.status}, text: ${text}`);
     }
 
     const respData = await response.json();
