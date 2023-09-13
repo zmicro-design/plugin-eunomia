@@ -4,6 +4,19 @@ const AUTO_TEST_TRIGGER_SERVER = process.env.EUNOMIA_AUTO_TEST_TRIGGER_SERVER;
 const AUTO_TEST_SERVER = process.env.EUNOMIA_AUTO_TEST_SERVER;
 
 async function main() {
+  console.log('POST', `${AUTO_TEST_TRIGGER_SERVER}/apt/openapi/ci/trigger`);
+  console.log('');
+  console.log(JSON.stringify({
+    "appName": "ta-common-service",
+    "domain": process.env.EUNOMIA_TASK_TEST_URL || "",
+    "companyCode": "thinkingdata",
+    "type": "normal",
+    "runEnv": "api",
+    "env": process.env.env || 'not_set',
+    "pid": +process.env.EUNOMIA_DEPLOYMENT_ID,
+    "taskIds": process.env.EUNOMIA_TASK_TEST_TASKIDS.split(',').map(e => +e),
+  }, null, 2));
+
   // trigger test
   const triggerResponse = await fetch(`${AUTO_TEST_TRIGGER_SERVER}/apt/openapi/ci/trigger`, {
     method: 'POST',
@@ -13,17 +26,24 @@ async function main() {
     },
     body: JSON.stringify({
       "appName": "ta-common-service",
-      "domain": process.env.EUNOMIA_TASK_TEST_URL,
+      "domain": process.env.EUNOMIA_TASK_TEST_URL || "",
       "companyCode": "thinkingdata",
       "type": "normal",
       "runEnv": "api",
-      "env": "thinkingdata",
-      "pid": process.env.EUNOMIA_DEPLOYMENT_ID,
-      "taskIds": process.env.EUNOMIA_TASK_TEST_TASKIDS.split(','),
+      "env": process.env.env || 'not_set',
+      "pid": +process.env.EUNOMIA_DEPLOYMENT_ID,
+      "taskIds": process.env.EUNOMIA_TASK_TEST_TASKIDS.split(',').map(e => +e),
     }),
   });
   if (!triggerResponse.ok) {
-    throw new Error(`unexpected trigger response ${triggerResponse.statusText}`);
+    let text = '';
+    try {
+      text = await response.text();
+    } catch (err) {
+      //
+    }
+
+    throw new Error(`unexpected response (status: ${response.status}, text: ${text}`);
   }
 
   const triggerResponseData = await triggerResponse.json();
@@ -45,7 +65,14 @@ async function main() {
   });
 
   if (!reportResponse.ok) {
-    throw new Error(`unexpected report response ${reportResponse.statusText}`);
+    let text = '';
+    try {
+      text = await response.text();
+    } catch (err) {
+      //
+    }
+
+    throw new Error(`unexpected response (status: ${response.status}, text: ${text}`);
   }
 
   const reportResponseData = await reportResponse.json();
