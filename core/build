@@ -135,6 +135,12 @@ eunomia::build_image() {
     log::info "[$(timestamp)][eunomia::build_image] EUNOMIA_DOCKER_BUILDX_PLATFORMS: $EUNOMIA_DOCKER_BUILDX_PLATFORMS"
   fi
 
+  if [ -n "$EUNOMIA_DOCKER_BUILDX_EXTRA_CONTEXT" ]; then
+    export PIPELINE_DOCKER_BUILD_CONTEXT_EXTRA=${EUNOMIA_DOCKER_BUILDX_EXTRA_CONTEXT}
+  fi
+  # @TODO
+  export PIPELINE_DOCKER_BUILD_CONTEXT_EXTRA="cache=/data/cache/idp/cicd/ta-multiverse/node_modules/.cache,cache2=/data/cache/idp/cicd/ta-multiverse"
+
   # export PIPELINE_DOCKER_BUILD_CACHE_ENABLE=true
   zmicro pipeline bp
   if [ "$?" != "0" ]; then
