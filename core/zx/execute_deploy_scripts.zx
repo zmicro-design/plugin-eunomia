@@ -47,7 +47,7 @@ async function main() {
     const { total, data } = respData.result;
     const all = data.length;
     for (const index in data) {
-      const { id, name, content, host } = data[index];
+      const { id, name, content, user, host } = data[index];
       const script_filepath = `${process.env.EUNOMIA_DEPLOY_SCRIPTS_DIR}/${id}.sh`;
       fs.writeFileSync(script_filepath, generateScript(content));
       // const response = await $`gzcaas client -s ${hostIP} --scriptfile ${script_filepath} --envfile ${process.env.EUNOMIA_BUILD_ENV_SHELL}`
@@ -57,7 +57,14 @@ async function main() {
       // }
 
       console.log(`[execute_deploy_scripts][${+index + 1}/${all}] execute step(${name}) on ${host.name}(${host.ip}) ...`);
-      await runShell(`gzcaas client -s ${host.ip} --scriptfile ${script_filepath} --envfile ${process.env.EUNOMIA_BUILD_ENV_SHELL}`);
+      await runShell(`gzcaas client -s ${host.ip} --scriptfile ${script_filepath} --envfile ${process.env.EUNOMIA_BUILD_ENV_SHELL}`, {
+        env: {
+          CAAS_CLIENT_ID: host.client_id || '',
+          CAAS_CLIENT_SECRET: host.client_secret || '',
+          // CAAS_USER: user || '',
+          CAAS_JOB_ID: process.env.EUNOMIA_BUILD_ID || '',
+        },
+      });
     }
   } catch (error) {
     console.error("[execute_deploy_scripts] catch error:", error);
@@ -149,6 +156,7 @@ async function runShell(command, options) {
       shell: true,
       stdio: 'inherit',
       cwd: options?.cwd || $.cwd,
+      env: process.env,
     });
 
     child.on('exit', (code) => {
