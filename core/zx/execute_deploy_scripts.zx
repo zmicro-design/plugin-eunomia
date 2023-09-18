@@ -61,7 +61,7 @@ async function main() {
         env: {
           CAAS_CLIENT_ID: host.client_id || '',
           CAAS_CLIENT_SECRET: host.client_secret || '',
-          // CAAS_USER: user || '',
+          CAAS_USER: user || '',
           CAAS_JOB_ID: process.env.EUNOMIA_BUILD_ID || '',
         },
       });
