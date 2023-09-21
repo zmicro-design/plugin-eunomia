@@ -95,7 +95,28 @@ function generateScript(content) {
   }
 
   pre([
-    ['force exit on error', 'set -e'],
+    // setup
+    ['register setup', `
+export EUNOMIA_DEPLOY_DIR=$(pwd)    
+`],
+    // cleanup
+    ['register cleanup', `
+cleanup() {
+  rv=$?
+
+  if [ -d "$EUNOMIA_DEPLOY_DIR" ]; then
+    log::info "[$(timestamp)][cleanup] workdir: $EUNOMIA_DEPLOY_DIR ..."
+    rm -rf $EUNOMIA_DEPLOY_DIR
+    log::info "[$(timestamp)][cleanup] workdir: $EUNOMIA_DEPLOY_DIR done"
+  else
+    log::info "[$(timestamp)][cleanup] workdir: $EUNOMIA_DEPLOY_DIR not exists"
+  fi
+
+  exit $rv
+}
+
+trap "cleanup" EXIT    
+`],
     // ['show eunomia version', 'log::info "[$(timestamp)] Eunomia: ${PLUGIN_VERSION}"'],
     ['show eunomia version', 'log::info "[$(timestamp)] Eunomia: $(plugin::version_echo eunomia)"'],
     //
@@ -135,10 +156,16 @@ function generateScript(content) {
     ['show rust version', 'log::info "[$(timestamp)] Rust: $(version::rust)"'],
     //
     ['show current directory', 'log::info "[$(timestamp)] current directory: $(pwd)"'],
+    //
+    ['register force exit on error', 'set -e'],
   ])
   main()
   post([
+    ['remove force exit on error', 'set +e'],
+    //
     ['show current directory', 'log::info "[$(timestamp)] current directory: $(pwd)"'],
+    //
+    // ['clean work directory', '[ -d "$EUNOMIA_DEPLOY_DIR" ] && log::info "[$(timestamp)][post] clean workdir: $EUNOMIA_DEPLOY_DIR ..." && rm -rf $EUNOMIA_DEPLOY_DIR && log::info "[$(timestamp)][post] clean workdir: $EUNOMIA_DEPLOY_DIR done" || log::info "[$(timestamp)][post] clean workdir: $EUNOMIA_DEPLOY_DIR not exists"'],
   ])
 
   return get();
