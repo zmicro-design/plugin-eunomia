@@ -1,0 +1,21 @@
+#!/bin/bash
+
+eunomia::schedule_clean() {
+  log::info "[$(timestamp)] clean docker ..."
+  zmicro clean docker
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)] failed to clean docker."
+    return 1
+  fi
+  log::success "[$(timestamp)] succeed to clean docker."
+
+  log::info "[$(timestamp)] clean builds cache ..."
+  rm -rf /data/plugins/eunomia/builds/*
+    if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)] failed to clean builds cache."
+    return 1
+  fi
+  log::success "[$(timestamp)] succeed to clean builds cache."
+}
+
+export -f eunomia::schedule_clean
