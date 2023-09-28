@@ -121,6 +121,14 @@ eunomia::agent_install() {
   curl -o- https://storage.idp.thinkingdata.cn/packages/idp-agent.install | bash
 }
 
+eunomia::agent_pid() {
+  cat /tmp/gzcli.daemon.gzcaas_server.pid
+}
+
+eunomia::agent_logs() {
+  tail -f /tmp/gzcli.daemon.gzcaas_server.log
+}
+
 export -f eunomia::agent_start
 export -f eunomia::agent_stop
 export -f eunomia::agent_restart
@@ -128,3 +136,6 @@ export -f eunomia::agent_restart
 export -f eunomia::agent_upgrade
 
 export -f eunomia::agent_install
+
+export -f eunomia::agent_pid
+export -f eunomia::agent_logs

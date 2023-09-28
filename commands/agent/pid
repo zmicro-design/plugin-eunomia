@@ -1,0 +1,26 @@
+#!/bin/bash
+
+
+help() {
+  echo "Usage:"
+  echo "  zmicro eunomia agent pid"
+}
+
+core() {
+  if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    help
+    exit 0
+  fi
+
+  eunomia::agent_pid
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)][agent][start] failed to eunomia agent start."
+    return 1
+  fi
+}
+
+run() {
+  core "$@"
+}
+
+run "$@"
