@@ -94,9 +94,14 @@ eunomia::agent_upgrade() {
   fi
 
   # install idp agent
-  curl https://storage.idp.thinkingdata.cn/packages/gzcaas >./gzcaas &&
-    chmod +x gzcaas &&
-    mv -f gzcaas /usr/bin/gzcaas
+  local pkg_name="gzcaas"
+  if [ "$(uname -m)" = "aarch64" ] || [ "$(uname -m)" = "arm64" ]; then
+    pkg_name="gzcaas_arm64"
+  fi
+
+  curl https://storage.idp.thinkingdata.cn/packages/$pkg_name > ./gzcaas \
+    && chmod +x gzcaas \
+    && mv -f gzcaas /usr/bin/gzcaas
 
   eunomia::agent_restart
 
