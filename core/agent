@@ -27,15 +27,16 @@ eunomia::agent_stop() {
     return 0
   fi
 
+  # @TODO
+  local pid_file="/tmp/gzcli.daemon.gzcaas_server.pid"
+  if [ -f "$pid_file" ]; then
+    rm -rf $pid_file
+  fi
+
   kill -9 $pid
   if [ "$?" != "0" ]; then
     log::error "[$(timestamp)] failed to stop eunomia agent"
     return 1
-  fi
-
-  local pid_file="/tmp/gzcli.daemon.gzcaas_server.pid"
-  if [ -f "$pid_file" ]; then
-    rm -rf $pid_file
   fi
 
   log::info "[$(timestamp)] eunomia agent stopped"
