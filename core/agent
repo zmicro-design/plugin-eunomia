@@ -147,6 +147,17 @@ eunomia::agent_logs() {
   tail -f /tmp/gzcli.daemon.gzcaas_server.log
 }
 
+eunomia::agent_status() {
+  local pid=$(eunomia::agent_pid)
+  if [ -n "$pid" ]; then
+    echo "running"
+    return 0
+  fi
+
+  echo "stopped"
+  return 1
+}
+
 export -f eunomia::agent_start
 export -f eunomia::agent_stop
 export -f eunomia::agent_restart
@@ -157,3 +168,5 @@ export -f eunomia::agent_install
 
 export -f eunomia::agent_pid
 export -f eunomia::agent_logs
+
+export -f eunomia::agent_status
