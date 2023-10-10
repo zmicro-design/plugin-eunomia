@@ -2,6 +2,8 @@
 
 if [ "$1" = "-c" ] && [ -n "$2" ]; then
   export PLUGIN_SHELL_COMMAND="$2"
+  zmicro plugin shell eunomia
+  exit $?
 fi
 
 zmicro plugin shell eunomia $@
