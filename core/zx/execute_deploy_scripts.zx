@@ -117,6 +117,8 @@ cleanup() {
 
 trap "cleanup" EXIT    
 `],
+    // load .bash_profile
+    ['Load .bash_profile', `if [ -f ~/.bash_profile ]; then source ~/.bash_profile; fi`],
     // ['show eunomia version', 'log::info "[$(timestamp)] Eunomia: ${PLUGIN_VERSION}"'],
     ['show eunomia version', 'log::info "[$(timestamp)] Eunomia: $(plugin::version_echo eunomia)"'],
     //
