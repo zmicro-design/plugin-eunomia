@@ -99,24 +99,6 @@ function generateScript(content) {
     ['register setup', `
 export EUNOMIA_DEPLOY_DIR=$(pwd)    
 `],
-    // cleanup
-    ['register cleanup', `
-cleanup() {
-  rv=$?
-
-  if [ -d "$EUNOMIA_DEPLOY_DIR" ]; then
-    log::info "[$(timestamp)][cleanup] workdir: $EUNOMIA_DEPLOY_DIR ..."
-    rm -rf $EUNOMIA_DEPLOY_DIR
-    log::info "[$(timestamp)][cleanup] workdir: $EUNOMIA_DEPLOY_DIR done"
-  else
-    log::info "[$(timestamp)][cleanup] workdir: $EUNOMIA_DEPLOY_DIR not exists"
-  fi
-
-  exit $rv
-}
-
-trap "cleanup" EXIT    
-`],
     // load .bash_profile
     ['Load .bash_profile', `if [ -f ~/.bash_profile ]; then source ~/.bash_profile; fi`],
     // ['show eunomia version', 'log::info "[$(timestamp)] Eunomia: ${PLUGIN_VERSION}"'],
@@ -159,6 +141,25 @@ trap "cleanup" EXIT
     //
     ['show current directory', 'log::info "[$(timestamp)] current directory: $(pwd)"'],
     //
+    // cleanup
+    ['register cleanup', `
+cleanup() {
+  rv=$?
+
+  if [ -d "$EUNOMIA_DEPLOY_DIR" ]; then
+    log::info "[$(timestamp)][cleanup] workdir: $EUNOMIA_DEPLOY_DIR ..."
+    rm -rf $EUNOMIA_DEPLOY_DIR
+    log::info "[$(timestamp)][cleanup] workdir: $EUNOMIA_DEPLOY_DIR done"
+  else
+    log::info "[$(timestamp)][cleanup] workdir: $EUNOMIA_DEPLOY_DIR not exists"
+  fi
+
+  exit $rv
+}
+
+trap "cleanup" EXIT    
+`],
+    // exit on error
     ['register force exit on error', 'set -e'],
   ])
   main()
