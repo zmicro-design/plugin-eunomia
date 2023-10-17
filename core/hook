@@ -100,7 +100,9 @@ EOF
 eunomia::hook_succeed() {
   if [ -n "$EUNOMIA_SUCCEED_HOOK" ]; then
     log::info "[$(timestamp)][eunomia::hook_succeed] call $EUNOMIA_SUCCEED_HOOK ..."
-    curl -s -X POST $EUNOMIA_SUCCEED_HOOK >>/dev/null
+    curl -s -X POST $EUNOMIA_SUCCEED_HOOK \
+      -H "X-Client-ID: $PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_ID" \
+      -H "X-Client-Secret: $PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_SECRET" >>/dev/null
   fi
 }
 
