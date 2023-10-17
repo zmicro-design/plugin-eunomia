@@ -298,6 +298,7 @@ eunomia::deploy_component_generate_oss_path() {
   # debug info
   cat <<EOF
 POST ${EUNOMIA_DEPLOY_COMPONENT_SERVER}/api/open/ms/ta-version-managements/versions/paths/generate
+IS_PRODUCT ${EUNOMIA_DEPLOY_COMPONENT_FROM_PRODUCT}
 
 {
   "module_name": "${EUNOMIA_DEPLOY_COMPONENT_MODULE_NAME}",
@@ -306,7 +307,8 @@ POST ${EUNOMIA_DEPLOY_COMPONENT_SERVER}/api/open/ms/ta-version-managements/versi
   "version_type": "${EUNOMIA_DEPLOY_COMPONENT_VERSION_TYPE}",
   "version_num": "${EUNOMIA_DEPLOY_COMPONENT_VERSION_NUM}",
   "cpu_arch": "${EUNOMIA_DEPLOY_COMPONENT_CPU_ARCH}",
-  "os": "${EUNOMIA_DEPLOY_COMPONENT_OS}"
+  "os": "${EUNOMIA_DEPLOY_COMPONENT_OS}",
+  "from_product": "${EUNOMIA_DEPLOY_COMPONENT_FROM_PRODUCT}"
 }
 EOF
 
@@ -314,6 +316,7 @@ EOF
     -X POST ${EUNOMIA_DEPLOY_COMPONENT_SERVER}/api/open/ms/ta-version-managements/versions/paths/generate \
     -o $response_file \
     -H "Content-Type: application/json" \
+    -H "is_product: ${EUNOMIA_DEPLOY_COMPONENT_FROM_PRODUCT}"
     --data-binary @- <<EOF
 {
   "module_name": "${EUNOMIA_DEPLOY_COMPONENT_MODULE_NAME}",
