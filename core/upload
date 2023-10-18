@@ -32,7 +32,8 @@ eunomia::upload() {
     return 1
   fi
   log::success "[$(timestamp)][eunomia::upload] succeed to create a version release record."
-  if [ "$EUNOMIA_DEPLOY_COMPONENT_VERSION_TYPE" != "product" ]; then
+  # TODO:remove this debug flag
+  if [ "$EUNOMIA_DEPLOY_COMPONENT_VERSION_TYPE" != "product" ] && [ "$EUNOMIA_DEPLOY_COMPONENT_DEBUG" != "true" ]; then
     log::success "[$(timestamp)][eunomia::upload] finish ..."
     return 0
   fi
