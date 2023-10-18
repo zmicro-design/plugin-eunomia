@@ -7,15 +7,15 @@ eunomia::prepare() {
     return 1
   fi
 
-  if [ ! -d "$PLUGIN_EUNOMIA_DOCKERFILES_DIR" ]; then
-    log::error "[config] Dockerfiles Dir($PLUGIN_EUNOMIA_DOCKERFILES_DIR) not found"
-    return 1
-  fi
+  # if [ ! -d "$PLUGIN_EUNOMIA_DOCKERFILES_DIR" ]; then
+  #   log::error "[config] Dockerfiles Dir($PLUGIN_EUNOMIA_DOCKERFILES_DIR) not found"
+  #   return 1
+  # fi
 
-  if [ -z "$(ls $PLUGIN_EUNOMIA_DOCKERFILES_DIR)" ]; then
-    log::error "[config] Dockerfiles Dir($PLUGIN_EUNOMIA_DOCKERFILES_DIR) is empty"
-    return 1
-  fi
+  # if [ -z "$(ls $PLUGIN_EUNOMIA_DOCKERFILES_DIR)" ]; then
+  #   log::error "[config] Dockerfiles Dir($PLUGIN_EUNOMIA_DOCKERFILES_DIR) is empty"
+  #   return 1
+  # fi
 
   # Show Docker Info
   # eunomia::prepare_show_docker_info
@@ -167,12 +167,6 @@ eunomia::prepare() {
   fi
 
   export PLUGIN_EUNOMIA_DOCKERFILE_FOR_GIT_REPO=${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/Dockerfile
-  export PLUGIN_EUNOMIA_DOCKERFILE_ENV_FOR_GIT_REPO=${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/.eunomia
-
-  if [ -f "$PLUGIN_EUNOMIA_DOCKERFILE_ENV_FOR_GIT_REPO" ]; then
-    log::error "[eunomia::build] .eunomia found at for $EUNOMIA_GIT_REPO_NAME, please remove it"
-    return 1
-  fi
 
   if [ -z "$EUNOMIA_BUILD_DOCKER_IMAGE_NAME" ] && [ -n "$EUNOMIA_GIT_REPO_NAME" ]; then
     export EUNOMIA_BUILD_DOCKER_IMAGE_NAME=$EUNOMIA_GIT_REPO_NAME
