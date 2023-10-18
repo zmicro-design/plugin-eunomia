@@ -32,6 +32,26 @@ eunomia::upload() {
     return 1
   fi
   log::success "[$(timestamp)][eunomia::upload] succeed to create a version release record."
+  if [ "$EUNOMIA_DEPLOY_COMPONENT_VERSION_TYPE" != "product" ]; then
+    log::success "[$(timestamp)][eunomia::upload] finish ..."
+    return 0
+  fi
+  # Execute Add ChangeLog
+  if [ -n "$EUNOMIA_DEPLOY_COMPONENT_CHANGELOG" ]; then
+      eunomia::deploy_component_create_changelog
+      if [ "$?" != "0" ]; then
+        log::error "[$(timestamp)][eunomia::upload] failed to create a changelog record."
+        log::error "[$(timestamp)][eunomia::upload] finish ..."
+      fi
+  fi
+  # Execute Add Dependency
+  if [ -n "$EUNOMIA_DEPLOY_COMPONENT_DEPENDENCY" ]; then
+    eunomia::deploy_component_create_dependency
+    if [ "$?" != "0" ]; then
+      log::error "[$(timestamp)][eunomia::upload] failed to create a dependency record."
+      log::error "[$(timestamp)][eunomia::upload] finish ..."
+    fi
+  fi
 
   log::success "[$(timestamp)][eunomia::upload] finish ..."
 }

@@ -427,7 +427,8 @@ EOF
     rm -f $response_file
     return 1
   fi
-
+  export EUNOMIA_DEPLOY_COMPONENT_VERSION_TYPE=$(cat "$response_file" | jq -r '.result.version_type')
+  export EUNOMIA_DEPLOY_COMPONENT_VERSIONID=$(cat "$response_file" | jq -r '.result.id')
   rm -f $response_file
 }
 
@@ -451,6 +452,47 @@ eunomia::deploy_scripts_exists() {
   plugin::run_zx is_deploy_scripts_exist
 }
 
+eunomia::deploy_component_create_changelog() {
+  cat <<EOF
+  POST ${EUNOMIA_DEPLOY_COMPONENT_SERVER}/api/open/ms/ta-version-managements/v2/changelog
+
+  {
+    "version_id": "${EUNOMIA_DEPLOY_VERSIONID}",
+    "change_log": "${EUNOMIA_DEPLOY_COMPONENT_CHANGELOG}"
+  }
+EOF
+  local response_file=$(os::tmp_file)
+  curl \
+      -X POST ${EUNOMIA_DEPLOY_COMPONENT_SERVER}/api/open/ms/ta-version-managements/v2/changelog \
+      -o $response_file \
+      -H "Content-Type: application/json" \
+      --data-binary @- <<EOF
+  {
+      "version_id": "${EUNOMIA_DEPLOY_VERSIONID}",
+      "change_log": "${EUNOMIA_DEPLOY_COMPONENT_CHANGELOG}"
+  }
+EOF
+
+
+}
+
+eunomia::deploy_component_create_dependency() {
+
+  local response_file=$(os::tmp_file)
+  curl \
+      -X POST ${EUNOMIA_DEPLOY_COMPONENT_SERVER}/api/open/ms/ta-version-managements/v2/dependency/ \
+      -o $response_file \
+      -H "Content-Type: application/json" \
+      --data-binary @- <<EOF
+  {
+      "cluster_version": "${EUNOMIA_DEPLOY_COMPONENT_CLUSTER_VERSION}",
+      "source_module_version_id": ${EUNOMIA_DEPLOY_COMPONENT_VERSIONID},
+      "dependencies": ${EUNOMIA_DEPLOY_COMPONENT_DEPENDENCY}
+  }
+EOF
+
+}
+
 export -f eunomia::deploy
 
 export -f eunomia::deploy_script
@@ -462,6 +504,8 @@ export -f eunomia::deploy_component_generate_oss_path
 export -f eunomia::deploy_component_get_artifact
 export -f eunomia::deploy_component_create_version
 export -f eunomia::deploy_component_get_artifact_md5
+export -f eunomia::deploy_component_create_changelog
+export -f eunomia::deploy_component_create_dependency
 
 export -f eunomia::deploy_component_upload_file
 
