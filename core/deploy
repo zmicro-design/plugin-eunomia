@@ -457,7 +457,7 @@ eunomia::deploy_component_create_changelog() {
   POST ${EUNOMIA_DEPLOY_COMPONENT_SERVER}/api/open/ms/ta-version-managements/v2/changelog
 
   {
-    "version_id": "${EUNOMIA_DEPLOY_VERSIONID}",
+    "version_id": "${EUNOMIA_DEPLOY_COMPONENT_VERSIONID}",
     "change_log": "${EUNOMIA_DEPLOY_COMPONENT_CHANGELOG}"
   }
 EOF
@@ -468,7 +468,7 @@ EOF
       -H "Content-Type: application/json" \
       --data-binary @- <<EOF
   {
-      "version_id": "${EUNOMIA_DEPLOY_VERSIONID}",
+      "version_id": "${EUNOMIA_DEPLOY_COMPONENT_VERSIONID}",
       "change_log": "${EUNOMIA_DEPLOY_COMPONENT_CHANGELOG}"
   }
 EOF
