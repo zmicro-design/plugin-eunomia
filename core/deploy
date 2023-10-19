@@ -316,7 +316,7 @@ EOF
     -X POST ${EUNOMIA_DEPLOY_COMPONENT_SERVER}/api/open/ms/ta-version-managements/versions/paths/generate \
     -o $response_file \
     -H "Content-Type: application/json" \
-    -H "is_product: ${EUNOMIA_DEPLOY_COMPONENT_FROM_PRODUCT}"
+    -H "is_product: ${EUNOMIA_DEPLOY_COMPONENT_FROM_PRODUCT}" \
     --data-binary @- <<EOF
 {
   "module_name": "${EUNOMIA_DEPLOY_COMPONENT_MODULE_NAME}",
