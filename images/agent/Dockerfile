@@ -1,19 +1,23 @@
-FROM whatwewant/zmicro:v1
+FROM whatwewant/gzcaas:v1-dind
 
 LABEL MAINTAINER="Zero<tobewhatwewant@outlook.com>"
 
-RUN apt update -y && apt install -yqq rsync
-
-RUN zmicro plugin run workspace env initialize nodejs
-
-ARG VERSION=latest
+RUN apt update -y
 
 RUN zmicro update -a
 
+RUN zmicro package install jq
+
+RUN zmicro package install sync
+
+RUN zmicro package install ossutil
+
+RUN zmicro plugin run workspace env initialize nodejs
+
 RUN zmicro plugin install eunomia
 
-RUN zmicro package install gzcaas
+ENV CAAS_SHELL=eunomia-shell
 
-COPY ./entrypoint.sh /entrypoint.sh
+ENV CAAS_METADATA_DIR=/data/gzcaas/metadata
 
-CMD /entrypoint.sh
+ENV CAAS_WORKDIR=/data/gzcaas/workdir
