@@ -246,13 +246,13 @@ eunomia::deploy_service() {
   fi
 
   local tmp_compose_file="$(os::tmp_file).yml"
-  cat $config_template |
-    sed "s%<PLUGIN_EUNOMIA_DEPLOYMENT_NAME>%${PLUGIN_EUNOMIA_DEPLOYMENT_NAME}%" |
-      >$tmp_compose_file
+  cat $config_template \
+    | sed "s%<PLUGIN_EUNOMIA_DEPLOYMENT_NAME>%${PLUGIN_EUNOMIA_DEPLOYMENT_NAME}%" \
+    > $tmp_compose_file
 
   export COMPOSE_FILE=$tmp_compose_file
-
   docker-compose config >$EUNOMIA_DEPLOYMENT_MANIFEST_FILE
+
   # service manifest file
   export COMPOSE_FILE=$EUNOMIA_DEPLOYMENT_MANIFEST_FILE
 
