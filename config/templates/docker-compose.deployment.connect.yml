@@ -1,6 +1,5 @@
 services:
-  zmicro_plugin_eunomia_deployment:
-    container_name: ${PLUGIN_EUNOMIA_DEPLOYMENT_NAME}
+  <PLUGIN_EUNOMIA_DEPLOYMENT_NAME>:
     restart: always
     image: whatwewant/connect-doreamon:v1
     environment:
