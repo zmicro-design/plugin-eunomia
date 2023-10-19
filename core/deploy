@@ -247,7 +247,7 @@ eunomia::deploy_service() {
 
   local tmp_compose_file="$(os::tmp_file).yml"
   cat $config_template \
-    | sed "s%<PLUGIN_EUNOMIA_DEPLOYMENT_NAME>%${PLUGIN_EUNOMIA_DEPLOYMENT_NAME}%" \
+    | sed "s%<PLUGIN_EUNOMIA_DEPLOYMENT_NAME>%${PLUGIN_EUNOMIA_DEPLOYMENT_NAME}%g" \
     > $tmp_compose_file
 
   export COMPOSE_FILE=$tmp_compose_file
