@@ -495,11 +495,11 @@ eunomia::deploy_component_create_dependency() {
   curl -X GET \
     -o $achive_dependency_response_file \
     ${EUNOMIA_DEPLOY_COMPONENT_SERVER}/api/open/ms/ta-version-managements/v2/dependency/achieve?id=${EUNOMIA_DEPLOY_COMPONENT_DEPENDENCY_ID}
-  if [ "$(cat achive_dependency_response_file | jq -r .code)" != "200" ]; then
+  if [ "$(cat $achive_dependency_response_file | jq -r .code)" != "200" ]; then
     log::error "[$(timestamp)][eunomia::deploy_component_create_dependency] failed to get achieve change log."
     return 1
   fi
-  change_log=$(cat achive_dependency_response_file | jq -r .result.achieve_dependencies_log )
+  change_log=$(cat $achive_dependency_response_file | jq -r .result.achieve_dependencies_log )
   local response_file=$(os::tmp_file)
   curl \
       -X POST ${EUNOMIA_DEPLOY_COMPONENT_SERVER}/api/open/ms/ta-version-managements/v2/dependency/ \
