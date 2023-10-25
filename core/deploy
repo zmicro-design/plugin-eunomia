@@ -462,7 +462,7 @@ eunomia::deploy_component_create_changelog() {
     log::error "[$(timestamp)][eunomia::deploy_component_create_changelog] failed to achieve change log."
     return 1
   fi
-  change_log=$(cat $response_file | jq -r .result.achieve_change_log)
+  change_log=$(cat $response_file | jq .result.achieve_change_log|tostring)
   log::info "[$(timestamp)][eunomia::deploy_component_create_changelog] change log: $change_log"
   # Clean the tempfile
   echo ""> $response_file
@@ -470,7 +470,7 @@ eunomia::deploy_component_create_changelog() {
   POST ${EUNOMIA_DEPLOY_COMPONENT_SERVER}/api/open/ms/ta-version-managements/v2/changelog
   {
     "version_id": ${EUNOMIA_DEPLOY_COMPONENT_VERSIONID},
-    "change_log": "${change_log}"
+    "change_log": ${change_log}
   }
 EOF
   local response_file=$(os::tmp_file)
@@ -480,8 +480,8 @@ EOF
       -H "Content-Type: application/json" \
       --data-binary @- <<EOF
   {
-      "version_id": "${EUNOMIA_DEPLOY_COMPONENT_VERSIONID}",
-      "change_log": "${change_log}"
+      "version_id": ${EUNOMIA_DEPLOY_COMPONENT_VERSIONID},
+      "change_log": ${change_log}
   }
 EOF
   if [ "$(cat $response_file | jq -r .code)" != "200" ];then
