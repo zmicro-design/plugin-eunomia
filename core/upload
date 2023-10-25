@@ -38,19 +38,21 @@ eunomia::upload() {
     return 0
   fi
   # Execute Add ChangeLog
-  if [ -n "$EUNOMIA_DEPLOY_COMPONENT_CHANGELOG" ] && [ -n "$EUNOMIA_DEPLOY_COMPONENT_VERSIONID" ]; then
+  if [ -n "$EUNOMIA_DEPLOY_COMPONENT_CHANGELOG_ID" ] && [ -n "$EUNOMIA_DEPLOY_COMPONENT_VERSIONID" ]; then
       eunomia::deploy_component_create_changelog
       if [ "$?" != "0" ]; then
         log::error "[$(timestamp)][eunomia::upload] failed to create a changelog record."
         log::error "[$(timestamp)][eunomia::upload] finish ..."
+        return 1
       fi
   fi
   # Execute Add Dependency
-  if [ -n "$EUNOMIA_DEPLOY_COMPONENT_DEPENDENCY" ]  && [ -n "$EUNOMIA_DEPLOY_COMPONENT_VERSIONID" ]; then
+  if [ -n "$EUNOMIA_DEPLOY_COMPONENT_DEPENDENCY_ID" ]  && [ -n "$EUNOMIA_DEPLOY_COMPONENT_VERSIONID" ]; then
     eunomia::deploy_component_create_dependency
     if [ "$?" != "0" ]; then
       log::error "[$(timestamp)][eunomia::upload] failed to create a dependency record."
       log::error "[$(timestamp)][eunomia::upload] finish ..."
+      return 1
     fi
   fi
 
