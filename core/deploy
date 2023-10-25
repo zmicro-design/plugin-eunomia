@@ -496,11 +496,18 @@ eunomia::deploy_component_create_dependency() {
     -o $achive_dependency_response_file \
     ${EUNOMIA_DEPLOY_COMPONENT_SERVER}/api/open/ms/ta-version-managements/v2/dependency/achieve?id=${EUNOMIA_DEPLOY_COMPONENT_DEPENDENCY_ID}
   if [ "$(cat $achive_dependency_response_file | jq -r .code)" != "200" ]; then
-    log::error "[$(timestamp)][eunomia::deploy_component_create_dependency] failed to get achieve change log."
+    log::error "[$(timestamp)][eunomia::deploy_component_create_dependency] failed to get achieve dependency."
     return 1
   fi
   change_log=$(cat $achive_dependency_response_file | jq -r .result.achieve_dependencies_log )
   local response_file=$(os::tmp_file)
+  cat <<EOF
+  {
+    "cluster_version": "${EUNOMIA_DEPLOY_COMPONENT_CLUSTER_VERSION}",
+    "source_module_version_id": ${EUNOMIA_DEPLOY_COMPONENT_VERSIONID},
+    "dependencies": ${EUNOMIA_DEPLOY_COMPONENT_DEPENDENCY_ID}
+  }
+EOF
   curl \
       -X POST ${EUNOMIA_DEPLOY_COMPONENT_SERVER}/api/open/ms/ta-version-managements/v2/dependency/ \
       -o $response_file \
@@ -513,7 +520,7 @@ eunomia::deploy_component_create_dependency() {
   }
 EOF
   if [ "$(cat $response_file | jq -r .code)" != "200" ];then
-      log::error "[$(timestamp)][eunomia::deploy_component_create_changelog] failed to create change log."
+      log::error "[$(timestamp)][eunomia::deploy_component_create_dependency] failed to create dependency."
       return 1
   fi
 }
