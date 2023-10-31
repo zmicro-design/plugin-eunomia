@@ -501,24 +501,12 @@ eunomia::deploy_component_create_dependency() {
   fi
   change_log=$(cat $achive_dependency_response_file | jq -r .result.achieve_dependencies_log )
   local response_file=$(os::tmp_file)
-  cat <<EOF
-  {
-    "cluster_version": "${EUNOMIA_DEPLOY_COMPONENT_CLUSTER_VERSION}",
-    "source_module_version_id": ${EUNOMIA_DEPLOY_COMPONENT_VERSIONID},
-    "dependencies": ${change_log}
-  }
-EOF
+  cat $change_log | jq ".source_module_version_id=${EUNOMIA_DEPLOY_COMPONENT_VERSIONID}"
   curl \
       -X POST ${EUNOMIA_DEPLOY_COMPONENT_SERVER}/api/open/ms/ta-version-managements/v2/dependency/ \
       -o $response_file \
       -H "Content-Type: application/json" \
-      --data-binary @- <<EOF
-  {
-      "cluster_version": "${EUNOMIA_DEPLOY_COMPONENT_CLUSTER_VERSION}",
-      "source_module_version_id": "${EUNOMIA_DEPLOY_COMPONENT_VERSIONID}",
-      "dependencies": ${change_log}
-  }
-EOF
+      -d "$(cat $change_log | jq ".source_module_version_id=${EUNOMIA_DEPLOY_COMPONENT_VERSIONID}")"
   if [ "$(cat $response_file | jq -r .code)" != "200" ];then
       log::error "[$(timestamp)][eunomia::deploy_component_create_dependency] failed to create dependency."
       return 1
