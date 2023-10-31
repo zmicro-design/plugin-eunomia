@@ -1,5 +1,5 @@
 services:
-  zmicro_plugin_eunomia_deployment:
+  <PLUGIN_EUNOMIA_DEPLOYMENT_NAME>:
     container_name: ${PLUGIN_EUNOMIA_DEPLOYMENT_NAME}
     restart: always
     image: ${PLUGIN_EUNOMIA_DOCKER_REGISTRY}/${PLUGIN_EUNOMIA_DEPLOYMENT_IMAGE_NAME}:build_${EUNOMIA_BUILD_ID}

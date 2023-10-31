@@ -1,6 +1,5 @@
 services:
-  zmicro_plugin_eunomia_deployment:
-    container_name: ${PLUGIN_EUNOMIA_DEPLOYMENT_NAME}
+  <PLUGIN_EUNOMIA_DEPLOYMENT_NAME>:
     restart: always
     image: whatwewant/connect-doreamon:v1
     environment:
@@ -17,8 +16,7 @@ services:
         aliases:
           - ${PLUGIN_EUNOMIA_DEPLOYMENT_EXTRA_HOSTNAME}
 
-  zmicro_plugin_eunomia_deployment_upstream:
-    container_name: ${PLUGIN_EUNOMIA_DEPLOYMENT_NAME}_upstream
+  <PLUGIN_EUNOMIA_DEPLOYMENT_NAME>_upstream:
     restart: always
     image: ${PLUGIN_EUNOMIA_DOCKER_REGISTRY}/${PLUGIN_EUNOMIA_DEPLOYMENT_IMAGE_NAME}:build_${EUNOMIA_BUILD_ID}
     environment:
