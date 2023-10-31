@@ -38,12 +38,12 @@ async function main() {
   if (!triggerResponse.ok) {
     let text = '';
     try {
-      text = await response.text();
+      text = await triggerResponse.text();
     } catch (err) {
       //
     }
 
-    throw new Error(`unexpected response (status: ${response.status}, text: ${text}`);
+    throw new Error(`unexpected response (status: ${triggerResponse.status}, text: ${text}`);
   }
 
   const triggerResponseData = await triggerResponse.json();
@@ -57,6 +57,8 @@ async function main() {
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
+      'X-Client-ID': process.env.PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_ID,
+      'X-Client-Secret': process.env.PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_SECRET,
     },
     body: JSON.stringify({
       "deployment": process.env.EUNOMIA_DEPLOYMENT_ID,
@@ -67,12 +69,12 @@ async function main() {
   if (!reportResponse.ok) {
     let text = '';
     try {
-      text = await response.text();
+      text = await reportResponse.text();
     } catch (err) {
       //
     }
 
-    throw new Error(`unexpected response (status: ${response.status}, text: ${text}`);
+    throw new Error(`unexpected response (status: ${reportResponse.status}, text: ${text}`);
   }
 
   const reportResponseData = await reportResponse.json();
