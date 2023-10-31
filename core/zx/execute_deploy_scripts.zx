@@ -56,8 +56,16 @@ async function main() {
       //   throw new Error(`failed to execute script ${script_filepath}`);
       // }
 
+      let server = host.ip;
+      if (!!host.is_strict_mode) {
+        server = `wss://${host.ip}`
+      }
+      if (!!host.port) {
+        server = `${server}:${host.port}`
+      }
+
       console.log(`[execute_deploy_scripts][${+index + 1}/${all}] execute step(${name}) on ${host.name}(${host.ip}) ...`);
-      await runShell(`gzcaas client -s ${host.ip} --scriptfile ${script_filepath} --envfile ${process.env.EUNOMIA_BUILD_ENV_SHELL}`, {
+      await runShell(`gzcaas client -s ${server} --scriptfile ${script_filepath} --envfile ${process.env.EUNOMIA_BUILD_ENV_SHELL}`, {
         env: {
           CAAS_CLIENT_ID: host.client_id || '',
           CAAS_CLIENT_SECRET: host.client_secret || '',
