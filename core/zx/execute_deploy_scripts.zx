@@ -168,7 +168,7 @@ cleanup() {
 trap "cleanup" EXIT    
 `],
     // exit on error
-    ['register force exit on error', 'set -e'],
+    ['register force exit on error', 'set -eo pipefail'],
   ])
   main()
   post([
