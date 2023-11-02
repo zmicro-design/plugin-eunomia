@@ -47,7 +47,7 @@ async function main() {
     const { total, data } = respData.result;
     const all = data.length;
     for (const index in data) {
-      const { id, name, content, env } = data[index];
+      const { id, type = 'custom_script', name, content, env, product_dir } = data[index];
       const script_filepath = `${process.env.EUNOMIA_BUILD_SCRIPTS_DIR}/${id}.sh`;
       fs.writeFileSync(script_filepath, content);
       // const response = await $`gzcaas client -s ${hostIP} --scriptfile ${script_filepath} --envfile ${process.env.EUNOMIA_BUILD_ENV_SHELL}`
@@ -56,19 +56,71 @@ async function main() {
       //   throw new Error(`failed to execute script ${script_filepath}`);
       // }
 
-      console.log(`[execute_build_scripts][${+index + 1}/${all}] execute step(${name}) with env ${env.name} ...`);
-      // await runShell(`source ${process.env.EUNOMIA_BUILD_ENV_SHELL} && bash ${script_filepath}`);
-      // await runShell(`bash ${script_filepath}`);
-      await runShell([
-        `docker run -i --rm`,
-        `--env-file ${process.env.EUNOMIA_BUILD_ENV_SHELL}`,
-        `--volume ${process.env.EUNOMIA_BUILD_GIT_DIR}:/build`,
-        `--volume ${process.env.EUNOMIA_BUILD_PRODUCT_DIR}:${process.env.EUNOMIA_BUILD_EXPORT_DIR}`,
-        `--volume ${script_filepath}:/script.sh`,
-        `--workdir /build`,
-        `${env.image}`,
-        `bash /script.sh`
-      ].join(' '));
+      let _script = [];
+
+      if (type === 'docker_image') {
+        console.log(`[execute_build_scripts][${+index + 1}/${all}] execute step(${name}) with type(${type}) ...`);
+
+        _script = [
+          `docker buildx build --push`,
+          `--progress=plain`,
+          `--tag ${process.env.EUNOMIA_BUILD_DOCKER_IMAGE_NAME}:commit_${process.env.EUNOMIA_GIT_COMMIT}`,
+          `--tag ${process.env.EUNOMIA_BUILD_DOCKER_IMAGE_NAME}:build_${process.env.PIPELINE_BUILD_ID}`,
+        ];
+
+        const envs = await getEnv();
+        for (const env of envs) {
+          const [env_name, env_value] = env.split('=');
+          _script.push(`--build-arg ${env_name}="${env_value}"`);
+        }
+
+        if (process.env.EUNOMIA_DOCKER_BUILDX_PLATFORMS) {
+          _script.push(`--platform ${process.env.EUNOMIA_DOCKER_BUILDX_PLATFORMS}`);
+        }
+
+        let context = process.env.EUNOMIA_BUILD_GIT_DIR
+        if (process.env.EUNOMIA_BUILD_DOCKER_BUILD_CONTEXT) {
+          context = process.env.EUNOMIA_BUILD_GIT_DIR + '/' + process.env.EUNOMIA_BUILD_DOCKER_BUILD_CONTEXT
+        }
+
+        // check dockerfile
+        const dockerfile = `${context}/Dockerfile`;
+        try {
+          await fs.promises.access(dockerfile);
+        } catch (error) {
+          throw new Error(`dockerfile ${dockerfile} not found`);
+        }
+
+        _script.push(context)
+      } else if (type === 'custom_script') {
+        console.log(`[execute_build_scripts][${+index + 1}/${all}] execute step(${name}) with type(${type}) + env(${env.name}) ...`);
+        // await runShell(`source ${process.env.EUNOMIA_BUILD_ENV_SHELL} && bash ${script_filepath}`);
+        // await runShell(`bash ${script_filepath}`);
+
+        _script = [
+          `docker run -i --rm`,
+          `--env-file ${process.env.EUNOMIA_BUILD_ENV_SHELL}`,
+          `--volume ${process.env.EUNOMIA_BUILD_GIT_DIR}:/build`,
+          `--volume ${script_filepath}:/script.sh`,
+        ];
+
+        if (!!product_dir) {
+          _script.push(`--volume ${process.env.EUNOMIA_BUILD_PRODUCT_DIR}:${product_dir}`);
+        }
+
+        _script = _script.concat([
+          `--workdir /build`,
+          `${env.image}`,
+          `bash /script.sh`
+        ]);
+      } else {
+        throw new Error(`unexpected build script type ${type}`);
+      }
+     
+
+      const script = _script.join(' ');
+
+      await runShell(script);
     }
   } catch (error) {
     console.error("[execute_build_scripts] catch error:", error);
@@ -100,6 +152,226 @@ async function runShell(command, options) {
       return reject(`run command error (command: ${command}, error: ${error?.message})`);
     });
   });
+}
+
+function getEnv() {
+  const ignoreKeys = [
+    'SHELL',
+    'PWD',
+    'USER',
+    'LOGNAME',
+    'HOME',
+    'PATH',
+    'LANG',
+    'TERM',
+    'SHLVL',
+    'HISTSIZE',
+    'BLACK',
+    'GREEN',
+    'GRAY',
+    'RED',
+    'YELLOW',
+    'PURPLE',
+    'BLUE',
+    'CYAN',
+    'ENDCOLOR',
+    'HOSTNAME',
+    'MAIL',
+    'EUNOMIA_ENV_FILE',
+    // flow
+    'execute_cmd',
+    //
+    '_',
+    //
+    'GOPATH',
+    'GOHOME',
+    'NPM_CONFIG_REGISTRY',
+    'LESSOPEN',
+    'triggerId',
+    'triggerMode',
+    'webhook',
+    'machine_group_id',
+    'mixFlowInstId',
+    'parentMixFlowInstId',
+    'pause_strategy',
+    'OLDPWD',
+    'branch',
+    'caches',
+    'HISTCONTROL',
+    'pipelineId',
+    'TODAY',
+    'TIMESTAMP',
+    'DATETIME',
+    'appId',
+    'package_download_path',
+    'pipelineConfigId',
+    'LOG_LEVEL',
+    'TZ',
+    //
+    'EUNOMIA_BUILD_TIMESTAMP',
+    'EUNOMIA_RUNNER_NAME',
+    //
+    'EUNOMIA_DEPLOYMENT_DEV_DOCKER_HOST',
+    'EUNOMIA_DEPLOYMENT_PROD_DOCKER_HOST',
+    'EUNOMIA_DEPLOYMENT_MANIFEST_FILE',
+    'EUNOMIA_DEPLOY_SCRIPTS_DIR',
+    'EUNOMIA_DEPLOY_SCRIPT',
+  ];
+
+  const whiteKeysNeedBase64 = [
+    'ta_version',
+    'withHermes',
+    'withMobile',
+    //
+    'env',
+    'docker_url',
+    //
+    'lang',
+    //
+    'API',
+    //
+    'TARGET', //
+    //
+    'GIT_SERVER',
+    'GIT_USERNAME',
+    'GIT_PASSWORD',
+    //
+    'CONFIG_CENTER_CLIENT_ID',
+    'CONFIG_CENTER_CLIENT_SECRET',
+    'CONFIG_CENTER_CONFIG_ID',
+  ];
+
+  const ignoreKeysMap = {};
+  ignoreKeys.forEach((key) => {
+    ignoreKeysMap[key] = true;
+  });
+
+  const whiteKeysNeedBase64Map = {};
+  whiteKeysNeedBase64.forEach((key) => {
+    whiteKeysNeedBase64Map[key] = true;
+  });
+
+  function decode(text) {
+    return Buffer.from(text, 'base64').toString('utf8');
+  }
+
+  function isBase64(str) {
+    const base64Regex = /^[a-zA-Z0-9+/]*={0,2}$/;
+    if (!base64Regex.test(str)) {
+      return false; // 不符合 Base64 编码规范
+    }
+
+    try {
+      return Buffer.from(str, 'base64').toString('base64') === str;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function isReadable(str) {
+    // ascii
+    if (/^[\x00-\x7F]+$/.test(str)) {
+      return true;
+    }
+
+    // unicode 
+    if (/^[\u4E00-\u9FFF]+$/u.test(str)) {
+      return true;
+    }
+
+    // // unicode readable
+    // if (/^[\x20-\x7E\u00A0-\u{10FFFF}]+$/u.test(str)) {
+    //   return true;
+    // }
+
+    return false;
+  }
+
+  function fn() {
+    const writeFileName = process.env.EUNOMIA_BUILD_ENV_SHELL
+    if (!writeFileName) {
+      throw new Error('env EUNOMIA_BUILD_ENV_SHELL is not set');
+    }
+
+    const env = process.env;
+    let new_envs = [];
+    for (const key in env) {
+      if (ignoreKeysMap[key]) continue;
+
+      // @TODO remove BASH_FUNC_*
+      if (key.startsWith('BASH_FUNC_')) continue;
+
+      // @TODO remove ZMICRO_*
+      if (key.startsWith('ZMICRO_')) continue;
+
+      // @TODO remove PLUGIN_*
+      if (key.startsWith('PLUGIN_')) continue;
+
+      // @TODO remove PIPELINE_*
+      if (key.startsWith('PIPELINE_')) continue;
+
+      // @TODO remove zoox_*
+      if (key.startsWith('zoox_')) continue;
+
+      // @TODO remove ENGINE_*
+      if (key.startsWith('ENGINE_')) continue;
+
+      // @TODO remove EXECUTOR_*
+      if (key.startsWith('EXECUTOR_')) continue;
+
+      // @TODO remove execute_*
+      if (key.startsWith('execute_')) continue;
+
+      // @TODO remove BUILD_*
+      if (key.startsWith('BUILD_')) continue;
+
+      // @TODO remove eunomia_*
+      if (key.startsWith('eunomia_')) continue;
+
+      // @TODO remove XDG_*
+      if (key.startsWith('XDG_')) continue;
+
+      // @TODO remove LD_*
+      if (key.startsWith('LD_')) continue;
+
+      // @TODO remove DEFAULT_*
+      if (key.startsWith('DEFAULT_')) continue;
+
+      // @TODO remove NODE_*
+      if (key.startsWith('NODE_')) continue;
+
+      // @TODO remove root*
+      if (key.startsWith('root')) continue;
+
+      let value = env[key];
+
+      if (process.env.EUNOMIA_BUILD_TRIGGER !== 'idp') {
+        // white keys need base64 decode
+        if (!!whiteKeysNeedBase64Map[key]) {
+          value = decode(env[key]);
+        }
+
+        // user var need base64 decode
+        if (key.startsWith('EUNOMIA_USER_VAR_')) {
+          value = decode(env[key]);
+        }
+      }
+
+      if (process.env.FLOW_CI === 'true') {
+        if (!isBase64(env[key])) continue;
+
+        value = decode(env[key]);
+        if (!isReadable(value)) continue;
+      }
+
+      // new_envs.push(`${key}=${JSON.stringify(value)}`);
+      new_envs.push(`${key}=${value}`);
+    }
+
+    return new_envs;
+  }
+
+  return fn();
 }
 
 main();
