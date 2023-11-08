@@ -305,6 +305,7 @@ eunomia::deploy_component_generate_oss_path() {
   # debug info
   cat <<EOF
 POST ${EUNOMIA_DEPLOY_COMPONENT_SERVER}/api/open/ms/ta-version-managements/versions/paths/generate
+IS_PRODUCT ${EUNOMIA_DEPLOY_COMPONENT_FROM_PRODUCT}
 
 {
   "module_name": "${EUNOMIA_DEPLOY_COMPONENT_MODULE_NAME}",
@@ -313,7 +314,8 @@ POST ${EUNOMIA_DEPLOY_COMPONENT_SERVER}/api/open/ms/ta-version-managements/versi
   "version_type": "${EUNOMIA_DEPLOY_COMPONENT_VERSION_TYPE}",
   "version_num": "${EUNOMIA_DEPLOY_COMPONENT_VERSION_NUM}",
   "cpu_arch": "${EUNOMIA_DEPLOY_COMPONENT_CPU_ARCH}",
-  "os": "${EUNOMIA_DEPLOY_COMPONENT_OS}"
+  "os": "${EUNOMIA_DEPLOY_COMPONENT_OS}",
+  "from_product": "${EUNOMIA_DEPLOY_COMPONENT_FROM_PRODUCT}"
 }
 EOF
 
@@ -321,6 +323,7 @@ EOF
     -X POST ${EUNOMIA_DEPLOY_COMPONENT_SERVER}/api/open/ms/ta-version-managements/versions/paths/generate \
     -o $response_file \
     -H "Content-Type: application/json" \
+    -H "is_product: ${EUNOMIA_DEPLOY_COMPONENT_FROM_PRODUCT}" \
     --data-binary @- <<EOF
 {
   "module_name": "${EUNOMIA_DEPLOY_COMPONENT_MODULE_NAME}",
@@ -431,7 +434,8 @@ EOF
     rm -f $response_file
     return 1
   fi
-
+  export EUNOMIA_DEPLOY_COMPONENT_VERSION_TYPE=$(cat "$response_file" | jq -r '.result.version_type')
+  export EUNOMIA_DEPLOY_COMPONENT_VERSIONID=$(cat "$response_file" | jq -r '.result.id')
   rm -f $response_file
 }
 
@@ -455,6 +459,67 @@ eunomia::deploy_scripts_exists() {
   plugin::run_zx is_deploy_scripts_exist
 }
 
+eunomia::deploy_component_create_changelog() {
+  # Get Changelog from server
+  local response_file=$(os::tmp_file)
+  curl -X GET \
+    -o $response_file \
+    ${EUNOMIA_DEPLOY_COMPONENT_SERVER}/api/open/ms/ta-version-managements/v2/changelog/achieve?id=${EUNOMIA_DEPLOY_COMPONENT_CHANGELOG_ID}
+  if [ "$(cat $response_file | jq -r .code)" != "200" ]; then
+    log::error "[$(timestamp)][eunomia::deploy_component_create_changelog] failed to achieve change log."
+    return 1
+  fi
+  change_log=$(cat $response_file | jq .result.achieve_change_log)
+  log::info "[$(timestamp)][eunomia::deploy_component_create_changelog] change log: $change_log"
+  # Clean the tempfile
+  echo ""> $response_file
+  cat <<EOF
+  POST ${EUNOMIA_DEPLOY_COMPONENT_SERVER}/api/open/ms/ta-version-managements/v2/changelog
+  {
+    "version_id": ${EUNOMIA_DEPLOY_COMPONENT_VERSIONID},
+    "change_log": ${change_log}
+  }
+EOF
+  local response_file=$(os::tmp_file)
+  curl \
+      -X POST ${EUNOMIA_DEPLOY_COMPONENT_SERVER}/api/open/ms/ta-version-managements/v2/changelog \
+      -o $response_file \
+      -H "Content-Type: application/json" \
+      --data-binary @- <<EOF
+  {
+      "version_id": ${EUNOMIA_DEPLOY_COMPONENT_VERSIONID},
+      "change_log": ${change_log}
+  }
+EOF
+  if [ "$(cat $response_file | jq -r .code)" != "200" ];then
+    log::error "[$(timestamp)][eunomia::deploy_component_create_changelog] failed to create change log."
+    return 1
+  fi
+}
+
+eunomia::deploy_component_create_dependency() {
+  local achive_dependency_response_file=$(os::tmp_file)
+  curl -X GET \
+    -o $achive_dependency_response_file \
+    ${EUNOMIA_DEPLOY_COMPONENT_SERVER}/api/open/ms/ta-version-managements/v2/dependency/achieve?id=${EUNOMIA_DEPLOY_COMPONENT_DEPENDENCY_ID}
+  if [ "$(cat $achive_dependency_response_file | jq -r .code)" != "200" ]; then
+    log::error "[$(timestamp)][eunomia::deploy_component_create_dependency] failed to get achieve dependency."
+    return 1
+  fi
+  change_log=$(cat $achive_dependency_response_file | jq -r .result.achieve_dependencies_log )
+  local response_file=$(os::tmp_file)
+  cat $change_log | jq ".source_module_version_id=${EUNOMIA_DEPLOY_COMPONENT_VERSIONID}"
+  curl \
+      -X POST ${EUNOMIA_DEPLOY_COMPONENT_SERVER}/api/open/ms/ta-version-managements/v2/dependency/ \
+      -o $response_file \
+      -H "Content-Type: application/json" \
+      -d "$(cat $change_log | jq ".source_module_version_id=${EUNOMIA_DEPLOY_COMPONENT_VERSIONID}")"
+  if [ "$(cat $response_file | jq -r .code)" != "200" ];then
+      log::error "[$(timestamp)][eunomia::deploy_component_create_dependency] failed to create dependency."
+      return 1
+  fi
+}
+
 export -f eunomia::deploy
 
 export -f eunomia::deploy_script
@@ -466,6 +531,8 @@ export -f eunomia::deploy_component_generate_oss_path
 export -f eunomia::deploy_component_get_artifact
 export -f eunomia::deploy_component_create_version
 export -f eunomia::deploy_component_get_artifact_md5
+export -f eunomia::deploy_component_create_changelog
+export -f eunomia::deploy_component_create_dependency
 
 export -f eunomia::deploy_component_upload_file
 
