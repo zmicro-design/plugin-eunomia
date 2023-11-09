@@ -33,7 +33,7 @@ eunomia::agent_stop() {
     rm -rf $pid_file
   fi
 
-  if ps -p $PID >/dev/null; then
+  if ps -p $pid >/dev/null; then
     kill -9 $pid
     if [ "$?" != "0" ]; then
       log::error "[$(timestamp)] failed to stop eunomia agent"
