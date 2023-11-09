@@ -151,6 +151,10 @@ eunomia::upload_git_info() {
   eunomia::hook_info_supply
 }
 
+eunomia::git() {
+  os::git "$@"
+}
+
 export -f eunomia::checkout_git
 
 export -f eunomia::export_product
@@ -160,3 +164,5 @@ export -f eunomia::depends_product
 export -f eunomia::depends_git
 
 export -f eunomia::upload_git_info
+
+export -f eunomia::git

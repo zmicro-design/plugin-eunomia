@@ -8,7 +8,7 @@ eunomia::agent_start() {
     log::info "[$(timestamp)] eunomia agent already started"
     return 0
   fi
-  
+
   gzcaas server -s eunomia-shell -d --metadata-dir /data/idp/agent/deploys --workdir /data/idp_build_cache
   if [ "$?" != "0" ]; then
     log::error "[$(timestamp)] failed to start eunomia agent"
@@ -33,13 +33,18 @@ eunomia::agent_stop() {
     rm -rf $pid_file
   fi
 
-  kill -9 $pid
-  if [ "$?" != "0" ]; then
-    log::error "[$(timestamp)] failed to stop eunomia agent"
-    return 1
+  if ps -p $PID >/dev/null; then
+    kill -9 $pid
+    if [ "$?" != "0" ]; then
+      log::error "[$(timestamp)] failed to stop eunomia agent"
+      return 1
+    fi
+
+    log::info "[$(timestamp)] eunomia agent stopped"
+    return
   fi
 
-  log::info "[$(timestamp)] eunomia agent stopped"
+  log::info "[$(timestamp)] eunomia agent not started"
 }
 
 eunomia::agent_restart() {
@@ -105,9 +110,9 @@ eunomia::agent_upgrade() {
     pkg_name="gzcaas_arm64"
   fi
 
-  curl https://storage.idp.thinkingdata.cn/packages/$pkg_name > ./gzcaas \
-    && chmod +x gzcaas \
-    && mv -f gzcaas /usr/bin/gzcaas
+  curl https://storage.idp.thinkingdata.cn/packages/$pkg_name >./gzcaas &&
+    chmod +x gzcaas &&
+    mv -f gzcaas /usr/bin/gzcaas
 
   eunomia::agent_restart
 
