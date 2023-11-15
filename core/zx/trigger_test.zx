@@ -51,6 +51,9 @@ async function main() {
     throw new Error(`unexpected trigger response ${JSON.stringify(triggerResponseData, null, 2)}`);
   }
 
+  console.log('')
+  console.log(JSON.stringify(triggerResponseData, null, 2));
+
   // report test url
   const reportResponse = await fetch(process.env.EUNOMIA_TEST_REPORT_HOOK, {
     method: 'POST',
@@ -62,7 +65,7 @@ async function main() {
     },
     body: JSON.stringify({
       "deployment": process.env.EUNOMIA_DEPLOYMENT_ID,
-      "report_url": `${AUTO_TEST_SERVER}/debug?executeTag=${triggerResponseData?.data?.executeTag}`,
+      "report_url": `${AUTO_TEST_SERVER}/debug?executeTag=${triggerResponseData?.data?.executeTag ?? triggerResponseData?.data?.[0]?.executeTag}`,
     }),
   });
 

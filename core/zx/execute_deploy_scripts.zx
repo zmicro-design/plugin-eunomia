@@ -156,7 +156,14 @@ cleanup() {
 
   if [ -d "$EUNOMIA_DEPLOY_DIR" ]; then
     log::info "[$(timestamp)][cleanup] workdir: $EUNOMIA_DEPLOY_DIR ..."
-    rm -rf $EUNOMIA_DEPLOY_DIR
+    if [ -f "/bin/rm" ]; then
+      /bin/rm -rf $EUNOMIA_DEPLOY_DIR
+    elif [ -f "/usr/bin/rm" ]; then
+      /usr/bin/rm -rf $EUNOMIA_DEPLOY_DIR
+    else
+      log::info "[$(timestamp)][cleanup] rm not found"
+    fi
+
     log::info "[$(timestamp)][cleanup] workdir: $EUNOMIA_DEPLOY_DIR done"
   else
     log::info "[$(timestamp)][cleanup] workdir: $EUNOMIA_DEPLOY_DIR not exists"
