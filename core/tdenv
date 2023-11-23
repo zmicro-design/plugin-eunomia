@@ -1,5 +1,37 @@
 #!/bin/bash
 
+eunomia::tdenv_create_start() {
+  if [ -z "$EUNOMIA_TDENV_ID" ]; then
+    log::warn "[$(timestamp)][eunomia::tdenv_create_start] none-standard ta docker env creator"
+
+    export EUNOMIA_TDENV_INSTANCE_NAME=${EUNOMIA_TDENV_INSTANCE_NAME:-$name}
+    export EUNOMIA_TDENV_IMAGE_NAME=${EUNOMIA_TDENV_IMAGE_NAME:-$imageurl}
+    export EUNOMIA_TDENV_IMAGE_TAG=${EUNOMIA_TDENV_IMAGE_TAG:-$tag}
+  fi
+
+  if [ -z "$EUNOMIA_TDENV_IMAGE_NAME" ]; then
+    log::error "[$(timestamp)][eunomia::tdenv_create_start] EUNOMIA_TDENV_IMAGE_NAME is required"
+    return 1
+  fi
+
+  if [ -z "$EUNOMIA_TDENV_IMAGE_TAG" ]; then
+    log::error "[$(timestamp)][eunomia::tdenv_create_start] EUNOMIA_TDENV_IMAGE_TAG is required"
+    return 1
+  fi
+
+  if [ -z "$EUNOMIA_TDENV_INSTANCE_NAME" ]; then
+    log::error "[$(timestamp)][eunomia::tdenv_create_start] EUNOMIA_TDENV_INSTANCE_NAME is required"
+    return 1
+  fi
+
+  # @TODO get terminal url
+  local pod_name=$(kubectl get po -n te --selector app.kubernetes.io/instance=$EUNOMIA_TDENV_INSTANCE_NAME --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
+  export EUNOMIA_TDENV_TERMINAL_URL="https://k8s.idp.thinkingdata.cn/#/shell/te/$pod_name/te-alone?namespace=te"
+
+  export EUNOMIA_TDENV_STATUS=1
+  plugin::run_zx tdenv_update_status
+}
+
 eunomia::tdenv_create_success() {
   if [ -z "$EUNOMIA_TDENV_ID" ]; then
     log::warn "[$(timestamp)][eunomia::tdenv_create_success] none-standard ta docker env creator"
@@ -42,6 +74,24 @@ eunomia::tdenv_create_failure() {
   plugin::run_zx tdenv_update_status
 }
 
+eunomia::tdenv_delete_start() {
+  if [ -z "$EUNOMIA_TDENV_ID" ]; then
+    log::warn "[$(timestamp)][eunomia::tdenv_create_success] none-standard ta docker env deletor"
+
+    export EUNOMIA_TDENV_INSTANCE_NAME=${EUNOMIA_TDENV_INSTANCE_NAME:-$name}
+    export EUNOMIA_TDENV_IMAGE_NAME=${EUNOMIA_TDENV_IMAGE_NAME:-$imageurl}
+    export EUNOMIA_TDENV_IMAGE_TAG=${EUNOMIA_TDENV_IMAGE_TAG:-$tag}
+  fi
+
+  if [ -z "$EUNOMIA_TDENV_INSTANCE_NAME" ]; then
+    log::error "[$(timestamp)][eunomia::tdenv_delete_start] EUNOMIA_TDENV_INSTANCE_NAME is required"
+    return 1
+  fi
+
+  export EUNOMIA_TDENV_STATUS=3
+  plugin::run_zx tdenv_update_status
+}
+
 eunomia::tdenv_delete_success() {
   if [ -z "$EUNOMIA_TDENV_ID" ]; then
     log::warn "[$(timestamp)][eunomia::tdenv_create_success] none-standard ta docker env deletor"
@@ -75,10 +125,11 @@ eunomia::tdenv_delete_failure() {
   plugin::run_zx tdenv_update_status
 }
 
-
+export -f eunomia::tdenv_create_start
 export -f eunomia::tdenv_create_success
 export -f eunomia::tdenv_create_failure
 
+export -f eunomia::tdenv_delete_start
 export -f eunomia::tdenv_delete_success
 export -f eunomia::tdenv_delete_failure
 
