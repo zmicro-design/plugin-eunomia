@@ -162,6 +162,8 @@ cleanup() {
     log::error "[$(timestamp)] 流水线部署脚本执行报错啦，请找流水线负责人${process.env.EUNOMIA_PROJECT_AUTHOR || ''}帮忙查看问题"
   fi
 
+  log::info "[$(timestamp)] current directory: $(pwd)"
+
   if [ -d "$EUNOMIA_DEPLOY_DIR" ]; then
     log::info "[$(timestamp)][cleanup] workdir: $EUNOMIA_DEPLOY_DIR ..."
     if [ -f "/bin/rm" ]; then
@@ -189,7 +191,7 @@ trap "cleanup" EXIT
   post([
     ['remove force exit on error', 'set +e'],
     //
-    ['show current directory', 'log::info "[$(timestamp)] current directory: $(pwd)"'],
+    // ['show current directory', 'log::info "[$(timestamp)] current directory: $(pwd)"'],
     // ['clean work directory', '[ -d "$EUNOMIA_DEPLOY_DIR" ] && log::info "[$(timestamp)][post] clean workdir: $EUNOMIA_DEPLOY_DIR ..." && rm -rf $EUNOMIA_DEPLOY_DIR && log::info "[$(timestamp)][post] clean workdir: $EUNOMIA_DEPLOY_DIR done" || log::info "[$(timestamp)][post] clean workdir: $EUNOMIA_DEPLOY_DIR not exists"'],
   ])
 
