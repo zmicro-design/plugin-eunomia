@@ -154,9 +154,9 @@ export EUNOMIA_DEPLOY_DIR=$(pwd)
     // cleanup
     ['register cleanup', `
 cleanup() {
-  log::info "[$(timestamp)] 以上是流水线部署脚本执行结束."
-
   rv=$?
+
+  log::info "[$(timestamp)] 以上是流水线部署脚本执行结束."
 
   if [ "$rv" != "0" ]; then
     log::error "[$(timestamp)] 流水线部署脚本执行报错啦，请找流水线负责人${process.env.EUNOMIA_PROJECT_AUTHOR || ''}帮忙查看问题"
