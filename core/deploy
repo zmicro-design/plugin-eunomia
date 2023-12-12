@@ -240,6 +240,9 @@ eunomia::deploy_service() {
 
   # generate manifest file from template
   local config_template=$PLUGIN_CONFIG_DIR/templates/docker-compose.deployment.${EUNOMIA_DEPLOYMENT_MODE}.yml
+  if [ "$EUNOMIA_DEPLOYMENT_DATA_PERSIST" = "true" ]; then
+    config_template=$PLUGIN_CONFIG_DIR/templates/data/docker-compose.deployment.${EUNOMIA_DEPLOYMENT_MODE}.yml
+  fi
   if [ ! -f "$config_template" ]; then
     log::error "[$(timestamp)][eunomia::deploy_service] unsupport deployment mode: ${EUNOMIA_DEPLOYMENT_MODE}"
     return 1

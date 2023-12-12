@@ -1,0 +1,38 @@
+services:
+  <PLUGIN_EUNOMIA_DEPLOYMENT_NAME>:
+    container_name: ${PLUGIN_EUNOMIA_DEPLOYMENT_NAME}
+    restart: always
+    image: whatwewant/connect-doreamon:v1
+    environment:
+      TZ: Asia/Shanghai
+      MODE: production
+      UPSTREAM: ${PLUGIN_EUNOMIA_DEPLOYMENT_NAME}_upstream:8080
+    env_file:
+      - ${EUNOMIA_DEPLOYMENT_ENV_CONFIG}
+      - ${EUNOMIA_BUILD_ENV_SHELL}
+    mem_limit: "${EUNOMIA_DEPLOYMENT_MEM_LIMIT}m"
+    cpus: ${EUNOMIA_DEPLOYMENT_CPU_LIMIT}
+    networks:
+      default:
+        aliases:
+          - ${PLUGIN_EUNOMIA_DEPLOYMENT_EXTRA_HOSTNAME}
+
+  <PLUGIN_EUNOMIA_DEPLOYMENT_NAME>_upstream:
+    container_name: ${PLUGIN_EUNOMIA_DEPLOYMENT_NAME}_upstream
+    restart: always
+    image: ${PLUGIN_EUNOMIA_DOCKER_REGISTRY}/${PLUGIN_EUNOMIA_DEPLOYMENT_IMAGE_NAME}:build_${EUNOMIA_BUILD_ID}
+    environment:
+      PORT: 8080
+      TZ: Asia/Shanghai
+    env_file:
+      - ${EUNOMIA_DEPLOYMENT_ENV_CONFIG}
+      - ${EUNOMIA_BUILD_ENV_SHELL}
+    mem_limit: "${EUNOMIA_DEPLOYMENT_MEM_LIMIT}m"
+    cpus: ${EUNOMIA_DEPLOYMENT_CPU_LIMIT}
+    volumes:
+      - ${PLUGIN_EUNOMIA_DEPLOYMENT_DATA_DIR}:/data
+
+networks:
+  default:
+    external: true
+    name: compose-ingress

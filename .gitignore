@@ -7,3 +7,4 @@ log/
 config/dockerfiles
 
 tmp/
+!config/templates/data

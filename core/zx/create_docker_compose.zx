@@ -1,0 +1,155 @@
+function main() {
+  const networks = createNetworks();
+  const services = createServices();
+
+  const compose = {
+    services,
+    networks,
+  };
+}
+
+function createServices() {
+  const mode = process.env.EUNOMIA_DEPLOYMENT_MODE;
+  const instance_name = process.env.PLUGIN_EUNOMIA_DEPLOYMENT_NAME;
+  const image_registry = process.env.PLUGIN_EUNOMIA_DOCKER_REGISTRY;
+  const image_name = process.env.PLUGIN_EUNOMIA_DEPLOYMENT_IMAGE_NAME;
+  const image_tag = 'build_' + process.env.EUNOMIA_BUILD_ID;
+
+  const image = `${image_registry}/${image_name}:${image_tag}`;
+
+  switch (mode) {
+    case 'service':
+      return createCommonServices(instance_name, image);
+    case 'connect':
+      return createConnectServices(instance_name);
+    case 'application':
+      return createApplicationServices(instance_name);
+    default:
+      throw new Error(`unknown deployment mode: ${mode}`);
+  }
+}
+
+function createCommonServices(instance_name, image) {
+  const service = {
+    container_name: instance_name,
+    restart: 'always',
+    image,
+    environment: {
+      TZ: 'Asia/Shanghai',
+      PORT: 8080,
+      MODE: 'production',
+      NODE_ENV: 'production',
+    },
+    env_file: [
+      '${EUNOMIA_DEPLOYMENT_ENV_CONFIG}',
+      '${EUNOMIA_BUILD_ENV_SHELL}',
+    ],
+    mem_limit: '${EUNOMIA_DEPLOYMENT_MEM_LIMIT}m',
+    cpus: '${EUNOMIA_DEPLOYMENT_CPU_LIMIT}',
+    networks: {
+      default: {
+        aliases: [
+          '${PLUGIN_EUNOMIA_DEPLOYMENT_EXTRA_HOSTNAME}',
+        ],
+      },
+    },
+  };
+
+  return [
+    {
+      [instance_name]: service,
+    },
+  ];
+}
+
+function createConnectServices(instance_name) {
+  const service = {
+    container_name: instance_name,
+    restart: 'always',
+    image: 'whatwewant/connect-doreamon:v1',
+    environment: {
+      TZ: 'Asia/Shanghai',
+    },
+    env_file: [
+      '${EUNOMIA_DEPLOYMENT_ENV_CONFIG}',
+      '${EUNOMIA_BUILD_ENV_SHELL}',
+    ],
+    mem_limit: '${EUNOMIA_DEPLOYMENT_MEM_LIMIT}m',
+    cpus: '${EUNOMIA_DEPLOYMENT_CPU_LIMIT}',
+    networks: {
+      default: {
+        aliases: [
+          '${PLUGIN_EUNOMIA_DEPLOYMENT_EXTRA_HOSTNAME}',
+        ],
+      },
+    },
+  };
+
+  return [
+    {
+      [instance_name]: service,
+    },
+  ];
+}
+
+function createApplicationServices(instance_name) {
+  const entry = {
+    container_name: instance_name,
+    restart: 'always',
+    image: 'whatwewant/connect-doreamon:v1',
+    environment: {
+      TZ: 'Asia/Shanghai',
+      UPSTREAM: `http://${instance_name}_upstream:8080`,
+    },
+    env_file: [
+      '${EUNOMIA_DEPLOYMENT_ENV_CONFIG}',
+      '${EUNOMIA_BUILD_ENV_SHELL}',
+    ],
+    mem_limit: '${EUNOMIA_DEPLOYMENT_MEM_LIMIT}m',
+    cpus: '${EUNOMIA_DEPLOYMENT_CPU_LIMIT}',
+    networks: {
+      default: {
+        aliases: [
+          '${PLUGIN_EUNOMIA_DEPLOYMENT_EXTRA_HOSTNAME}',
+        ],
+      },
+    },
+  };
+
+  const upstream = {
+    container_name: `${instance_name}_upstream`,
+    restart: 'always',
+    image: 'whatwewant/connect-doreamon:v1',
+    environment: {
+      TZ: 'Asia/Shanghai',
+      PORT: 8080,
+    },
+    env_file: [
+      '${EUNOMIA_DEPLOYMENT_ENV_CONFIG}',
+      '${EUNOMIA_BUILD_ENV_SHELL}',
+    ],
+    mem_limit: '${EUNOMIA_DEPLOYMENT_MEM_LIMIT}m',
+    cpus: '${EUNOMIA_DEPLOYMENT_CPU_LIMIT}',
+  };
+
+  return [
+    {
+      [instance_name]: entry,
+    },
+    {
+      [`${instance_name}_upstream`]: upstream,
+    },
+  ];
+}
+
+
+function createNetworks() {
+  return {
+    default: {
+      external: true,
+      name: 'compose-ingress',
+    },
+  };
+}
+
+main();
