@@ -43,7 +43,7 @@ core() {
       if [ "$(lock::request eunomia_flow_queue_alert 10)" = "true" ]; then
         if [ "$running" = "$PLUGIN_EUNOMIA_TASK_QUEUE_COCURRENCY" ]; then
           notify::feishu $PLUGIN_EUNOMIA_NOTIFICATION_FEISHU_URL "[$(timestamp)] 任务队列预警" "状态: CICD 任务队列已满（${running}/${total}）\n当前时间: $(timestamp)"
-        elif [ "$running" -gt "3" ]; then
+        elif [ "$running" -gt "6" ]; then
           notify::feishu $PLUGIN_EUNOMIA_NOTIFICATION_FEISHU_URL "[$(timestamp)] 任务队列预警" "状态: CICD 任务队列利用率 > 80%（${running}/${total}）\n当前时间: $timestamp"
         fi
       fi
