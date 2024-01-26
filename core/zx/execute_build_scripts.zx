@@ -47,8 +47,24 @@ async function main() {
     const { total, data } = respData.result;
     const all = data.length;
     for (const index in data) {
-      const { id, type = 'custom_script', name, content, env, product_dir } = data[index];
+      const {
+        id,
+        type = 'custom_script',
+        name,
+        content,
+        env,
+        product_dir,
+      } = data[index];
+
       const script_filepath = `${process.env.EUNOMIA_BUILD_SCRIPTS_DIR}/${id}.sh`;
+      const script_generated_filepath = `${process.env.EUNOMIA_BUILD_SCRIPTS_DIR}/${id}.generated.sh`;
+      const product_dir_host = `${process.env.EUNOMIA_BUILD_PRODUCT_DIR}/${id}`;
+      const product_id = `product.${process.env.EUNOMIA_BUILD_ID}.${id}`;
+      const product_filename = `${product_id}.tar.gz`;
+      const product_md5_filename = `${product_filename}.md5`;
+      const product_filepath = `${process.env.EUNOMIA_BUILD_PRODUCT_DIR}/${product_filename}`;
+      const product_md5_filepath = `${process.env.EUNOMIA_BUILD_PRODUCT_DIR}/${product_md5_filename}`;
+
       fs.writeFileSync(script_filepath, content);
       // const response = await $`gzcaas client -s ${hostIP} --scriptfile ${script_filepath} --envfile ${process.env.EUNOMIA_BUILD_ENV_SHELL}`
       // console.log('[execute_build_scripts] exit code:', response.exitCode);
@@ -97,29 +113,68 @@ async function main() {
         // await runShell(`source ${process.env.EUNOMIA_BUILD_ENV_SHELL} && bash ${script_filepath}`);
         // await runShell(`bash ${script_filepath}`);
 
-        _script = [
+        const workdir = '/build';
+        
+        const build_script = [
           `docker run -i --rm`,
           `--env-file ${process.env.EUNOMIA_BUILD_ENV_SHELL}`,
-          `--volume ${process.env.EUNOMIA_BUILD_GIT_DIR}:/build`,
+          // `--volume ${process.env.EUNOMIA_BUILD_GIT_DIR}:/build`,
           `--volume ${script_filepath}:/script.sh`,
         ];
 
         if (!!product_dir) {
-          _script.push(`--volume ${process.env.EUNOMIA_BUILD_PRODUCT_DIR}:${product_dir}`);
+          if (product_dir.startsWith('/')) {
+            build_script.push(`--volume ${product_dir_host}:${product_dir}`);
+          } else {
+            build_script.push(`--volume ${product_dir_host}:${workdir}/${product_dir}`);
+          }
         }
 
-        _script = _script.concat([
-          `--workdir /build`,
+        build_script.push([
+          `--workdir ${workdir}`,
           `${env.image}`,
-          `bash /script.sh`
-        ]);
+          `bash /script.sh`,
+        ].join(' '));
+
+        _script.push(build_script.join(' '));
+
+        if (!!product_dir) {
+          // generate product package
+          _script.push(`tar -zcvf ${product_filepath} -C ${product_dir_host} .`);
+          
+          // generate product package md5
+          _script.push(`md5sum ${product_filepath} > ${product_md5_filepath}`);
+
+          // upload product package to idp object storage
+          _script.push([
+            `curl -X POST`,
+            `-H "Content-Type: multipart/form-data"`,
+            `-H "X-Client-ID: ${process.env.PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_ID}"`,
+            `-H "X-Client-Secret: ${process.env.PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_SECRET}"`,
+            `-F "name=${product_filename}"`,
+            `-F "file=@${product_filepath}"`,
+            `${process.env.PLUGIN_EUNOMIA_CONFIG_CENTER}/api/open/v1/client/deployments/${process.env.EUNOMIA_DEPLOYMENT_ID}/upload`,
+          ].join(' '));
+
+          // upload product package md5 to idp object storage
+          _script.push([
+            `curl -X POST`,
+            `-H "Content-Type: multipart/form-data"`,
+            `-H "X-Client-ID: ${process.env.PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_ID}"`,
+            `-H "X-Client-Secret: ${process.env.PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_SECRET}"`,
+            `-F "name=${product_md5_filename}"`,
+            `-F "file=@${product_md5_filepath}"`,
+            `${process.env.PLUGIN_EUNOMIA_CONFIG_CENTER}/api/open/v1/client/deployments/${process.env.EUNOMIA_DEPLOYMENT_ID}/upload`,
+          ].join(' '));
+        }
       } else {
         throw new Error(`unexpected build script type ${type}`);
       }
      
 
-      const script = _script.join(' ');
+      const script = _script.join('\n\n');
 
+      fs.writeFileSync(script_generated_filepath, script);
       await runShell(script);
     }
   } catch (error) {
