@@ -194,6 +194,10 @@ eunomia::deploy_service() {
     ;;
   esac
 
+  if [ -n "$EUNOMIA_DEPLOYMENT_DOCKER_HOST" ]; then
+    export DOCKER_HOST=$EUNOMIA_DEPLOYMENT_DOCKER_HOST
+  fi
+
   # env shell
   export EUNOMIA_BUILD_ENV_SHELL=$EUNOMIA_DEPLOYMENT_ENV_SHELL
   log::info "[$(timestamp)][eunomia::deploy_service] start to generate deployment env shell at ${EUNOMIA_BUILD_ENV_SHELL} ..."
