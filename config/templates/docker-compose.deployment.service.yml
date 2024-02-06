@@ -11,8 +11,8 @@ services:
       - ${EUNOMIA_BUILD_ENV_SHELL}
     mem_limit: "${EUNOMIA_DEPLOYMENT_MEM_LIMIT}m"
     cpus: ${EUNOMIA_DEPLOYMENT_CPU_LIMIT}
-    # volumes:
-    #   - ${PLUGIN_EUNOMIA_DEPLOYMENT_DATA_DIR}:/data
+    volumes:
+      - ${PLUGIN_EUNOMIA_DEPLOYMENT_DATA_DIR}:/data
     networks:
       default:
         aliases:
