@@ -127,6 +127,7 @@ export EUNOMIA_DEPLOY_DIR=$(pwd)
     //
     ['show device id', 'log::info "[$(timestamp)] Device ID: $(os::device_id)"'],
     ['show device config', 'log::info "[$(timestamp)] Device Config: $(os::device_config)"'],
+    ['show device usage', 'log::info "[$(timestamp)] Device Usage: $(os::usage percent)"'],
     //
     ['show hostname', 'log::info "[$(timestamp)] Hostname: $(os::hostname)"'],
     ['show net ip', 'log::info "[$(timestamp)] Net IP: $(net::get_ip_internal)"'],
