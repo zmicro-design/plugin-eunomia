@@ -14,13 +14,19 @@ eunomia::export() {
   log::info "[$(timestamp)][eunomia::export] image: $PLUGIN_EUNOMIA_EXPORT_RUNNER_IMAGE ..."
 
   # ensure container removed
+  log::info "[$(timestamp)][eunomia::export] remove container if exists ..."
   docker rm -f $PLUGIN_EUNOMIA_EXPORT_RUNNER_NAME >> /dev/null 2>&1
   # if [ "$EUNOMIA_DOCKER_BUILDX_PLATFORMS" = "linux/arm64" ]; then
   #     docker pull --platform linux/arm64 $PLUGIN_EUNOMIA_EXPORT_RUNNER_IMAGE
   # fi
   # docker run -d --name $PLUGIN_EUNOMIA_EXPORT_RUNNER_NAME $PLUGIN_EUNOMIA_EXPORT_RUNNER_IMAGE >> /dev/null
   
-  docker run -d --platform ${EUNOMIA_DOCKER_BUILDX_PLATFORMS:-"linux/amd64"} --name $PLUGIN_EUNOMIA_EXPORT_RUNNER_NAME $PLUGIN_EUNOMIA_EXPORT_RUNNER_IMAGE >> /dev/null
+  log::info "[$(timestamp)][eunomia::export] start container(name: $PLUGIN_EUNOMIA_EXPORT_RUNNER_NAME) with image(${PLUGIN_EUNOMIA_EXPORT_RUNNER_IMAGE}) ..."
+  docker run \
+    -d \
+    --platform ${EUNOMIA_DOCKER_BUILDX_PLATFORMS:-"linux/amd64"} \
+    --name $PLUGIN_EUNOMIA_EXPORT_RUNNER_NAME $PLUGIN_EUNOMIA_EXPORT_RUNNER_IMAGE \
+    sleep 10000 >> /dev/null
   if [ "$?" != "0" ]; then
     log::error "[$(timestamp)][eunomia::export] failed to start runner container"
     return 1
@@ -46,7 +52,7 @@ eunomia::export() {
     return 0
   fi
 
-  log::info "[$(timestamp)][eunomia::export] exporting to $PLUGIN_EUNOMIA_EXPORT_ID_PKG"
+  log::info "[$(timestamp)][eunomia::export] exporting to $PLUGIN_EUNOMIA_EXPORT_ID_PKG ..."
   cd $PLUGIN_EUNOMIA_EXPORT_ID_DIR
   tar -zcvf $PLUGIN_EUNOMIA_EXPORT_ID_PKG . >> /dev/null
   if [ "$?" != "0" ]; then
