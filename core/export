@@ -60,12 +60,13 @@ eunomia::export() {
     return 1
   fi
 
+  log::info "[$(timestamp)][eunomia::export] clean container and temp dir ..."
   docker rm -f $PLUGIN_EUNOMIA_EXPORT_RUNNER_NAME >> /dev/null 2>&1
   rm -rf $PLUGIN_EUNOMIA_EXPORT_ID_DIR
 
-  if [ -n "$PLUGIN_EUNOMIA_EXPORT_DIST" ]; then
-    log::info "[$(timestamp)][eunomia::export] alias to $PLUGIN_EUNOMIA_EXPORT_DIST"
-    cp $PLUGIN_EUNOMIA_EXPORT_ID_PKG $PLUGIN_EUNOMIA_EXPORT_DIST
+  if [ -n "$PLUGIN_EUNOMIA_EXPORT_DIR_OSS" ]; then
+    log::info "[$(timestamp)][eunomia::export] upload $PLUGIN_EUNOMIA_EXPORT_ID_PKG to oss: $PLUGIN_EUNOMIA_EXPORT_DIR_OSS"
+    mv $PLUGIN_EUNOMIA_EXPORT_ID_PKG $PLUGIN_EUNOMIA_EXPORT_DIR_OSS
   fi
 
   log::info "[$(timestamp)][eunomia::export] done"
