@@ -25,6 +25,14 @@ eunomia::export() {
     log::error "[$(timestamp)][eunomia::export] failed to start runner container"
     return 1
   fi
+
+  log::info "[$(timestamp)][eunomia::export] checking data dir: $EUNOMIA_BUILD_EXPORT_DIR ..."
+  docker exec $PLUGIN_EUNOMIA_EXPORT_RUNNER_NAME test -d $EUNOMIA_BUILD_EXPORT_DIR >> /dev/null
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)][eunomia::export] ignore export, no data found"
+    docker rm -f $PLUGIN_EUNOMIA_EXPORT_RUNNER_NAME >> /dev/null 2>&1
+    return 1
+  fi
   
   log::info "[$(timestamp)][eunomia::export] copy from docker:$EUNOMIA_BUILD_EXPORT_DIR to host:$PLUGIN_EUNOMIA_EXPORT_ID_DIR"
   docker cp $PLUGIN_EUNOMIA_EXPORT_RUNNER_NAME:${EUNOMIA_BUILD_EXPORT_DIR} $PLUGIN_EUNOMIA_EXPORT_ID_DIR >> /dev/null
