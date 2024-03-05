@@ -31,10 +31,12 @@ core() {
     log::info "[$(timestamp)][build] task queue is enabled(running: $running, total: $total)"
 
     while true; do
-      # random sleep
-      local wait_time=$(os::random_int 30 10)
-      # log::info "[$(timestamp)][build] wait $wait_time seconds ..."
-      os::wait $wait_time
+      # wait for queue
+      if [ "$EUNOMIA_BUILD_NO_WAIT" != "true" ]; then
+        local wait_time=$(os::random_int 30 10)
+        # log::info "[$(timestamp)][build] wait $wait_time seconds ..."
+        os::wait $wait_time
+      fi
 
       local total=$(eunomia::task_queue_count_total)
       local running=$(eunomia::task_queue_count_running)
