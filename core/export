@@ -37,7 +37,7 @@ eunomia::export() {
   if [ "$?" != "0" ]; then
     log::error "[$(timestamp)][eunomia::export] ignore export, no data found"
     docker rm -f $PLUGIN_EUNOMIA_EXPORT_RUNNER_NAME >> /dev/null 2>&1
-    return 1
+    return 0
   fi
   
   log::info "[$(timestamp)][eunomia::export] copy from docker:$EUNOMIA_BUILD_EXPORT_DIR to host:$PLUGIN_EUNOMIA_EXPORT_ID_DIR"
