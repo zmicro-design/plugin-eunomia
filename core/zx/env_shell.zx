@@ -73,6 +73,17 @@ const ignoreKeys = [
   'CAAS_METADATA_DIR',
   'CAAS_WORKDIR',
   'CAAS_SHELL',
+  //
+  'LS_COLORS',
+  //
+  'ENABLE_DOCKER_BUILDX',
+  'DOCKER_VERSION',
+  'DOCKER_CHANNEL',
+  'DOCKER_COMPOSE_VERSION',
+  'DOCKER_BUILDER_MEMORY',
+  'DOCKER_BUILDER_PLATFORM',
+  'BUILDX_VERSION',
+  'DIND_VERSION',
 ];
 
 const whiteKeysNeedBase64 = [
@@ -199,6 +210,12 @@ function main() {
 
     // @TODO remove root*
     if (key.startsWith('root')) continue;
+
+    // @TODO remove SERVICE_GZCAAS_
+    if (key.startsWith('SERVICE_GZCAAS_')) continue;
+
+    // @TODO remove OSS_
+    if (key.startsWith('OSS_')) continue;
     
     let value = env[key];
 
