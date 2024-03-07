@@ -67,7 +67,7 @@ eunomia::export_product() {
   wget -q -c $EUNOMIA_EXPORT_DIST_URL -O $filepath #>>/dev/null 2>&1
   if [ "$?" != "0" ]; then
     echo "failed to download $EUNOMIA_EXPORT_DIST to $filepath"
-    exit 1
+    return 1
   fi
   log::info "[$(timestamp)] download product dist success"
 
@@ -75,7 +75,7 @@ eunomia::export_product() {
   tar -xvf $filepath -C . >>/dev/null 2>&1
   if [ "$?" != "0" ]; then
     echo "failed to extract $filepath"
-    exit 1
+    return 1
   fi
   log::info "[$(timestamp)] extract product dist success"
 
@@ -89,17 +89,23 @@ eunomia::export_product() {
   # rm -rf $filepath >>/dev/null 2>&1
   # if [ "$?" != "0" ]; then
   #     echo "failed to remove $filepath"
-  #     exit 1
+  #     return 1
   # fi
   # log::info "[$(timestamp)] remove product dist success"
 }
 
 eunomia::depends_product() {
   eunomia::export_product "$@"
+  if [ "$?" != "0" ]; then
+    return 1
+  fi
 }
 
 eunomia::download_product() {
   eunomia::export_product "$@"
+  if [ "$?" != "0" ]; then
+    return 1
+  fi
 }
 
 eunomia::depends_git() {
@@ -115,7 +121,7 @@ eunomia::depends_git() {
   wget -q -c $url -O $filepath #>>/dev/null 2>&1
   if [ "$?" != "0" ]; then
     echo "failed to download $EUNOMIA_EXPORT_DIST to $filepath"
-    exit 1
+    return 1
   fi
   log::info "[$(timestamp)] download git source code success"
 
@@ -123,7 +129,7 @@ eunomia::depends_git() {
   tar -xvf $filepath -C . >>/dev/null 2>&1
   if [ "$?" != "0" ]; then
     echo "failed to extract $filepath"
-    exit 1
+    return 1
   fi
   log::info "[$(timestamp)] extract git source code success"
 
