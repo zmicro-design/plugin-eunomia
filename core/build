@@ -119,7 +119,7 @@ eunomia::build_image() {
 
   export PIPELINE_DOCKER_BUILD_DOCKERFILE=$EUNOMIA_BUILD_DOCKERFILE_PATH
   export PIPELINE_DOCKER_BUILD_ARGS_ENVFILE=$EUNOMIA_BUILD_ENV_SHELL
-  log::info "[$(timestamp)][eunomia::build_image] DEP CPU ARCH $EUNOMIA_DEPLOY_COMPONENT_CPU_ARCH"
+  log::info "[$(timestamp)][eunomia::build_image] arch: $EUNOMIA_DEPLOY_COMPONENT_CPU_ARCH"
   case $EUNOMIA_DEPLOY_COMPONENT_CPU_ARCH in
   aarch64)
     export PIPELINE_DOCKER_BUILD_PLATFORMS=linux/arm64
