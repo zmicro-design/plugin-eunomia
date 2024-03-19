@@ -21,6 +21,9 @@ eunomia::hook_log() {
     log::info "[$(timestamp)][eunomia::hook_log] call $EUNOMIA_LOG_HOOK with log(file: $log_file)..."
 
     curl \
+      --connect-timeout 10 \
+      --retry 5 \
+      --retry-delay 10 \
       -s \
       -X POST \
       -H "X-Client-ID: $PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_ID" \

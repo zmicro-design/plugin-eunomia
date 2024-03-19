@@ -68,7 +68,7 @@ eunomia::export_product() {
   set +e
   wget -q -c $EUNOMIA_EXPORT_DIST_URL -O $filepath #>>/dev/null 2>&1
   if [ "$?" != "0" ]; then
-    echo "failed to download $EUNOMIA_EXPORT_DIST to $filepath"
+    log::error "failed to download $EUNOMIA_EXPORT_DIST to $filepath"
     return 1
   fi
   log::info "[$(timestamp)] download product dist success"
@@ -76,7 +76,7 @@ eunomia::export_product() {
   log::info "[$(timestamp)] start to extract product dist ..."
   tar -xvf $filepath -C . >>/dev/null 2>&1
   if [ "$?" != "0" ]; then
-    echo "failed to extract $filepath"
+    log::error "failed to extract $filepath"
     return 1
   fi
   log::info "[$(timestamp)] extract product dist success"
