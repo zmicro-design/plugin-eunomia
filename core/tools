@@ -64,7 +64,7 @@ eunomia::export_product() {
 
   log::info "[$(timestamp)] start to download product dist ..."
   if ! wget -q -c $EUNOMIA_EXPORT_DIST_URL -O $filepath; then
-    log::error "failed to download $EUNOMIA_EXPORT_DIST to $filepath"
+    log::error "[$(timestamp)] failed to download $EUNOMIA_EXPORT_DIST_URL to $filepath"
     return 1
   fi
   log::info "[$(timestamp)] download product dist success"
@@ -72,7 +72,7 @@ eunomia::export_product() {
   log::info "[$(timestamp)] start to extract product dist ..."
   tar -xvf $filepath -C . >>/dev/null 2>&1
   if [ "$?" != "0" ]; then
-    log::error "failed to extract $filepath"
+    log::error "[$(timestamp)] failed to extract $filepath"
     return 1
   fi
   log::info "[$(timestamp)] extract product dist success"
@@ -117,7 +117,7 @@ eunomia::depends_git() {
 
   log::info "[$(timestamp)][eunomia::depends_git] start to download git source code ..."
   if ! wget -q -c $url -O $filepath; then
-    echo "failed to download $EUNOMIA_EXPORT_DIST to $filepath"
+    log::error "[$(timestamp)] failed to download $url to $filepath"
     return 1
   fi
   log::info "[$(timestamp)] download git source code success"
@@ -125,7 +125,7 @@ eunomia::depends_git() {
   log::info "[$(timestamp)] start to extract git source code ..."
   tar -xvf $filepath -C . >>/dev/null 2>&1
   if [ "$?" != "0" ]; then
-    echo "failed to extract $filepath"
+    log::error "[$(timestamp)] failed to extract $filepath"
     return 1
   fi
   log::info "[$(timestamp)] extract git source code success"
