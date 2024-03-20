@@ -21,10 +21,8 @@ eunomia::checkout_git() {
     return 1
   fi
 
-  set +e
   log::info "[$(timestamp)][eunomia::checkout_git] checkouting $EUNOMIA_GIT_REPOSITORY at branch $EUNOMIA_GIT_BRANCH ..."
-  git::checkout $EUNOMIA_GIT_BRANCH $EUNOMIA_GIT_COMMIT $EUNOMIA_GIT_CHECKOUT_DIR $EUNOMIA_GIT_REPOSITORY
-  if [ "$?" != "0" ]; then
+  if ! git::checkout $EUNOMIA_GIT_BRANCH $EUNOMIA_GIT_COMMIT $EUNOMIA_GIT_CHECKOUT_DIR $EUNOMIA_GIT_REPOSITORY; then
     log::error "[$(timestamp)][eunomia::checkout_git] failed to checkout $EUNOMIA_GIT_REPOSITORY at branch $EUNOMIA_GIT_BRANCH."
     return 1
   fi
@@ -65,9 +63,7 @@ eunomia::export_product() {
   fi
 
   log::info "[$(timestamp)] start to download product dist ..."
-  set +e
-  wget -q -c $EUNOMIA_EXPORT_DIST_URL -O $filepath #>>/dev/null 2>&1
-  if [ "$?" != "0" ]; then
+  if ! wget -q -c $EUNOMIA_EXPORT_DIST_URL -O $filepath; then
     log::error "failed to download $EUNOMIA_EXPORT_DIST to $filepath"
     return 1
   fi
@@ -120,9 +116,7 @@ eunomia::depends_git() {
   local filepath=./${EUNOMIA_BUILD_ID}.git.tar.gz
 
   log::info "[$(timestamp)][eunomia::depends_git] start to download git source code ..."
-  set +e
-  wget -q -c $url -O $filepath #>>/dev/null 2>&1
-  if [ "$?" != "0" ]; then
+  if ! wget -q -c $url -O $filepath; then
     echo "failed to download $EUNOMIA_EXPORT_DIST to $filepath"
     return 1
   fi
