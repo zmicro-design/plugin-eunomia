@@ -113,12 +113,18 @@ async function main() {
         // await runShell(`source ${process.env.EUNOMIA_BUILD_ENV_SHELL} && bash ${script_filepath}`);
         // await runShell(`bash ${script_filepath}`);
 
+        // await runShell(`log::info "[$(timestamp)] prepare env with image(${env.image}) ..."`);
+        console.log(`[${+index + 1}/${all}][${name}][1] 准备环境(${env.image}) ...`);
+        await runShell(`docker pull ${env.image}`);
+        // await runShell(`log::info "[$(timestamp)] execute the build script with env(${name}) ..."`);
+        console.log(`[${+index + 1}/${all}][${name}][2] 执行代码 ...`);
+
         const workdir = '/build';
         
         const build_script = [
           `docker run -i --rm`,
           `--env-file ${process.env.EUNOMIA_BUILD_ENV_SHELL}`,
-          // `--volume ${process.env.EUNOMIA_BUILD_GIT_DIR}:/build`,
+          `--volume ${process.env.EUNOMIA_BUILD_GIT_DIR}:/build`,
           `--volume ${script_filepath}:/script.sh`,
         ];
 
