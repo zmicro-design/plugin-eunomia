@@ -33,7 +33,7 @@ core() {
     while true; do
       # wait for queue
       if [ "$EUNOMIA_BUILD_NO_WAIT" != "true" ]; then
-        local wait_time=$(os::random_int 30 10)
+        local wait_time=1 # $(os::random_int 30 10)
         # log::info "[$(timestamp)][build] wait $wait_time seconds ..."
         os::wait $wait_time
       fi

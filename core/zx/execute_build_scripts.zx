@@ -3,6 +3,77 @@ const cp = require('child_process');
 $.verbose = false;
 
 async function main() {
+  // 1. 获取配置
+  console.log(`[execute_build_scripts][getConfig] (id: ${process.env.EUNOMIA_BUILD_CONFIG_ID})...`);
+  const cfg = await getConfig();
+
+  // 2. 获取脚本
+  console.log(`[execute_build_scripts][getScripts] ...`);
+  const scripts = await getScripts();
+
+  // 3. 执行脚本
+  await runScripts(scripts, cfg);
+}
+
+async function getConfig() {
+  if (!process.env.PLUGIN_EUNOMIA_CONFIG_CENTER) {
+    throw new Error('env PLUGIN_EUNOMIA_CONFIG_CENTER is not set');
+  }
+
+  if (!process.env.PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_ID) {
+    throw new Error('env PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_ID is not set');
+  }
+
+  if (!process.env.PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_SECRET) {
+    throw new Error('env PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_SECRET is not set');
+  }
+
+  // if not set, return empty object
+  if (!process.env.EUNOMIA_BUILD_CONFIG_ID) {
+    return {};
+  }
+
+  const response = await fetch(`${process.env.PLUGIN_EUNOMIA_CONFIG_CENTER}/api/open/v1/client/config/${process.env.EUNOMIA_BUILD_CONFIG_ID}`, {
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'X-Client-ID': process.env.PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_ID,
+      'X-Client-Secret': process.env.PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_SECRET,
+    },
+  });
+  if (!response.ok) {
+    let text = '';
+    try {
+      text = await response.text();
+    } catch (err) {
+      //
+    }
+
+    throw new Error(`unexpected response (status: ${response.status}, text: ${text}`);
+  }
+
+  const data = await response.json();
+  if (data.code !== 200) {
+    throw new Error(`unexpected response ${data.message}`);
+  }
+
+  const cfg = {};
+  // data.result.config is envfile, parse it to object
+  const lines = (data.result.config || '').split('\n');
+  for (const line of lines) {
+    if (!line) continue;
+
+    const [key, value] = line.split('=');
+    if (!key) continue;
+    if (key.startsWith('#')) continue;
+
+    cfg[key] = value;
+  }
+
+  return cfg;
+}
+
+async function getScripts() {
   try {
     if (!process.env.PLUGIN_EUNOMIA_CONFIG_CENTER) {
       throw new Error('env PLUGIN_EUNOMIA_CONFIG_CENTER is not set');
@@ -45,7 +116,18 @@ async function main() {
     }
 
     const { total, data } = respData.result;
-    const all = data.length;
+    // []{ id, type, name, content, env, product_dir }
+    return data || [];
+  } catch (error) {
+    console.error("[execute_build_scripts] catch error:", error);
+    process.exit(1);
+  }
+}
+
+async function runScripts(data, cfg) {
+  const all = data.length;
+
+  try {
     for (const index in data) {
       const {
         id,
@@ -127,6 +209,13 @@ async function main() {
           `--volume ${process.env.EUNOMIA_BUILD_GIT_DIR}:/build`,
           `--volume ${script_filepath}:/script.sh`,
         ];
+
+        // apply cfg as env
+        if (!!cfg) {
+          for (const key in cfg) {
+            build_script.push(`--env "${key}=${cfg[key]}"`);
+          }
+        }
 
         if (!!product_dir) {
           if (product_dir.startsWith('/')) {

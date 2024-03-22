@@ -39,10 +39,12 @@ core() {
     fi
   fi
 
-  zmicro eunomia deploy
-  if [ "$?" != "0" ]; then
-    log::error "[$(timestamp)][idp] failed to eunomia deploy."
-    return 1
+  if [ "$EUNOMIA_SKIP_DEPLOY_STAGE" != "true" ]; then
+    zmicro eunomia deploy
+    if [ "$?" != "0" ]; then
+      log::error "[$(timestamp)][idp] failed to eunomia deploy."
+      return 1
+    fi
   fi
 
   if [ "$EUNOMIA_PROJECT_ENABLE_AUTO_TEST" = "true" ]; then
