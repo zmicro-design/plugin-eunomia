@@ -177,6 +177,9 @@ eunomia::tools_tdenv_run() {
     -o StrictHostKeyChecking=no \
     -i $HOME/.ssh/id_rsa.idp.tdenv \
     root@$tdenv "$command"
+  if [ "$?" != "0" ]; then
+    return 1
+  fi
 }
 
 eunomia::tools_tdenv_ta_admin() {
