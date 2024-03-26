@@ -179,7 +179,7 @@ eunomia::tools_tdenv_run() {
     root@$tdenv "$command"
 }
 
-eunomia::tools_tdenv_tadmin() {
+eunomia::tools_tdenv_ta_admin() {
   local tdenv=“”
   local args="${@}"
 
@@ -190,23 +190,23 @@ eunomia::tools_tdenv_tadmin() {
   fi
 
   if [ -z "$tdenv" ]; then
-    log::error "[eunomia::tools_tdenv_tadmin] env EUNOMIA_DEPLOY_TDENV is required"
+    log::error "[eunomia::tools_tdenv_ta_admin] env EUNOMIA_DEPLOY_TDENV is required"
     return 1
   fi
 
   if [ -z "$args" ]; then
-    log::error "[eunomia::tools_tdenv_tadmin] args is required"
+    log::error "[eunomia::tools_tdenv_ta_admin] args is required"
     return 1
   fi
 
-  log::info "[$(timestamp)][eunomia::tools_tdenv_tadmin] args(ta-admin $args) in tdenv($tdenv) ..."
+  log::info "[$(timestamp)][eunomia::tools_tdenv_ta_admin] args(ta-admin $args) in tdenv($tdenv) ..."
   eunomia::tools_tdenv_run "$tdenv" "/data/app/.admin_manager_ta/ta-admin $args"
   if [ "$?" != "0" ]; then
-    log::error "[eunomia::tools_tdenv_tadmin] failed to run command(ta-admin $args) in tdenv($tdenv)"
+    log::error "[eunomia::tools_tdenv_ta_admin] failed to run command(ta-admin $args) in tdenv($tdenv)"
     return 1
   fi
 
-  log::info "[$(timestamp)][eunomia::tools_tdenv_tadmin] succeed to run command(ta-admin $args) in tdenv($tdenv)"
+  log::info "[$(timestamp)][eunomia::tools_tdenv_ta_admin] succeed to run command(ta-admin $args) in tdenv($tdenv)"
 }
 
 export -f eunomia::checkout_git
@@ -222,4 +222,4 @@ export -f eunomia::upload_git_info
 export -f eunomia::git
 
 export -f eunomia::tools_tdenv_run
-export -f eunomia::tools_tdenv_tadmin
+export -f eunomia::tools_tdenv_ta_admin
