@@ -28,7 +28,7 @@ eunomia::checkout_git() {
   fi
 
   cd $EUNOMIA_GIT_CHECKOUT_DIR
-  
+
   tar -zcvf ${EUNOMIA_STORAGE_GITS_DIR}/${EUNOMIA_BUILD_ID}.git.tar.gz . >>/dev/null 2>&1
   if [ "$?" != "0" ]; then
     log::error "[$(timestamp)][eunomia::checkout_git] failed to tar $EUNOMIA_GIT_CHECKOUT_DIR."
@@ -158,6 +158,57 @@ eunomia::git() {
   os::git "$@"
 }
 
+eunomia::tools_tdenv_run() {
+  local tdenv=$1
+  local command="$2"
+  if [ -z "$tdenv" ]; then
+    log::error "[eunomia::tools_tdenv_run] tdenv is required"
+    return 1
+  fi
+
+  if [ -z "$command" ]; then
+    log::error "[eunomia::tools_tdenv_run] command is required"
+    return 1
+  fi
+
+  # log::info "[eunomia::tools_tdenv_run] command($command) in tdenv($tdenv) ..."
+  ssh -p 22 \
+    -o "BatchMode yes" \
+    -o StrictHostKeyChecking=no \
+    -i $HOME/.ssh/id_rsa.idp.tdenv \
+    root@$tdenv "$command"
+}
+
+eunomia::tools_tdenv_tadmin() {
+  local tdenv=“”
+  local args="${@}"
+
+  if [ -n "$EUNOMIA_DEPLOY_TDENV" ]; then
+    tdenv=${EUNOMIA_DEPLOY_TDENV#http://}
+    tdenv=${tdenv#https://}
+    tdenv=$(echo $tdenv | awk -F ':' '{print $1}')
+  fi
+
+  if [ -z "$tdenv" ]; then
+    log::error "[eunomia::tools_tdenv_tadmin] env EUNOMIA_DEPLOY_TDENV is required"
+    return 1
+  fi
+
+  if [ -z "$args" ]; then
+    log::error "[eunomia::tools_tdenv_tadmin] args is required"
+    return 1
+  fi
+
+  log::info "[$(timestamp)][eunomia::tools_tdenv_tadmin] args(ta-admin $args) in tdenv($tdenv) ..."
+  eunomia::tools_tdenv_run "$tdenv" "/data/app/.admin_manager_ta/ta-admin $args"
+  if [ "$?" != "0" ]; then
+    log::error "[eunomia::tools_tdenv_tadmin] failed to run command(ta-admin $args) in tdenv($tdenv)"
+    return 1
+  fi
+
+  log::info "[$(timestamp)][eunomia::tools_tdenv_tadmin] succeed to run command(ta-admin $args) in tdenv($tdenv)"
+}
+
 export -f eunomia::checkout_git
 
 export -f eunomia::export_product
@@ -169,3 +220,6 @@ export -f eunomia::depends_git
 export -f eunomia::upload_git_info
 
 export -f eunomia::git
+
+export -f eunomia::tools_tdenv_run
+export -f eunomia::tools_tdenv_tadmin
