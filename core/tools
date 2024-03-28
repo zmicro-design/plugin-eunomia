@@ -183,13 +183,22 @@ eunomia::tools_tdenv_run() {
 }
 
 eunomia::tools_tdenv_ta_admin() {
-  local tdenv=“”
+  local tdenv=""
   local args="${@}"
 
   if [ -n "$EUNOMIA_DEPLOY_TDENV" ]; then
     tdenv=${EUNOMIA_DEPLOY_TDENV#http://}
     tdenv=${tdenv#https://}
     tdenv=$(echo $tdenv | awk -F ':' '{print $1}')
+  fi
+
+  # compitable with old version
+  if [ -z "$EUNOMIA_DEPLOY_TDENV" ]; then
+    if [ -n "$docker_url" ]; then
+      tdenv=${docker_url#http://}
+      tdenv=${tdenv#https://}
+      tdenv=$(echo $tdenv | awk -F ':' '{print $1}')
+    fi
   fi
 
   if [ -z "$tdenv" ]; then
