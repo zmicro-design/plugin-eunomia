@@ -17,6 +17,11 @@ eunomia::deploy() {
     fi
   fi
 
+  if [ -n "$EUNOMIA_DEPLOYMENT_MODE" ]; then
+    export EUNOMIA_DEPLOY_MODE=$EUNOMIA_DEPLOYMENT_MODE
+    export EUNOMIA_DEPLOY_HOST=$EUNOMIA_DEPLOYMENT_DOCKER_HOST
+  fi
+
   case $EUNOMIA_DEPLOY_MODE in
   script)
     log::info "[$(timestamp)][eunomia::deploy] start to deploy script ..."
