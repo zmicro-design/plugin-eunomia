@@ -92,24 +92,29 @@ eunomia::create_image_record() {
 }
 
 eunomia::build_image() {
-  #    Solution 2 => 本地 Dockerfile 优先级小于于全局服务 zmicro dockerfiles 中的
-  log::info "[$(timestamp)][eunomia::build_image] checking Dockerfile exist ..."
-  if [ -d "$PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO" ]; then
-    log::info "[$(timestamp)][eunomia::build_image] dockerfiles found repo, so use repo ..."
-    # RSYNC DOKCERFILE_DIR/*
-    # @TODO with "DIR/" suffix copy file
-    if [ -n "$PLUGIN_EUNOMIA_DOCKERFILE_MODULE" ]; then
-      # log::info "[$(timestamp)][eunomia::build_image] using PLUGIN_EUNOMIA_DOCKERFILE_MODULE(${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/$PLUGIN_EUNOMIA_DOCKERFILE_MODULE/) ..."
-      # 子模块
-      rsync -av ${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/$PLUGIN_EUNOMIA_DOCKERFILE_MODULE/ $EUNOMIA_BUILD_GIT_DIR
-    else
-      # log::info "[$(timestamp)][eunomia::build_image] using PLUGIN_EUNOMIA_DOCKERFILE_MODULE(${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/) ..."
-      # 主模块
-      # rsync -av --exclude="$PLUGIN_EUNOMIA_DOCKERFILE_ENV_FOR_GIT_REPO" ${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/ $EUNOMIA_BUILD_GIT_DIR
-      rsync -av ${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/ $EUNOMIA_BUILD_GIT_DIR
-    fi
+  if [ -n "$EUNOMIA_BUILD_DOCKERFILE_PATH" ]; then
+    #   Solution 1 => 自定义 Dockerfile 路径
+    log::info "[$(timestamp)][eunomia::build_image] found custom Dockerfile path: $EUNOMIA_BUILD_DOCKERFILE_PATH (ignore product dockerfile) .."
   else
-    log::info "[$(timestamp)][eunomia::build_image] dockerfiles not found repo, so use local Dockerfile ..."
+    #    Solution 2 => 本地 Dockerfile 优先级小于于全局服务 zmicro dockerfiles 中的
+    log::info "[$(timestamp)][eunomia::build_image] checking Dockerfile exist ..."
+    if [ -d "$PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO" ]; then
+      log::info "[$(timestamp)][eunomia::build_image] dockerfiles found repo, so use repo ..."
+      # RSYNC DOKCERFILE_DIR/*
+      # @TODO with "DIR/" suffix copy file
+      if [ -n "$PLUGIN_EUNOMIA_DOCKERFILE_MODULE" ]; then
+        # log::info "[$(timestamp)][eunomia::build_image] using PLUGIN_EUNOMIA_DOCKERFILE_MODULE(${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/$PLUGIN_EUNOMIA_DOCKERFILE_MODULE/) ..."
+        # 子模块
+        rsync -av ${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/$PLUGIN_EUNOMIA_DOCKERFILE_MODULE/ $EUNOMIA_BUILD_GIT_DIR
+      else
+        # log::info "[$(timestamp)][eunomia::build_image] using PLUGIN_EUNOMIA_DOCKERFILE_MODULE(${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/) ..."
+        # 主模块
+        # rsync -av --exclude="$PLUGIN_EUNOMIA_DOCKERFILE_ENV_FOR_GIT_REPO" ${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/ $EUNOMIA_BUILD_GIT_DIR
+        rsync -av ${PLUGIN_EUNOMIA_DOCKERFILE_DIR_FOR_GIT_REPO}/ $EUNOMIA_BUILD_GIT_DIR
+      fi
+    else
+      log::info "[$(timestamp)][eunomia::build_image] dockerfiles not found repo, so use local Dockerfile ..."
+    fi
   fi
 
   if [ ! -f "$PIPELINE_GIT_REPOSITORY_DIR/Dockerfile" ]; then
