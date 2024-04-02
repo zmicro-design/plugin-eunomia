@@ -45,7 +45,7 @@ eunomia::deploy() {
     log::success "[$(timestamp)][eunomia::deploy] succeed to deploy script(online)"
     return 0
     ;;
-  service)
+  service | application | connect)
     log::info "[$(timestamp)][eunomia::deploy] start to deploy service ..."
     eunomia::deploy_service
     if [ "$?" != "0" ]; then
