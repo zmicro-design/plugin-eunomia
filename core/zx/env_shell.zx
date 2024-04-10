@@ -215,7 +215,7 @@ function main() {
     if (key.startsWith('SERVICE_GZCAAS_')) continue;
 
     // @TODO remove OSS_
-    if (key.startsWith('OSS_')) continue;
+    // if (key.startsWith('OSS_')) continue;
     
     let value = env[key];
 
