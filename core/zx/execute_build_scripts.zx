@@ -119,7 +119,7 @@ async function getScripts() {
     // []{ id, type, name, content, env, product_dir }
     return data || [];
   } catch (error) {
-    console.error("[execute_build_scripts] catch error:", error);
+    console.error("[execute_build_scripts] catch before exit:", error);
     process.exit(1);
   }
 }
@@ -273,7 +273,7 @@ async function runScripts(data, cfg) {
       await runShell(script);
     }
   } catch (error) {
-    console.error("[execute_build_scripts] catch error:", error);
+    console.error("[execute_build_scripts] catch before exit:", error);
     process.exit(1);
   }
 }

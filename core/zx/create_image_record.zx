@@ -26,7 +26,7 @@ async function main() {
     
     await Promise.all(tags.map(e => createImageWithTag(e)));
   } catch (error) {
-    console.error("[create_image_record] catch error:", error);
+    console.error("[create_image_record] catch before exit:", error);
     process.exit(1);
   }
 }

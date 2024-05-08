@@ -34,7 +34,7 @@ async function main() {
     //  commands.push(`docker push ${target}`);
     }
   } catch (error) {
-    console.error("[migrate_te_docker_images] catch error:", error);
+    console.error("[migrate_te_docker_images] catch before exit:", error);
     process.exit(1);
   }
 

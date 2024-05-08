@@ -75,7 +75,7 @@ async function main() {
       });
     }
   } catch (error) {
-    console.error("[execute_deploy_scripts] catch error:", error);
+    console.error("[execute_deploy_scripts] catch before exit:", error);
     process.exit(1);
   }
 }

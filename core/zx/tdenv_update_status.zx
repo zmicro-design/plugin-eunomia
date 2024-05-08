@@ -75,7 +75,7 @@ async function main() {
       throw new Error(`unexpected response ${respData.message}`);
     }
   } catch (error) {
-    console.error("[tdenv_update_status] catch error:", error);
+    console.error("[tdenv_update_status] catch before exit:", error);
     process.exit(1);
   }
 }
