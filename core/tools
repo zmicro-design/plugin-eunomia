@@ -172,13 +172,25 @@ eunomia::tools_tdenv_run() {
   fi
 
   # log::info "[eunomia::tools_tdenv_run] command($command) in tdenv($tdenv) ..."
-  ssh -p 22 \
-    -o "BatchMode yes" \
-    -o "HostkeyAlgorithms=+ssh-rsa" \
-    -o "PubkeyAcceptedAlgorithms=+ssh-rsa" \
-    -o StrictHostKeyChecking=no \
-    -i $HOME/.ssh/id_rsa.idp.tdenv \
-    root@$tdenv "$command"
+
+  # fix OpenSSH_7.4: Bad configuration option: pubkeyacceptedalgorithms
+  ssh -V | grep "OpenSSH_7" >> /dev/null 2>&1
+  if [ "$?" != "0" ]; then
+    ssh -p 22 \
+      -o "BatchMode yes" \
+      -o "HostkeyAlgorithms=+ssh-rsa" \
+      -o "PubkeyAcceptedAlgorithms=+ssh-rsa" \
+      -o StrictHostKeyChecking=no \
+      -i $HOME/.ssh/id_rsa.idp.tdenv \
+      root@$tdenv "$command"
+  else
+    ssh -p 22 \
+      -o "BatchMode yes" \
+      -o "HostkeyAlgorithms=+ssh-rsa" \
+      -o StrictHostKeyChecking=no \
+      -i $HOME/.ssh/id_rsa.idp.tdenv \
+      root@$tdenv "$command"
+  fi
   if [ "$?" != "0" ]; then
     return 1
   fi
