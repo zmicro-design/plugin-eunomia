@@ -174,7 +174,7 @@ eunomia::tools_tdenv_run() {
   # log::info "[eunomia::tools_tdenv_run] command($command) in tdenv($tdenv) ..."
 
   # fix OpenSSH_7.4: Bad configuration option: pubkeyacceptedalgorithms
-  ssh -V | grep "OpenSSH_7" >> /dev/null 2>&1
+  ssh -V 2>&1 | grep "OpenSSH_7" >> /dev/null 2>&1
   if [ "$?" != "0" ]; then
     ssh -p 22 \
       -o "BatchMode yes" \
