@@ -72,22 +72,27 @@ async function getConfig() {
 
     // start with double quote
     if (value.startsWith('"')) {
-      let _value = value;
-      while (!_value.endsWith('"')) {
-        index ++;
+      if (!value.endsWith('"')) {
+        // remove double quote
+        cfg[key] = cfg[key].slice(1, -1);
+      } else {
+        let _value = value;
+        while (!_value.endsWith('"')) {
+          index++;
 
-        // avoid out of range
-        if (index >= lines.length) {
-          break;
+          // avoid out of range
+          if (index >= lines.length) {
+            break;
+          }
+
+          _value += '\n' + lines[index];
         }
 
-        _value += '\n' + lines[index];
+        cfg[key] = _value;
+
+        // remove double quote
+        cfg[key] = cfg[key].slice(1, -1);
       }
-
-      cfg[key] = _value;
-
-      // remove double quote
-      cfg[key] = cfg[key].slice(1, -1);
     }
   }
 
