@@ -60,7 +60,8 @@ async function getConfig() {
   const cfg = {};
   // data.result.config is envfile, parse it to object
   const lines = (data.result.config || '').split('\n');
-  for (const line of lines) {
+  for (let index = 0; index < lines.length; index ++) {
+    const line = lines[index];
     if (!line) continue;
 
     const [key, value] = line.split('=');
@@ -68,6 +69,26 @@ async function getConfig() {
     if (key.startsWith('#')) continue;
 
     cfg[key] = value;
+
+    // start with double quote
+    if (value.startsWith('"')) {
+      let _value = value;
+      while (!_value.endsWith('"')) {
+        index ++;
+
+        // avoid out of range
+        if (index >= lines.length) {
+          break;
+        }
+
+        _value += '\n' + lines[index];
+      }
+
+      cfg[key] = _value;
+
+      // remove double quote
+      cfg[key] = cfg[key].slice(1, -1);
+    }
   }
 
   return cfg;
@@ -213,7 +234,14 @@ async function runScripts(data, cfg) {
         // apply cfg as env
         if (!!cfg) {
           for (const key in cfg) {
-            build_script.push(`--env "${key}=${cfg[key]}"`);
+            // build_script.push(`--env "${key}=${cfg[key]}"`);
+
+            // if value contains space / \n / \r /\t, use double quote
+            if (/[\s\n\r\t]/.test(cfg[key])) {
+              build_script.push(`--env ${key}="${cfg[key]}"`);
+            } else {
+              build_script.push(`--env ${key}=${cfg[key]}`);
+            }
           }
         }
 
