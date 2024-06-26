@@ -56,15 +56,22 @@ async function getConfig() {
   if (data.code !== 200) {
     throw new Error(`unexpected response ${data.message}`);
   }
-
-  const cfg = {};
+  
   // data.result.config is envfile, parse it to object
-  const lines = (data.result.config || '').split('\n');
-  for (let index = 0; index < lines.length; index ++) {
+  return parseConfig(data.result.config || '');
+}
+
+function parseConfig(text) {
+  const cfg = {};
+
+  // dotenv format
+  const lines = text.split('\n');
+  for (let index = 0; index < lines.length; index++) {
     const line = lines[index];
     if (!line) continue;
 
-    const [key, value] = line.split('=');
+    const [key, ...values] = line.split('=');
+    const value = values.join('=');
     if (!key) continue;
     if (key.startsWith('#')) continue;
 
@@ -73,7 +80,7 @@ async function getConfig() {
 
     // start with double quote
     if (value.startsWith('"')) {
-      
+
       // end with double quote
       if (value.endsWith('"')) {
         // remove double quote
