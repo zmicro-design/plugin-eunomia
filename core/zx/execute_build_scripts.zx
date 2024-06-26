@@ -254,7 +254,7 @@ async function runScripts(data, cfg) {
             // build_script.push(`--env "${key}=${cfg[key]}"`);
 
             // if value contains space / \n / \r /\t, use double quote
-            if (/[\s\n\r\t]/.test(cfg[key])) {
+            if (/[\s\n\r\t#]/.test(cfg[key])) {
               build_script.push(`--env ${key}="${cfg[key]}"`);
             } else {
               build_script.push(`--env ${key}=${cfg[key]}`);
