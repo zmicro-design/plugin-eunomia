@@ -69,14 +69,18 @@ async function getConfig() {
     if (key.startsWith('#')) continue;
 
     cfg[key] = value;
+    if (!value) continue;
 
     // start with double quote
     if (value.startsWith('"')) {
+      // end with double quote
       if (!value.endsWith('"')) {
         // remove double quote
         cfg[key] = cfg[key].slice(1, -1);
       } else {
+        // value contains \n
         let _value = value;
+        // find the end of double quote
         while (!_value.endsWith('"')) {
           index++;
 
