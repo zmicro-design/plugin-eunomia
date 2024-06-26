@@ -73,8 +73,9 @@ async function getConfig() {
 
     // start with double quote
     if (value.startsWith('"')) {
+      
       // end with double quote
-      if (!value.endsWith('"')) {
+      if (value.endsWith('"')) {
         // remove double quote
         cfg[key] = cfg[key].slice(1, -1);
       } else {
