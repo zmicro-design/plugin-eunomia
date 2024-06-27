@@ -252,6 +252,8 @@ async function runScripts(data, cfg) {
         // apply cfg as env
         if (!!cfg) {
           for (const key in cfg) {
+            const value = cfg[key];
+
             // build_script.push(`--env "${key}=${cfg[key]}"`);
 
             // if value contains space / \n / \r /\t, use double quote
@@ -261,7 +263,12 @@ async function runScripts(data, cfg) {
             //   build_script.push(`--env ${key}=${cfg[key]}`);
             // }
 
-            build_script.push(`--env ${key}="${cfg[key]}"`);
+            // if value contains double quote, treat it as string
+            if (/"/.test(cfg[key])) {
+              value = cfg[key].replace(/"/g, '\\"');
+            }
+
+            build_script.push(`--env ${key}="${value}"`);
           }
         }
 
