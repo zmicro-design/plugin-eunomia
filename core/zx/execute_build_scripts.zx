@@ -206,7 +206,8 @@ async function runScripts(data, cfg) {
 
         const envs = await getEnv();
         for (const env of envs) {
-          const [env_name, env_value] = env.split('=');
+          const [env_name, ...rest] = env.split('=');
+          const env_value = rest.join('=');
           _script.push(`--build-arg ${env_name}="${env_value}"`);
         }
 
@@ -254,11 +255,13 @@ async function runScripts(data, cfg) {
             // build_script.push(`--env "${key}=${cfg[key]}"`);
 
             // if value contains space / \n / \r /\t, use double quote
-            if (/[\s\n\r\t#]/.test(cfg[key])) {
-              build_script.push(`--env ${key}="${cfg[key]}"`);
-            } else {
-              build_script.push(`--env ${key}=${cfg[key]}`);
-            }
+            // if (/[\s\n\r\t#$&|()<>'"`\\]/.test(cfg[key])) {
+            //   build_script.push(`--env ${key}="${cfg[key]}"`);
+            // } else {
+            //   build_script.push(`--env ${key}=${cfg[key]}`);
+            // }
+
+            build_script.push(`--env ${key}="${cfg[key]}"`);
           }
         }
 
