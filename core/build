@@ -118,8 +118,10 @@ eunomia::build_image() {
   fi
 
   if [ ! -f "$PIPELINE_GIT_REPOSITORY_DIR/Dockerfile" ]; then
-    log::error "[$(timestamp)][eunomia::build_image] Dockerfile($PIPELINE_GIT_REPOSITORY_DIR/Dockerfile) not found at for $EUNOMIA_GIT_REPO_NAME"
-    return 1
+    # log::error "[$(timestamp)][eunomia::build_image] Dockerfile($PIPELINE_GIT_REPOSITORY_DIR/Dockerfile) not found at for $EUNOMIA_GIT_REPO_NAME"
+    # return 1
+    log::info "[$(timestamp)][eunomia::build_image] ignore build image, because Dockerfile not found ..."
+    return 0
   fi
 
   export PIPELINE_DOCKER_BUILD_DOCKERFILE=$EUNOMIA_BUILD_DOCKERFILE_PATH
