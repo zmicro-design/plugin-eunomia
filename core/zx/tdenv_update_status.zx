@@ -57,6 +57,8 @@ async function main() {
         publish_url: process.env.EUNOMIA_TDENV_PUBLISH_URL,
         visit_url: process.env.EUNOMIA_TDENV_VISIT_URL,
         terminal_url: process.env.EUNOMIA_TDENV_TERMINAL_URL,
+        //
+        provider: process.env.PROVIDER,
       }),
     });
     if (!response.ok) {
