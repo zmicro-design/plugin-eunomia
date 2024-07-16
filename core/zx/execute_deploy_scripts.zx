@@ -75,7 +75,13 @@ async function main() {
       });
     }
   } catch (error) {
-    console.error("[execute_deploy_scripts] catch before exit:", error);
+    // console.error("[execute_deploy_scripts] catch before exit:", error);
+
+    // await runShell(`echo "[execute_deploy_scripts] catch before exit: ${error}" >> ${process.env.EUNOMIA_BUILD_DIR}/error.log`);
+    fs.writeFileSync(
+      `${process.env.EUNOMIA_BUILD_DIR}/error.log`,
+      `[execute_deploy_scripts] catch before exit: ${error}`,
+    );
     process.exit(1);
   }
 }

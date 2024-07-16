@@ -328,7 +328,13 @@ async function runScripts(data, cfg) {
       await runShell(script);
     }
   } catch (error) {
-    console.error("[execute_build_scripts] catch before exit:", error);
+    // console.error("[execute_build_scripts] catch before exit:", error);
+
+    // await runShell(`echo "[execute_build_scripts] catch before exit: ${error}" >> ${process.env.EUNOMIA_BUILD_DIR}/error.log`);
+    fs.writeFileSync(
+      process.env.EUNOMIA_BUILD_DIR + '/error.log',
+      `[execute_build_scripts] catch before exit: ${error}`,
+    );
     process.exit(1);
   }
 }
