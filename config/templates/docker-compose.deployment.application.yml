@@ -2,7 +2,7 @@ services:
   <PLUGIN_EUNOMIA_DEPLOYMENT_NAME>:
     container_name: ${PLUGIN_EUNOMIA_DEPLOYMENT_NAME}
     restart: always
-    image: whatwewant/connect-doreamon:v1
+    image: ${PLUGIN_EUNOMIA_DOCKER_REGISTRY}/whatwewant/connect-doreamon:v1
     environment:
       TZ: Asia/Shanghai
       MODE: production
