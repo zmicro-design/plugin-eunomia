@@ -18,7 +18,7 @@ eunomia::hook_log() {
   fi
 
   if [ -n "$EUNOMIA_LOG_HOOK" ]; then
-    log::info "[$(timestamp)][eunomia::hook_log] call $EUNOMIA_LOG_HOOK with log(file: $log_file)..."
+    # log::info "[$(timestamp)][eunomia::hook_log] call $EUNOMIA_LOG_HOOK with log(file: $log_file)..."
 
     curl \
       --connect-timeout 10 \
@@ -37,7 +37,7 @@ eunomia::hook_log() {
 
 eunomia::hook_info_supply() {
   if [ -n "$EUNOMIA_INFO_SUPPLY_HOOK" ]; then
-    log::info "[$(timestamp)][eunomia::hook_info_supply] call $EUNOMIA_INFO_SUPPLY_HOOK ..."
+    # log::info "[$(timestamp)][eunomia::hook_info_supply] call $EUNOMIA_INFO_SUPPLY_HOOK ..."
 
     curl \
       -s \
@@ -65,7 +65,7 @@ EOF
 
 eunomia::hook_start() {
   if [ -n "$EUNOMIA_START_HOOK" ]; then
-    log::info "[$(timestamp)][eunomia::hook_start] call $EUNOMIA_START_HOOK ..."
+    # log::info "[$(timestamp)][eunomia::hook_start] call $EUNOMIA_START_HOOK ..."
 
     local FLOW_PIPELINE_ID=$(echo $EUNOMIA_BUILD_ID | awk -F '_' '{print $1}')
     local FLOW_BUILD_ID=$(echo $EUNOMIA_BUILD_ID | awk -F '_' '{print $2}')
@@ -102,7 +102,7 @@ EOF
 
 eunomia::hook_succeed() {
   if [ -n "$EUNOMIA_SUCCEED_HOOK" ]; then
-    log::info "[$(timestamp)][eunomia::hook_succeed] call $EUNOMIA_SUCCEED_HOOK ..."
+    # log::info "[$(timestamp)][eunomia::hook_succeed] call $EUNOMIA_SUCCEED_HOOK ..."
     curl -s -X POST $EUNOMIA_SUCCEED_HOOK \
       -H "X-Client-ID: $PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_ID" \
       -H "X-Client-Secret: $PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_SECRET" >>/dev/null
@@ -111,7 +111,7 @@ eunomia::hook_succeed() {
 
 eunomia::hook_failed() {
   if [ -n "$EUNOMIA_FAILED_HOOK" ]; then
-    log::info "[$(timestamp)][eunomia::hook_failed] call $EUNOMIA_FAILED_HOOK ..."
+    # log::info "[$(timestamp)][eunomia::hook_failed] call $EUNOMIA_FAILED_HOOK ..."
     curl \
       -s \
       -X POST $EUNOMIA_FAILED_HOOK\
@@ -122,7 +122,7 @@ eunomia::hook_failed() {
 
 eunomia::hook_checkout_start() {
   if [ -n "$EUNOMIA_CHECKOUT_START_HOOK" ]; then
-    log::info "[$(timestamp)][eunomia::hook_checkout_start] call $EUNOMIA_CHECKOUT_START_HOOK ..."
+    # log::info "[$(timestamp)][eunomia::hook_checkout_start] call $EUNOMIA_CHECKOUT_START_HOOK ..."
 
     local FLOW_PIPELINE_ID=$(echo $EUNOMIA_BUILD_ID | awk -F '_' '{print $1}')
     local FLOW_BUILD_ID=$(echo $EUNOMIA_BUILD_ID | awk -F '_' '{print $2}')
@@ -147,7 +147,7 @@ eunomia::hook_checkout_succeed() {
   # eunomia::hook_info_supply
 
   if [ -n "$EUNOMIA_CHECKOUT_SUCCEED_HOOK" ]; then
-    log::info "[$(timestamp)][eunomia::hook_checkout_succeed] call $EUNOMIA_CHECKOUT_SUCCEED_HOOK ..."
+    # log::info "[$(timestamp)][eunomia::hook_checkout_succeed] call $EUNOMIA_CHECKOUT_SUCCEED_HOOK ..."
     curl -s -X POST $EUNOMIA_CHECKOUT_SUCCEED_HOOK \
       -H "X-Client-ID: $PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_ID" \
       -H "X-Client-Secret: $PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_SECRET" >>/dev/null
@@ -156,7 +156,7 @@ eunomia::hook_checkout_succeed() {
 
 eunomia::hook_checkout_failed() {
   if [ -n "$EUNOMIA_CHECKOUT_FAILED_HOOK" ]; then
-    log::info "[$(timestamp)][eunomia::hook_checkout_failed] call $EUNOMIA_CHECKOUT_FAILED_HOOK ..."
+    # log::info "[$(timestamp)][eunomia::hook_checkout_failed] call $EUNOMIA_CHECKOUT_FAILED_HOOK ..."
     curl -s -X POST $EUNOMIA_CHECKOUT_FAILED_HOOK \
       -H "X-Client-ID: $PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_ID" \
       -H "X-Client-Secret: $PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_SECRET" >>/dev/null
@@ -165,7 +165,7 @@ eunomia::hook_checkout_failed() {
 
 eunomia::hook_build_start() {
   if [ -n "$EUNOMIA_BUILD_START_HOOK" ]; then
-    log::info "[$(timestamp)][eunomia::hook_build_start] call $EUNOMIA_BUILD_START_HOOK ..."
+    # log::info "[$(timestamp)][eunomia::hook_build_start] call $EUNOMIA_BUILD_START_HOOK ..."
 
     local FLOW_PIPELINE_ID=$(echo $EUNOMIA_BUILD_ID | awk -F '_' '{print $1}')
     local FLOW_BUILD_ID=$(echo $EUNOMIA_BUILD_ID | awk -F '_' '{print $2}')
@@ -187,7 +187,7 @@ EOF
 
 eunomia::hook_build_succeed() {
   if [ -n "$EUNOMIA_BUILD_SUCCEED_HOOK" ]; then
-    log::info "[$(timestamp)][eunomia::hook_build_succeed] call $EUNOMIA_BUILD_SUCCEED_HOOK ..."
+    # log::info "[$(timestamp)][eunomia::hook_build_succeed] call $EUNOMIA_BUILD_SUCCEED_HOOK ..."
     curl -s -X POST $EUNOMIA_BUILD_SUCCEED_HOOK \
       -H "X-Client-ID: $PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_ID" \
       -H "X-Client-Secret: $PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_SECRET" >>/dev/null
@@ -196,7 +196,7 @@ eunomia::hook_build_succeed() {
 
 eunomia::hook_build_failed() {
   if [ -n "$EUNOMIA_BUILD_FAILED_HOOK" ]; then
-    log::info "[$(timestamp)][eunomia::hook_build_failed] call $EUNOMIA_BUILD_FAILED_HOOK ..."
+    # log::info "[$(timestamp)][eunomia::hook_build_failed] call $EUNOMIA_BUILD_FAILED_HOOK ..."
     curl -s -X POST $EUNOMIA_BUILD_FAILED_HOOK \
       -H "X-Client-ID: $PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_ID" \
       -H "X-Client-Secret: $PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_SECRET" >>/dev/null
@@ -205,7 +205,7 @@ eunomia::hook_build_failed() {
 
 eunomia::hook_deploy_start() {
   if [ -n "$EUNOMIA_DEPLOY_START_HOOK" ]; then
-    log::info "[$(timestamp)][eunomia::hook_deploy_start] call $EUNOMIA_DEPLOY_START_HOOK ..."
+    # log::info "[$(timestamp)][eunomia::hook_deploy_start] call $EUNOMIA_DEPLOY_START_HOOK ..."
 
     local FLOW_PIPELINE_ID=$(echo $EUNOMIA_BUILD_ID | awk -F '_' '{print $1}')
     local FLOW_BUILD_ID=$(echo $EUNOMIA_BUILD_ID | awk -F '_' '{print $2}')
@@ -228,24 +228,24 @@ EOF
 
 eunomia::hook_deploy_succeed() {
   if [ -n "$EUNOMIA_DEPLOY_SUCCEED_HOOK" ]; then
-    log::info "[$(timestamp)][eunomia::hook_deploy_succeed] call $EUNOMIA_DEPLOY_SUCCEED_HOOK ..."
+    # log::info "[$(timestamp)][eunomia::hook_deploy_succeed] call $EUNOMIA_DEPLOY_SUCCEED_HOOK ..."
     curl -s -X POST $EUNOMIA_DEPLOY_SUCCEED_HOOK \
       -H "X-Client-ID: $PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_ID" \
       -H "X-Client-Secret: $PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_SECRET" >>/dev/null
   fi
 
-  eunomia::hook_log $EUNOMIA_DEPLOY_LOG
+  # eunomia::hook_log $EUNOMIA_DEPLOY_LOG
 }
 
 eunomia::hook_deploy_failed() {
   if [ -n "$EUNOMIA_DEPLOY_FAILED_HOOK" ]; then
-    log::info "[$(timestamp)][eunomia::hook_deploy_failed] call $EUNOMIA_DEPLOY_FAILED_HOOK ..."
+    # log::info "[$(timestamp)][eunomia::hook_deploy_failed] call $EUNOMIA_DEPLOY_FAILED_HOOK ..."
     curl -s -X POST $EUNOMIA_DEPLOY_FAILED_HOOK \
       -H "X-Client-ID: $PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_ID" \
       -H "X-Client-Secret: $PLUGIN_EUNOMIA_CONFIG_CENTER_CLIENT_SECRET" >>/dev/null
   fi
 
-  eunomia::hook_log $EUNOMIA_DEPLOY_LOG
+  # eunomia::hook_log $EUNOMIA_DEPLOY_LOG
 }
 
 export -f eunomia::hook_log
