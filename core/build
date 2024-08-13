@@ -2,13 +2,17 @@
 
 eunomia::build() {
   if [ -z "$EUNOMIA_BUILD_GIT_DIR" ]; then
-    log::error "[$(timestamp)][eunomia::build] EUNOMIA_BUILD_GIT_DIR is required"
-    return 1
+    # log::error "[$(timestamp)][eunomia::build] EUNOMIA_BUILD_GIT_DIR is required"
+    # return 1
+    log::info "[$(timestamp)][eunomia::build] ignore build, because EUNOMIA_BUILD_GIT_DIR empty ..."
+    return 0
   fi
 
   if [ ! -d "$EUNOMIA_BUILD_GIT_DIR" ]; then
-    log::error "[$(timestamp)][eunomia::build] EUNOMIA_BUILD_GIT_DIR($EUNOMIA_BUILD_GIT_DIR) not found, you must run prepare first"
-    return 1
+    # log::error "[$(timestamp)][eunomia::build] EUNOMIA_BUILD_GIT_DIR($EUNOMIA_BUILD_GIT_DIR) not found, you must run prepare first"
+    # return 1
+    log::info "[$(timestamp)][eunomia::build] ignore build, because EUNOMIA_BUILD_GIT_DIR not found ..."
+    return 0
   fi
 
   eunomia::build_info
